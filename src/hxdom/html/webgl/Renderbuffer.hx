@@ -1,4 +1,4 @@
-package hxdom.webgl;
+package hxdom.html.webgl;
 
 #if js
 typedef Renderbuffer = js.html.webgl.Renderbuffer;

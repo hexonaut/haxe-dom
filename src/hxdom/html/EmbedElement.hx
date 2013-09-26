@@ -1,4 +1,4 @@
-package hxdom;
+package hxdom.html;
 
 #if js
 typedef EmbedElement = js.html.EmbedElement;
@@ -33,7 +33,7 @@ class EmbedElement extends Element {
  HTML&nbsp;attribute, containing the displayed width of the resource. */
 	public var width:String;
 
-	public function getSVGDocument ():hxdom.svg.Document {
+	public function getSVGDocument ():hxdom.html.svg.Document {
 		return null;
 	}
 	

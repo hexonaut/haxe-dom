@@ -1,4 +1,4 @@
-package hxdom.webgl;
+package hxdom.html.webgl;
 
 #if js
 typedef ActiveInfo = js.html.webgl.ActiveInfo;

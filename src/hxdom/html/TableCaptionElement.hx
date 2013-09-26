@@ -1,4 +1,4 @@
-package hxdom;
+package hxdom.html;
 
 #if js
 typedef TableCaptionElement = js.html.TableCaptionElement;

@@ -1,4 +1,4 @@
-package hxdom;
+package hxdom.html;
 
 #if js
 typedef ObjectElement = js.html.ObjectElement;
@@ -131,7 +131,7 @@ class ObjectElement extends Element {
 		return null;
 	}
 
-	public function getSVGDocument ():hxdom.svg.Document {
+	public function getSVGDocument ():hxdom.html.svg.Document {
 		return null;
 	}
 

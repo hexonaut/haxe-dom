@@ -1,7 +1,7 @@
-package hxdom.svg;
+package hxdom.html.svg;
 
-import hxdom.Element;
-import hxdom.NodeList;
+import hxdom.html.Element;
+import hxdom.html.NodeList;
 
 #if js
 typedef PreserveAspectRatio = js.html.svg.PreserveAspectRatio;

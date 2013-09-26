@@ -1,8 +1,8 @@
-package hxdom.rtc;
+package hxdom.html.rtc;
 
-import hxdom.Element;
-import hxdom.EventTarget;
-import hxdom.NodeList;
+import hxdom.html.Element;
+import hxdom.html.EventTarget;
+import hxdom.html.NodeList;
 
 #if js
 typedef NavigatorUserMediaError = js.html.rtc.NavigatorUserMediaError;

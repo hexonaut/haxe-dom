@@ -1,4 +1,4 @@
-package hxdom;
+package hxdom.html;
 
 #if js
 typedef IFrameElement = js.html.IFrameElement;
@@ -61,7 +61,7 @@ class IFrameElement extends Element {
 &nbsp;HTML&nbsp;attribute, indicating the width of the frame. */
 	public var width:String;
 
-	public function getSVGDocument ():hxdom.svg.Document {
+	public function getSVGDocument ():hxdom.html.svg.Document {
 		return null;
 	}
 	

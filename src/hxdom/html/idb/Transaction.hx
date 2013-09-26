@@ -1,8 +1,8 @@
-package hxdom.idb;
+package hxdom.html.idb;
 
-import hxdom.Element;
-import hxdom.EventTarget;
-import hxdom.NodeList;
+import hxdom.html.Element;
+import hxdom.html.EventTarget;
+import hxdom.html.NodeList;
 
 #if js
 typedef Transaction = js.html.idb.Transaction;
@@ -21,19 +21,19 @@ class Transaction extends EventTarget {
 	/** The database connection that this transaction is associated with. */
 	public var db(default,null) : Database;
 
-	public var error(default,null) : hxdom.DOMError;
+	public var error(default,null) : hxdom.html.DOMError;
 
 	/** The mode for isolating access to data in the object stores that are in the scope of the transaction. For possible values, see Constants. The default value is <code><a href="#const_read_only" title="#const read only">READ_ONLY</a></code>. */
 	public var mode(default,null) : String;
 
 	/** The event handler for the <code>onabort</code> event. */
-	public var onabort : hxdom.EventListener;
+	public var onabort : hxdom.html.EventListener;
 
 	/** The event handler for the <code>oncomplete</code> event. */
-	public var oncomplete : hxdom.EventListener;
+	public var oncomplete : hxdom.html.EventListener;
 
 	/** The event handler for the <code>error </code>event. */
-	public var onerror : hxdom.EventListener;
+	public var onerror : hxdom.html.EventListener;
 
 	public function abort() : Void {
 		

@@ -1,7 +1,7 @@
-package hxdom.idb;
+package hxdom.html.idb;
 
-import hxdom.Element;
-import hxdom.NodeList;
+import hxdom.html.Element;
+import hxdom.html.NodeList;
 
 #if js
 typedef VersionChangeRequest = js.html.idb.VersionChangeRequest;
@@ -9,7 +9,7 @@ typedef VersionChangeRequest = js.html.idb.VersionChangeRequest;
 class VersionChangeRequest extends Request {
 	
 	/** The event handler for the blocked event. */
-	public var onblocked : hxdom.EventListener;
+	public var onblocked : hxdom.html.EventListener;
 	
 }
 #end

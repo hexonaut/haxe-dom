@@ -1,8 +1,8 @@
-package hxdom.rtc;
+package hxdom.html.rtc;
 
-import hxdom.Element;
-import hxdom.EventTarget;
-import hxdom.NodeList;
+import hxdom.html.Element;
+import hxdom.html.EventTarget;
+import hxdom.html.NodeList;
 
 #if js
 typedef MediaStream = js.html.rtc.MediaStream;
@@ -17,7 +17,7 @@ class MediaStream extends EventTarget {
 
 	public var label(default,null) : String;
 
-	public var onended : hxdom.EventListener;
+	public var onended : hxdom.html.EventListener;
 
 	public var readyState(default,null) : Int;
 

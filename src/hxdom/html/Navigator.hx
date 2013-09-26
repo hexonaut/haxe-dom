@@ -1,4 +1,4 @@
-package hxdom;
+package hxdom.html;
 
 #if js
 typedef Navigator = js.html.Navigator;
@@ -59,7 +59,7 @@ class Navigator {
 		
 	}
 
-	public function getUserMedia( options : Dynamic, successCallback : hxdom.rtc.NavigatorUserMediaSuccessCallback, ?errorCallback : hxdom.rtc.NavigatorUserMediaErrorCallback ) : Void {
+	public function getUserMedia( options : Dynamic, successCallback : hxdom.html.rtc.NavigatorUserMediaSuccessCallback, ?errorCallback : hxdom.html.rtc.NavigatorUserMediaErrorCallback ) : Void {
 		
 	}
 

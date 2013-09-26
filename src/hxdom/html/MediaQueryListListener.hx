@@ -1,4 +1,4 @@
-package hxdom;
+package hxdom.html;
 
 /** <div><strong>DRAFT</strong>
 <div>This page is not complete.</div>

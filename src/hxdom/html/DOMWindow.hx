@@ -1,4 +1,4 @@
-package hxdom;
+package hxdom.html;
 
 #if js
 typedef DOMWindow = js.html.DOMWindow;
@@ -44,7 +44,7 @@ class DOMWindow extends EventTarget {
 	/** Returns a reference to the history object. */
 	public var history(default, null):History;
 
-	public var indexedDB(default, null):hxdom.idb.Factory;
+	public var indexedDB(default, null):hxdom.html.idb.Factory;
 
 	/** Gets the height of the content area of the browser window including, if rendered, the horizontal scrollbar. */
 	public var innerHeight(default, null):Int;
@@ -420,7 +420,7 @@ class DOMWindow extends EventTarget {
 		return null;
 	}
 
-	public function openDatabase (name:String, version:String, displayName:String, estimatedSize:Int, ?creationCallback:hxdom.sql.DatabaseCallback):hxdom.sql.Database {
+	public function openDatabase (name:String, version:String, displayName:String, estimatedSize:Int, ?creationCallback:hxdom.html.sql.DatabaseCallback):hxdom.html.sql.Database {
 		return null;
 	}
 
@@ -447,7 +447,7 @@ class DOMWindow extends EventTarget {
 		return null;
 	}
 
-	public function requestFileSystem (type:Int, size:Int, successCallback:hxdom.fs.FileSystemCallback, ?errorCallback:hxdom.fs.ErrorCallback):Void {
+	public function requestFileSystem (type:Int, size:Int, successCallback:hxdom.html.fs.FileSystemCallback, ?errorCallback:hxdom.html.fs.ErrorCallback):Void {
 		
 	}
 
@@ -459,7 +459,7 @@ class DOMWindow extends EventTarget {
 		
 	}
 
-	public function resolveLocalFileSystemURL (url:String, successCallback:hxdom.fs.EntryCallback, ?errorCallback:hxdom.fs.ErrorCallback):Void {
+	public function resolveLocalFileSystemURL (url:String, successCallback:hxdom.html.fs.EntryCallback, ?errorCallback:hxdom.html.fs.ErrorCallback):Void {
 		
 	}
 

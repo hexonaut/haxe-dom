@@ -1,4 +1,4 @@
-package hxdom;
+package hxdom.html;
 
 #if js
 typedef FrameElement = js.html.FrameElement;
@@ -34,7 +34,7 @@ class FrameElement extends Element {
 
 	public var width(default, null):Int;
 
-	public function getSVGDocument ():hxdom.svg.Document {
+	public function getSVGDocument ():hxdom.html.svg.Document {
 		return null;
 	}
 	

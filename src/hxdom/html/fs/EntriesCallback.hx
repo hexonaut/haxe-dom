@@ -1,3 +1,3 @@
-package hxdom.fs;
+package hxdom.html.fs;
 
 typedef EntriesCallback = EntryArray -> Bool;

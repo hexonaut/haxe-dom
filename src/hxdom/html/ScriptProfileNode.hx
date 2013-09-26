@@ -1,4 +1,4 @@
-package hxdom;
+package hxdom.html;
 
 #if js
 typedef ScriptProfileNode = js.html.ScriptProfileNode;
@@ -21,7 +21,7 @@ class ScriptProfileNode {
 
 	public var visible(default,null) : Bool;
 
-	public function children() : Array<hxdom.ScriptProfileNode> {
+	public function children() : Array<hxdom.html.ScriptProfileNode> {
 		return null;
 	}
 	

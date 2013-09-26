@@ -1,8 +1,8 @@
-package hxdom.rtc;
+package hxdom.html.rtc;
 
-import hxdom.Element;
-import hxdom.EventTarget;
-import hxdom.NodeList;
+import hxdom.html.Element;
+import hxdom.html.EventTarget;
+import hxdom.html.NodeList;
 
 #if js
 typedef MediaStreamTrack = js.html.rtc.MediaStreamTrack;
@@ -21,11 +21,11 @@ class MediaStreamTrack extends EventTarget {
 
 	public var label(default,null) : String;
 
-	public var onended : hxdom.EventListener;
+	public var onended : hxdom.html.EventListener;
 
-	public var onmute : hxdom.EventListener;
+	public var onmute : hxdom.html.EventListener;
 
-	public var onunmute : hxdom.EventListener;
+	public var onunmute : hxdom.html.EventListener;
 
 	public var readyState(default,null) : Int;
 	

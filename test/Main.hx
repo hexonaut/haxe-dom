@@ -1,8 +1,6 @@
 package ;
 
-import hxdom.DivElement;
-import hxdom.Document;
-import neko.Lib;
+import hxdom.Browser;
 
 /**
  * Testing for hxdom.
@@ -13,7 +11,8 @@ import neko.Lib;
 class Main {
 	
 	static function main () {
-		var div = Document.createDiv();
+		var div = Browser.document.createDivElement();
+		trace(div);
 	}
 	
 }

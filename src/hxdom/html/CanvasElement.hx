@@ -1,4 +1,4 @@
-package hxdom;
+package hxdom.html;
 
 #if js
 typedef CanvasElement = js.html.CanvasElement;
@@ -28,7 +28,7 @@ class CanvasElement extends Element {
 	/** A typed shortcut for <code>getContext("2d")</code>. */
 	public inline function getContext2d ():CanvasRenderingContext2D { return cast getContext("2d"); }
 
-	public inline function getContextWebGL (?attribs:hxdom.webgl.ContextAttributes):hxdom.webgl.RenderingContext {
+	public inline function getContextWebGL (?attribs:hxdom.html.webgl.ContextAttributes):hxdom.html.webgl.RenderingContext {
 		return CanvasUtil.getContextWebGL(this, attribs);
 	}
 	

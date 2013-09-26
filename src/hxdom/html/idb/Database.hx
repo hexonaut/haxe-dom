@@ -1,8 +1,8 @@
-package hxdom.idb;
+package hxdom.html.idb;
 
-import hxdom.Element;
-import hxdom.EventTarget;
-import hxdom.NodeList;
+import hxdom.html.Element;
+import hxdom.html.EventTarget;
+import hxdom.html.NodeList;
 
 #if js
 typedef Database = js.html.idb.Database;
@@ -13,13 +13,13 @@ class Database extends EventTarget {
 	public var name(default,null) : String;
 
 	/** A list of the names of the <a title="en/IndexedDB#gloss object store" rel="internal" href="https://developer.mozilla.org/en/IndexedDB#gloss_object_store">object stores</a> currently in the connected database. */
-	public var objectStoreNames(default,null) : hxdom.DOMStringList;
+	public var objectStoreNames(default,null) : hxdom.html.DOMStringList;
 
-	public var onabort : hxdom.EventListener;
+	public var onabort : hxdom.html.EventListener;
 
-	public var onerror : hxdom.EventListener;
+	public var onerror : hxdom.html.EventListener;
 
-	public var onversionchange : hxdom.EventListener;
+	public var onversionchange : hxdom.html.EventListener;
 
 	/** The version of the connected database. When a database is first created, this attribute is the empty string. */
 	public var version(default,null) : Any;
@@ -59,7 +59,7 @@ class Database extends EventTarget {
 <table class="standard-table"> <thead> <tr> <th scope="col" width="131">Exception</th> <th scope="col" width="698">Description</th> </tr> </thead> <tbody> <tr> <td><code><a title="en/IndexedDB/DatabaseException#NOT ALLOWED ERR" rel="internal" href="https://developer.mozilla.org/en/IndexedDB/IDBDatabaseException#NOT_ALLOWED_ERR">NOT_ALLOWED_ERR</a></code></td> <td>The error is thrown for one of two reasons: <ul> <li>The <code>close()</code> method has been called on this IDBDatabase instance.</li> <li>The object store has been deleted or removed.</li> </ul> </td> </tr> <tr> <td><code><a title="en/IndexedDB/IDBDatabaseException#NOT FOUND ERR" rel="internal" href="https://developer.mozilla.org/en/IndexedDB/IDBDatabaseException#NOT_FOUND_ERR">NOT_FOUND_ERR</a></code></td> <td>One of the object stores doesn't exist in the connected database.</td> </tr> </tbody>
 </table>
 </div> Throws DatabaseException. */
-	@:overload( function( storeNames : hxdom.DOMStringList, mode : String ) :Transaction {} )
+	@:overload( function( storeNames : hxdom.html.DOMStringList, mode : String ) :Transaction {} )
 	@:overload( function( storeNames : Array<String>, mode : String ) :Transaction {} )
 	public function transaction( storeName : String, mode : String ) : Transaction {
 		return null;

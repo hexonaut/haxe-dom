@@ -1,4 +1,4 @@
-package hxdom;
+package hxdom.html;
 
 #if js
 typedef Console = js.html.Console;
@@ -7,7 +7,7 @@ class Console {
 	
 	public var memory(default, null) : MemoryInfo;
 
-	public var profiles(default, null) : Array<hxdom.ScriptProfile>;
+	public var profiles(default, null) : Array<hxdom.html.ScriptProfile>;
 
 	public function assert( condition : Bool , ?p1 : Dynamic, ?p2 : Dynamic, ?p3 : Dynamic, ?p4 : Dynamic, ?p5 : Dynamic) : Void {
 		

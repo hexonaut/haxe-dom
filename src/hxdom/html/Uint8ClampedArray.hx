@@ -1,4 +1,4 @@
-package hxdom;
+package hxdom.html;
 
 #if js
 typedef Uint8ClampedArray = js.html.Uint8ClampedArray;

@@ -1,8 +1,8 @@
-package hxdom.idb;
+package hxdom.html.idb;
 
-import hxdom.Element;
-import hxdom.EventTarget;
-import hxdom.NodeList;
+import hxdom.html.Element;
+import hxdom.html.EventTarget;
+import hxdom.html.NodeList;
 
 #if js
 typedef ObjectStore = js.html.idb.ObjectStore;
@@ -12,7 +12,7 @@ class ObjectStore {
 	public var autoIncrement(default,null) : Bool;
 
 	/** A list of the names of <a title="en/IndexedDB#gloss index" rel="internal" href="https://developer.mozilla.org/en/IndexedDB#gloss_index">indexes</a> on objects in this object store. */
-	public var indexNames(default,null) : hxdom.DOMStringList;
+	public var indexNames(default,null) : hxdom.html.DOMStringList;
 
 	/** The <a title="en/IndexedDB#gloss key path" rel="internal" href="https://developer.mozilla.org/en/IndexedDB#gloss_key_path">key path</a> of this object store. If this attribute is null, the application must provide a key for each modification operation. */
 	public var keyPath(default,null) : Any;

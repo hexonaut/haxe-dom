@@ -1,7 +1,7 @@
-package hxdom.sql;
+package hxdom.html.sql;
 
-import hxdom.Element;
-import hxdom.NodeList;
+import hxdom.html.Element;
+import hxdom.html.NodeList;
 
 #if js
 typedef Transaction = js.html.sql.Transaction;

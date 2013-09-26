@@ -1,3 +1,3 @@
-package hxdom;
+package hxdom.html;
 
 typedef PositionCallback = Geoposition -> Bool;

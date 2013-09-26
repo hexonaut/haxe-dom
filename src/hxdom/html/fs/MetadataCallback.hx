@@ -1,3 +1,3 @@
-package hxdom.fs;
+package hxdom.html.fs;
 
 typedef MetadataCallback = Metadata -> Bool;

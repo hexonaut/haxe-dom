@@ -1,7 +1,7 @@
-package hxdom.fs;
+package hxdom.html.fs;
 
-import hxdom.Element;
-import hxdom.NodeList;
+import hxdom.html.Element;
+import hxdom.html.NodeList;
 
 #if js
 typedef Entry = js.html.fs.Entry;
@@ -38,7 +38,7 @@ class Entry {
 		
 	}
 
-	public function remove( successCallback : hxdom.VoidCallback, ?errorCallback : ErrorCallback ) : Void {
+	public function remove( successCallback : hxdom.html.VoidCallback, ?errorCallback : ErrorCallback ) : Void {
 		
 	}
 

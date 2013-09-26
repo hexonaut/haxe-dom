@@ -1,8 +1,8 @@
-package hxdom.idb;
+package hxdom.html.idb;
 
-import hxdom.Element;
-import hxdom.EventTarget;
-import hxdom.NodeList;
+import hxdom.html.Element;
+import hxdom.html.EventTarget;
+import hxdom.html.NodeList;
 
 #if js
 typedef Request = js.html.idb.Request;
@@ -10,7 +10,7 @@ typedef Request = js.html.idb.Request;
 class Request extends EventTarget {
 	
 	/** Getter throws DatabaseException. */
-	public var error(default,null) : hxdom.DOMError;
+	public var error(default,null) : hxdom.html.DOMError;
 
 	/** Getter throws DatabaseException. */
 	public var errorCode(default,null) : Int;
@@ -18,9 +18,9 @@ class Request extends EventTarget {
 	/** Getter throws DatabaseException. */
 	public var errorMessage(default,null) : String;
 
-	public var onerror : hxdom.EventListener;
+	public var onerror : hxdom.html.EventListener;
 
-	public var onsuccess : hxdom.EventListener;
+	public var onsuccess : hxdom.html.EventListener;
 
 	public var readyState(default,null) : String;
 

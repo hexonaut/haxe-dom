@@ -1,3 +1,3 @@
-package hxdom;
+package hxdom.html;
 
 typedef RequestAnimationFrameCallback = Float -> Bool;

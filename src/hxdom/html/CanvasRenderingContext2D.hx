@@ -1,4 +1,4 @@
-package hxdom;
+package hxdom.html;
 
 #if js
 typedef CanvasRenderingContext2D = js.html.CanvasRenderingContext2D;

@@ -1,19 +1,19 @@
-package hxdom.rtc;
+package hxdom.html.rtc;
 
-import hxdom.Element;
-import hxdom.EventTarget;
-import hxdom.NodeList;
+import hxdom.html.Element;
+import hxdom.html.EventTarget;
+import hxdom.html.NodeList;
 
 #if js
 typedef MediaStreamTrackList = js.html.rtc.MediaStreamTrackList;
 #else
-class MediaStreamTrackList extends hxdom.EventTarget implements ArrayAccess<MediaStreamTrack> {
+class MediaStreamTrackList extends hxdom.html.EventTarget implements ArrayAccess<MediaStreamTrack> {
 	
 	public var length(default,null) : Int;
 
-	public var onaddtrack : hxdom.EventListener;
+	public var onaddtrack : hxdom.html.EventListener;
 
-	public var onremovetrack : hxdom.EventListener;
+	public var onremovetrack : hxdom.html.EventListener;
 
 	public function add( track : MediaStreamTrack ) : Void {
 		

@@ -1,3 +1,3 @@
-package hxdom.sql;
+package hxdom.html.sql;
 
 typedef TransactionCallback = Transaction -> Bool;

@@ -1,7 +1,7 @@
-package hxdom.fs;
+package hxdom.html.fs;
 
-import hxdom.Element;
-import hxdom.NodeList;
+import hxdom.html.Element;
+import hxdom.html.NodeList;
 
 #if js
 typedef FileSystem = js.html.fs.FileSystem;

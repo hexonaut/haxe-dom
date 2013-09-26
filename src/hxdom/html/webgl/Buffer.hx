@@ -1,4 +1,4 @@
-package hxdom.webgl;
+package hxdom.html.webgl;
 
 #if js
 typedef Buffer = js.html.webgl.Buffer;

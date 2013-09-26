@@ -1,4 +1,4 @@
-package hxdom;
+package hxdom.html;
 
 #if js
 typedef DataTransferItem = js.html.DataTransferItem;
@@ -9,7 +9,7 @@ class DataTransferItem {
 
 	public var type(default,null) : String;
 
-	public function getAsEntry() : hxdom.fs.Entry {
+	public function getAsEntry() : hxdom.html.fs.Entry {
 		return null;
 	}
 

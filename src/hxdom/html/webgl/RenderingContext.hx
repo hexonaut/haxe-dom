@@ -1,4 +1,4 @@
-package hxdom.webgl;
+package hxdom.html.webgl;
 
 #if js
 typedef RenderingContext = js.html.webgl.RenderingContext;
@@ -624,13 +624,13 @@ class RenderingContext {
 	public function blendFuncSeparate (srcRGB:Int, dstRGB:Int, srcAlpha:Int, dstAlpha:Int ):Void {}
 
 	/** Throws DOMException. */
-	@:overload( function( target:Int, data:hxdom.ArrayBuffer, usage:Int ) :Void {} )
-	@:overload( function( target:Int, data:hxdom.ArrayBufferView, usage:Int ) :Void {} )
+	@:overload( function( target:Int, data:hxdom.html.ArrayBuffer, usage:Int ) :Void {} )
+	@:overload( function( target:Int, data:hxdom.html.ArrayBufferView, usage:Int ) :Void {} )
 	public function bufferData (target:Int, size:Int, usage:Int ):Void {}
 
 	/** Throws DOMException. */
-	@:overload( function( target:Int, offset:Int, data:hxdom.ArrayBuffer ) :Void {} )
-	public function bufferSubData (target:Int, offset:Int, data:hxdom.ArrayBufferView ):Void {}
+	@:overload( function( target:Int, offset:Int, data:hxdom.html.ArrayBuffer ) :Void {} )
+	public function bufferSubData (target:Int, offset:Int, data:hxdom.html.ArrayBufferView ):Void {}
 
 	public function checkFramebufferStatus (target:Int ):Int { return null; }
 
@@ -646,9 +646,9 @@ class RenderingContext {
 
 	public function compileShader (shader:Shader ):Void {}
 
-	public function compressedTexImage2D (target:Int, level:Int, internalformat:Int, width:Int, height:Int, border:Int, data:hxdom.ArrayBufferView ):Void {}
+	public function compressedTexImage2D (target:Int, level:Int, internalformat:Int, width:Int, height:Int, border:Int, data:hxdom.html.ArrayBufferView ):Void {}
 
-	public function compressedTexSubImage2D (target:Int, level:Int, xoffset:Int, yoffset:Int, width:Int, height:Int, format:Int, data:hxdom.ArrayBufferView ):Void {}
+	public function compressedTexSubImage2D (target:Int, level:Int, xoffset:Int, yoffset:Int, width:Int, height:Int, format:Int, data:hxdom.html.ArrayBufferView ):Void {}
 
 	public function copyTexImage2D (target:Int, level:Int, internalformat:Int, x:Int, y:Int, width:Int, height:Int, border:Int ):Void {}
 
@@ -718,7 +718,7 @@ class RenderingContext {
 
 	/** Throws DOMException. */
 	@:overload( function( program:Program ) :Void {} )
-	public function getAttachedShaders (program:Program ):Array<hxdom.webgl.Shader> {return null;}
+	public function getAttachedShaders (program:Program ):Array<hxdom.html.webgl.Shader> {return null;}
 
 	public function getAttribLocation (program:Program, name:String ):Int {return null;}
 
@@ -796,7 +796,7 @@ class RenderingContext {
 
 	public function polygonOffset (factor:Float, units:Float ):Void {}
 
-	public function readPixels (x:Int, y:Int, width:Int, height:Int, format:Int, type:Int, pixels:hxdom.ArrayBufferView ):Void {}
+	public function readPixels (x:Int, y:Int, width:Int, height:Int, format:Int, type:Int, pixels:hxdom.html.ArrayBufferView ):Void {}
 
 	public function releaseShaderCompiler ():Void {}
 
@@ -821,60 +821,60 @@ class RenderingContext {
 	public function stencilOpSeparate (face:Int, fail:Int, zfail:Int, zpass:Int ):Void {}
 
 	/** Throws DOMException. */
-	@:overload( function( target:Int, level:Int, internalformat:Int, width:Int, height:Int, border:Int, format:Int, type:Int, pixels:hxdom.ArrayBufferView ) :Void {} )
-	@:overload( function( target:Int, level:Int, internalformat:Int, format:Int, type:Int, pixels:hxdom.ImageData ) :Void {} )
-	@:overload( function( target:Int, level:Int, internalformat:Int, format:Int, type:Int, image:hxdom.ImageElement ) :Void {} )
-	@:overload( function( target:Int, level:Int, internalformat:Int, format:Int, type:Int, canvas:hxdom.CanvasElement ) :Void {} )
-	public function texImage2D (target:Int, level:Int, internalformat:Int, format:Int, type:Int, video:hxdom.VideoElement ):Void {}
+	@:overload( function( target:Int, level:Int, internalformat:Int, width:Int, height:Int, border:Int, format:Int, type:Int, pixels:hxdom.html.ArrayBufferView ) :Void {} )
+	@:overload( function( target:Int, level:Int, internalformat:Int, format:Int, type:Int, pixels:hxdom.html.ImageData ) :Void {} )
+	@:overload( function( target:Int, level:Int, internalformat:Int, format:Int, type:Int, image:hxdom.html.ImageElement ) :Void {} )
+	@:overload( function( target:Int, level:Int, internalformat:Int, format:Int, type:Int, canvas:hxdom.html.CanvasElement ) :Void {} )
+	public function texImage2D (target:Int, level:Int, internalformat:Int, format:Int, type:Int, video:hxdom.html.VideoElement ):Void {}
 
 	public function texParameterf (target:Int, pname:Int, param:Float ):Void {}
 
 	public function texParameteri (target:Int, pname:Int, param:Int ):Void {}
 
 	/** Throws DOMException. */
-	@:overload( function( target:Int, level:Int, xoffset:Int, yoffset:Int, width:Int, height:Int, format:Int, type:Int, pixels:hxdom.ArrayBufferView ) :Void {} )
-	@:overload( function( target:Int, level:Int, xoffset:Int, yoffset:Int, format:Int, type:Int, pixels:hxdom.ImageData ) :Void {} )
-	@:overload( function( target:Int, level:Int, xoffset:Int, yoffset:Int, format:Int, type:Int, image:hxdom.ImageElement ) :Void {} )
-	@:overload( function( target:Int, level:Int, xoffset:Int, yoffset:Int, format:Int, type:Int, canvas:hxdom.CanvasElement ) :Void {} )
-	public function texSubImage2D (target:Int, level:Int, xoffset:Int, yoffset:Int, format:Int, type:Int, video:hxdom.VideoElement ):Void {}
+	@:overload( function( target:Int, level:Int, xoffset:Int, yoffset:Int, width:Int, height:Int, format:Int, type:Int, pixels:hxdom.html.ArrayBufferView ) :Void {} )
+	@:overload( function( target:Int, level:Int, xoffset:Int, yoffset:Int, format:Int, type:Int, pixels:hxdom.html.ImageData ) :Void {} )
+	@:overload( function( target:Int, level:Int, xoffset:Int, yoffset:Int, format:Int, type:Int, image:hxdom.html.ImageElement ) :Void {} )
+	@:overload( function( target:Int, level:Int, xoffset:Int, yoffset:Int, format:Int, type:Int, canvas:hxdom.html.CanvasElement ) :Void {} )
+	public function texSubImage2D (target:Int, level:Int, xoffset:Int, yoffset:Int, format:Int, type:Int, video:hxdom.html.VideoElement ):Void {}
 
 	public function uniform1f (location:UniformLocation, x:Float ):Void {}
 
-	public function uniform1fv (location:UniformLocation, v:hxdom.Float32Array ):Void {}
+	public function uniform1fv (location:UniformLocation, v:hxdom.html.Float32Array ):Void {}
 
 	public function uniform1i (location:UniformLocation, x:Int ):Void {}
 
-	public function uniform1iv (location:UniformLocation, v:hxdom.Int32Array ):Void {}
+	public function uniform1iv (location:UniformLocation, v:hxdom.html.Int32Array ):Void {}
 
 	public function uniform2f (location:UniformLocation, x:Float, y:Float ):Void {}
 
-	public function uniform2fv (location:UniformLocation, v:hxdom.Float32Array ):Void {}
+	public function uniform2fv (location:UniformLocation, v:hxdom.html.Float32Array ):Void {}
 
 	public function uniform2i (location:UniformLocation, x:Int, y:Int ):Void {}
 
-	public function uniform2iv (location:UniformLocation, v:hxdom.Int32Array ):Void {}
+	public function uniform2iv (location:UniformLocation, v:hxdom.html.Int32Array ):Void {}
 
 	public function uniform3f (location:UniformLocation, x:Float, y:Float, z:Float ):Void {}
 
-	public function uniform3fv (location:UniformLocation, v:hxdom.Float32Array ):Void {}
+	public function uniform3fv (location:UniformLocation, v:hxdom.html.Float32Array ):Void {}
 
 	public function uniform3i (location:UniformLocation, x:Int, y:Int, z:Int ):Void {}
 
-	public function uniform3iv (location:UniformLocation, v:hxdom.Int32Array ):Void {}
+	public function uniform3iv (location:UniformLocation, v:hxdom.html.Int32Array ):Void {}
 
 	public function uniform4f (location:UniformLocation, x:Float, y:Float, z:Float, w:Float ):Void {}
 
-	public function uniform4fv (location:UniformLocation, v:hxdom.Float32Array ):Void {}
+	public function uniform4fv (location:UniformLocation, v:hxdom.html.Float32Array ):Void {}
 
 	public function uniform4i (location:UniformLocation, x:Int, y:Int, z:Int, w:Int ):Void {}
 
-	public function uniform4iv (location:UniformLocation, v:hxdom.Int32Array ):Void {}
+	public function uniform4iv (location:UniformLocation, v:hxdom.html.Int32Array ):Void {}
 
-	public function uniformMatrix2fv (location:UniformLocation, transpose:Bool, array:hxdom.Float32Array ):Void {}
+	public function uniformMatrix2fv (location:UniformLocation, transpose:Bool, array:hxdom.html.Float32Array ):Void {}
 
-	public function uniformMatrix3fv (location:UniformLocation, transpose:Bool, array:hxdom.Float32Array ):Void {}
+	public function uniformMatrix3fv (location:UniformLocation, transpose:Bool, array:hxdom.html.Float32Array ):Void {}
 
-	public function uniformMatrix4fv (location:UniformLocation, transpose:Bool, array:hxdom.Float32Array ):Void {}
+	public function uniformMatrix4fv (location:UniformLocation, transpose:Bool, array:hxdom.html.Float32Array ):Void {}
 
 	public function useProgram (program:Program ):Void {}
 
@@ -882,19 +882,19 @@ class RenderingContext {
 
 	public function vertexAttrib1f (indx:Int, x:Float ):Void {}
 
-	public function vertexAttrib1fv (indx:Int, values:hxdom.Float32Array ):Void {}
+	public function vertexAttrib1fv (indx:Int, values:hxdom.html.Float32Array ):Void {}
 
 	public function vertexAttrib2f (indx:Int, x:Float, y:Float ):Void {}
 
-	public function vertexAttrib2fv (indx:Int, values:hxdom.Float32Array ):Void {}
+	public function vertexAttrib2fv (indx:Int, values:hxdom.html.Float32Array ):Void {}
 
 	public function vertexAttrib3f (indx:Int, x:Float, y:Float, z:Float ):Void {}
 
-	public function vertexAttrib3fv (indx:Int, values:hxdom.Float32Array ):Void {}
+	public function vertexAttrib3fv (indx:Int, values:hxdom.html.Float32Array ):Void {}
 
 	public function vertexAttrib4f (indx:Int, x:Float, y:Float, z:Float, w:Float ):Void {}
 
-	public function vertexAttrib4fv (indx:Int, values:hxdom.Float32Array ):Void {}
+	public function vertexAttrib4fv (indx:Int, values:hxdom.html.Float32Array ):Void {}
 
 	public function vertexAttribPointer (indx:Int, size:Int, type:Int, normalized:Bool, stride:Int, offset:Int ):Void {}
 

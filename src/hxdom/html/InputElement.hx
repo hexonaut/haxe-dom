@@ -1,4 +1,4 @@
-package hxdom;
+package hxdom.html;
 
 #if js
 typedef InputElement = js.html.InputElement;
@@ -51,7 +51,7 @@ class InputElement extends Element {
  HTML attribute, indicating that the control is not available for interaction. */
 	public var disabled:Bool;
 
-	public var entries(default, null):hxdom.fs.EntryArray;
+	public var entries(default, null):hxdom.html.fs.EntryArray;
 
 	/** A list of selected files. */
 	public var files:FileList;
