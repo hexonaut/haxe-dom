@@ -1,6 +1,7 @@
 package ;
 
 import hxdom.DivElement;
+import hxdom.Document;
 import neko.Lib;
 
 /**
@@ -12,7 +13,7 @@ import neko.Lib;
 class Main {
 	
 	static function main () {
-		var div = new DivElement();
+		var div = Document.createDiv();
 	}
 	
 }
