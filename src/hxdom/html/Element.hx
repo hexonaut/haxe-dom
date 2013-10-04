@@ -317,7 +317,7 @@ class Element extends Node {
 	}
 
 	public function remove ():Void {
-		
+		parentNode.removeChild(this);
 	}
 
 	public function removeAttribute (name:String):Void {

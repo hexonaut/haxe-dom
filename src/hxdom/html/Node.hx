@@ -77,69 +77,157 @@ class Node extends EventTarget {
 
 	/** Setter throws DOMException. */
 	public var textContent:String;
-
+	
+	inline function __add (i:Int, node:Node):Void {
+		//Update sibling refs
+		if (childNodes.length > 0) {
+			if (childNodes.length == i) {
+				//Last child
+				childNodes[childNodes.length - 1].nextSibling = node;
+				node.previousSibling = childNodes[childNodes.length - 1];
+			} else if (i == 0) {
+				//First child
+				childNodes[0].previousSibling = node;
+				node.nextSibling = childNodes[0];
+			} else {
+				//Somewhere in the middle
+				childNodes[i - 1].nextSibling = node;
+				node.previousSibling = childNodes[i - 1];
+				
+				childNodes[i].previousSibling = node;
+				node.nextSibling = childNodes[i];
+			}
+		}
+		
+		//Insert element
+		if (i != childNodes.length) childNodes.insert(i, node);
+		else childNodes.push(node);
+		
+		//Update parent
+		node.parentNode = this;
+	}
+	
+	inline function __remove (i:Int, node:Node):Void {
+		//Remove sibling refs
+		if (node.previousSibling != null) node.previousSibling.nextSibling = node.nextSibling;
+		if (node.nextSibling != null) node.nextSibling.previousSibling = node.previousSibling;
+		
+		//Null parent ref
+		node.parentNode = null;
+		
+		//Remove from array
+		childNodes.splice(i, 1);
+	}
+	
 	public function appendChild (newChild:Node):Node {
-		return null;
+		if (newChild.parentNode != null) newChild.parentNode.removeChild(newChild);
+		__add(childNodes.length, newChild);
+		
+		return newChild;
 	}
 
 	public function cloneNode (deep:Bool):Node {
+		throw "Not implemented.";
+		
 		return null;
 	}
 
 	public function compareDocumentPosition (other:Node):Int {
+		throw "Not implemented.";
+		
 		return null;
 	}
 
 	public function contains (other:Node):Bool {
-		return null;
+		var exists = false;
+		for (i in childNodes) {
+			if (i == other) return true;
+		}
+		return false;
 	}
 
 	public function hasAttributes ():Bool {
+		throw "Depreciated.";
+		
 		return null;
 	}
 
 	public function hasChildNodes ():Bool {
-		return null;
+		return childNodes.length > 0;
 	}
 
-	public function insertBefore (newChild:Node, refChild:Node):Node {
-		return null;
+	public function insertBefore (newChild:Node, ?refChild:Node):Node {
+		var insertPos = childNodes.length;
+		for (i in 0 ... childNodes.length) {
+			if (childNodes[i] == refChild) {
+				insertPos = i;
+				break;
+			}
+		}
+		__add(insertPos, newChild);
+		return newChild;
 	}
 
 	public function isDefaultNamespace (?namespaceURI:String):Bool {
+		throw "Not implemented.";
+		
 		return null;
 	}
 
 	public function isEqualNode (other:Node):Bool {
-		return null;
+		return this == other;
 	}
 
 	public function isSameNode (other:Node):Bool {
+		throw "Depreciated.";
+		
 		return null;
 	}
 
 	public function isSupported (feature:String, ?version:String):Bool {
+		throw "Depreciated.";
+		
 		return null;
 	}
 
 	public function lookupNamespaceURI (?prefix:String):String {
+		throw "Not implemented.";
+		
 		return null;
 	}
 
 	public function lookupPrefix (?namespaceURI:String):String {
+		throw "Not implemented.";
+		
 		return null;
 	}
 
 	public function normalize ():Void {
-		
+		throw "Not implemented.";
 	}
 
 	public function removeChild (oldChild:Node):Node {
-		return null;
+		for (i in 0 ... childNodes.length) {
+			if (childNodes[i] == oldChild) {
+				__remove(i, oldChild);
+				return oldChild;
+			}
+		}
+		throw "Not a child.";
 	}
 
 	public function replaceChild (newChild:Node, oldChild:Node):Node {
-		return null;
+		//Remove from previous node if applicable
+		if (newChild.parentNode != null) newChild.parentNode.removeChild(newChild);
+		
+		for (i in 0 ... childNodes.length) {
+			if (childNodes[i] == oldChild) {
+				__remove(i, oldChild);
+				__add(i, newChild);
+				break;
+			}
+		}
+		return oldChild;
 	}
 	
 }
