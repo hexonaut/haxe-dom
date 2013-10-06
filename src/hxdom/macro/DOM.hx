@@ -5,6 +5,6 @@ package hxdom.macro;
  * 
  * @author Sam MacPherson
  */
-#if js @:autoBuild(hxdom.macro.NodeMacros.buildJS()) #else @:autoBuild(hxdom.macro.NodeMacros.build()) #end
+#if !macro #if js @:autoBuild(hxdom.macro.NodeMacros.buildJS()) #else @:autoBuild(hxdom.macro.NodeMacros.build()) #end #end
 interface DOM {
 }

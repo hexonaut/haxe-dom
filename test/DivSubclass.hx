@@ -2,13 +2,19 @@ package ;
 
 import hxdom.html.DivElement;
 import hxdom.macro.DOM;
+import hxdom.Elements;
 
-class DivSubclass extends DivElement implements DOM {
+class DivSubclass extends EDiv {
 	
 	public var someRandomInt(default, null):Int;
+	public var divElem:EDiv;
 
-	public function new (a1:Int, a2:Int) {
+	public function new (div:EDiv) {
+		super();
+		
 		someRandomInt = 5;
+		this.divElem = div;
+		appendChild(div);
 	}
 	
 	public function listenToSomeEvent ():Void {
@@ -18,10 +24,5 @@ class DivSubclass extends DivElement implements DOM {
 	public function onClick (_):Void {
 		trace("CLICK");
 	}
-	
-	//public static function create (a1:Int, a2:Int):DivSubclass {
-	//	untyped DivSubclass.call(null);
-	//	return null;
-	//}
 	
 }

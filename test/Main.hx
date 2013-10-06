@@ -1,9 +1,11 @@
 package ;
 
-import hxdom.html.Text;
+import haxe.Serializer;
+import haxe.Timer;
+import hxdom.Attr;
 import hxdom.HTMLSerializer;
 import hxdom.js.Boot;
-import hxdom.Wrappers;
+import hxdom.Elements;
 import DivSubclass;
 
 using hxdom.DomTools;
@@ -19,18 +21,30 @@ class Main {
 	static function main () {
 		#if js
 		var html = Boot.init();
-		
-		var domElem = DivSubclass.create(1, 1);
-		trace(domElem);
-		//domElem.text("JS Element!");
-		//html.childNodes[1].appendChild(domElem);
 		#else
-		HTMLSerializer.USE_CACHE = true;
-		
-		var domElem = DivSubclass.create(1, 1).classes("class1").classes("class2").ident("asdf").text("Testing");
+		var domElem = DivSubclass.create(EDiv.create()).classes("class1").classes("class2").attr(id, "asdf").addText("Testing");
 		domElem.listenToSomeEvent();
-		var html = EHtml.create().add(EHead.create().add(EScript.create().source("haxedom.js"))).add(EBody.create().add(domElem));
-		trace(HTMLSerializer.run(html));
+		var body = EBody.create().add(domElem);
+		var html = EHtml.create().add(EHead.create().add(EScript.create().attr(src, "shiv.js").attr(defer, true)).add(EScript.create().attr(src, "haxedom.js").attr(defer, true))).add(body);
+		
+		for (i in 0 ... 100) {
+			body.add(EDiv.create().attr(id, "id" + i).add(new EAnchor().classes("link-profile").addText("PROFILE " + i)));
+		}
+		
+		var numRuns = 1000;
+		
+		var mark = Timer.stamp();
+		for (i in 0 ... numRuns) {
+			HTMLSerializer.run(html);
+		}
+		trace("HTMLSerializer: " + (Timer.stamp() - mark) * 1000 / numRuns);
+		
+		Serializer.USE_CACHE = true;
+		mark = Timer.stamp();
+		for (i in 0 ... numRuns) {
+			Serializer.run(html);
+		}
+		trace("Serializer: " + (Timer.stamp() - mark) * 1000 / numRuns);
 		#end
 	}
 	

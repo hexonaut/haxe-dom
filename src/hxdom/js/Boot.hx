@@ -14,8 +14,12 @@ using StringTools;
  */
 class Boot extends Unserializer {
 	
+	var elementLookup:Map<Int, Element>;		//Find elements from their id
+	
 	public function new () {
 		super("");
+		
+		elementLookup = new Map<Int, Element>();
 	}
 	
 	function element (e:Element):Void {
@@ -28,6 +32,8 @@ class Boot extends Unserializer {
 				} else {
 					throw "Class " + i.nodeValue + " not found. Be sure the class is available to the client.";
 				}
+			} else if (i.nodeName == "data-id") {
+				//The element's id -- keep moving
 			} else if (i.nodeName.startsWith("data-k")) {
 				var index = Std.parseInt(i.nodeName.substr("data-k".length));
 				var key = i.nodeValue;
@@ -50,18 +56,24 @@ class Boot extends Unserializer {
 		}
 	}
 	
-	function unserializeNode (node:Node):Dynamic {
-		cache.push(node);
-		
+	function unserializeNode (node:Node):Void {
 		switch (node.nodeType) {
-			case Node.ELEMENT_NODE: element(cast node);
+			case Node.ELEMENT_NODE: 
+				element(cast node);
+				for (i in node.childNodes) {
+					unserializeNode(i);
+				}
 		}
-		
-		for (i in node.childNodes) {
-			unserializeNode(i);
+	}
+	
+	function buildElementLookup (node:Node):Void {
+		if (node.nodeType == Node.ELEMENT_NODE) {
+			elementLookup.set(Std.parseInt(node.attributes.getNamedItem("data-id").nodeValue), cast node);
+			
+			for (i in node.childNodes) {
+				buildElementLookup(i);
+			}
 		}
-		
-		return node;
 	}
 	
 	/**
@@ -75,9 +87,25 @@ class Boot extends Unserializer {
 		return unserialize();
 	}
 	
+	public override function unserialize ():Dynamic {
+		if (get(pos) == 'D'.code) {
+			//Element ID reference
+			pos++;
+			var e = elementLookup.get(readDigits());
+			if (e == null) throw "Missing element reference!";
+			return e;
+		} else {
+			return super.unserialize();
+		}
+	}
+	
 	public static function init ():HtmlElement {
 		#if js
-		return cast new Boot().unserializeNode(js.Browser.document.childNodes[1]);
+		var html = js.Browser.document.childNodes[1];
+		var boot = new Boot();
+		boot.buildElementLookup(html);
+		boot.unserializeNode(html);
+		return cast html;
 		#else
 		throw "Only available to JS.";
 		return null;
