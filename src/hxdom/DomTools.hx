@@ -4,6 +4,8 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 import hxdom.html.Element;
+import hxdom.html.EventListener;
+import hxdom.html.EventTarget;
 import hxdom.html.Node;
 import hxdom.html.ScriptElement;
 import hxdom.Elements;
@@ -15,6 +17,7 @@ import hxdom.Elements;
  */
 class DomTools {
 	
+	#if !macro
 	/**
 	 * Does an appendChild, but returns the current node for chaining.
 	 */
@@ -22,6 +25,17 @@ class DomTools {
 		parent.appendChild(child);
 		
 		return parent;
+	}
+	
+	/**
+	 * Clear all children.
+	 */
+	public static function clear<T:Node> (node:T):T {
+		while (node.childNodes.length > 0) {
+			node.removeChild(node.firstChild);
+		}
+		
+		return node;
 	}
 	
 	/**
@@ -38,7 +52,7 @@ class DomTools {
 	 * Shortcut for adding text.
 	 */
 	public static function addText<T:Node> (parent:T, text:String):T {
-		parent.appendChild(new Text(text));
+		parent.appendChild(Text.create(text));
 		
 		return parent;
 	}
@@ -51,6 +65,7 @@ class DomTools {
 		
 		return e;
 	}
+	#end
 	
 	/**
 	 * Set an attribute for this element.

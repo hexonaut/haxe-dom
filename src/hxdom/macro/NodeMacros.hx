@@ -40,6 +40,7 @@ class NodeMacros {
 				case "EBase": tagName = "BASE";
 				case "EBiIsolation": tagName = "BDI";
 				case "EBiOverride": tagName = "BDO";
+				case "EBlockQuote": tagName = "BLOCKQUOTE";
 				case "EBody": tagName = "BODY";
 				case "EBreak": tagName = "BR";
 				case "EButton": tagName = "BUTTON";
@@ -119,7 +120,7 @@ class NodeMacros {
 				case "EStrong": tagName = "STRONG";
 				case "EStyle": tagName = "STYLE";
 				case "ESub": tagName = "SUB";
-				case "ESumary": tagName = "SUMMARY";
+				case "ESummary": tagName = "SUMMARY";
 				case "ESup": tagName = "SUP";
 				case "ETable": tagName = "TABLE";
 				case "ETableBody": tagName = "TBODY";
@@ -220,16 +221,23 @@ class NodeMacros {
 		var eInfo = getElementInfo();
 		
 		//Build static create function that is the exact same as the constructor -- inject class prototype into DOM element
-		if (ctorArgs != null && eInfo.tagName != null) {
+		if (ctorArgs != null) {
 			var newArgs = new Array<Expr>();
 			for (i in ctorArgs) {
 				newArgs.push({expr:EConst(CIdent(i.name)), pos:pos});
 			}
 			var funcExprs = new Array<Expr>();
 			var ecls = {expr:EConst(CIdent(clsRef.name)), pos:Context.currentPos()};
-			funcExprs.push(macro var e:Dynamic = js.Browser.document.createElement(${eInfo.tagName}.toUpperCase()));
-			funcExprs.push(macro untyped e.__proto__ = ${ecls}.prototype);
-			funcExprs.push(macro untyped ${ecls}.call(e));
+			if (eInfo.tagName != null) {
+				//Element
+				funcExprs.push(macro var e:Dynamic = js.Browser.document.createElement(${eInfo.tagName}.toUpperCase()));
+				funcExprs.push(macro untyped e.__proto__ = ${ecls}.prototype);
+				funcExprs.push(macro untyped ${ecls}.call(e));
+			} else {
+				//Text Node
+				funcExprs.push(macro var e:Dynamic = js.Browser.document.createTextNode(${newArgs[0]}));
+				funcExprs.push(macro untyped e.__proto__ = ${ecls}.prototype);
+			}
 			funcExprs.push(macro return cast e);
 			fields.push( { kind: FFun( { args:ctorArgs, expr: { expr: EBlock(funcExprs), pos:pos }, params: [], ret: TPath({ name: clsRef.name, pack: clsRef.pack, params: [] }) }), meta: [], name: "create", doc: null, pos: pos, access: [AStatic,APublic] });
 		}

@@ -1,12 +1,12 @@
 package ;
 
-import haxe.Serializer;
-import haxe.Timer;
-import hxdom.Attr;
 import hxdom.HTMLSerializer;
 import hxdom.js.Boot;
 import hxdom.Elements;
-import DivSubclass;
+import ForumThreadView;
+import PostView;
+import ProfileView;
+import User;
 
 using hxdom.DomTools;
 
@@ -22,29 +22,21 @@ class Main {
 		#if js
 		var html = Boot.init();
 		#else
-		var domElem = DivSubclass.create(EDiv.create()).classes("class1").classes("class2").attr(id, "asdf").addText("Testing");
-		domElem.listenToSomeEvent();
-		var body = EBody.create().add(domElem);
-		var html = EHtml.create().add(EHead.create().add(EScript.create().attr(src, "shiv.js").attr(defer, true)).add(EScript.create().attr(src, "haxedom.js").attr(defer, true))).add(body);
+		var user1 = new User(0, "Fred", "image1.png");
+		var user2 = new User(1, "John", "image2.png");
 		
-		for (i in 0 ... 100) {
-			body.add(EDiv.create().attr(id, "id" + i).add(new EAnchor().classes("link-profile").addText("PROFILE " + i)));
-		}
+		var post1 = PostView.create(user1, "Hi John!");
+		var post2 = PostView.create(user2, "Well hello there Fred.");
 		
-		var numRuns = 1000;
+		var html = EHtml.create();
+		var head = EHead.create();
+		head.add(EScript.create().attr(src, "shiv.js").attr(defer, true));
+		head.add(EScript.create().attr(src, "haxedom.js").attr(defer, true));
+		var body = ForumThreadView.create([post1, post2]);
 		
-		var mark = Timer.stamp();
-		for (i in 0 ... numRuns) {
-			HTMLSerializer.run(html);
-		}
-		trace("HTMLSerializer: " + (Timer.stamp() - mark) * 1000 / numRuns);
+		html.add(head).add(body);
 		
-		Serializer.USE_CACHE = true;
-		mark = Timer.stamp();
-		for (i in 0 ... numRuns) {
-			Serializer.run(html);
-		}
-		trace("Serializer: " + (Timer.stamp() - mark) * 1000 / numRuns);
+		sys.io.File.saveContent("index.html", HTMLSerializer.run(html));
 		#end
 	}
 	

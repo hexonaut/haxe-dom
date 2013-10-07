@@ -29,7 +29,7 @@ class EventTarget {
 	
 	macro public function addEventListener (ethis:Expr, type:ExprOf<String>, listener:ExprOf<EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
 		var params = listener.expr.getParameters();
-		var inst = (params.length > 1) ? params[0] : ethis;
+		var inst = (params.length > 1) ? params[0] : macro this;
 		var func = Context.makeExpr((params.length > 1) ? params[1] : switch (params[0]) { case CIdent(val): val; default: null; }, Context.currentPos());
 		return macro $ethis.__addEventListener($inst, $type, $func, $useCapture);
 	}
@@ -45,11 +45,16 @@ class EventTarget {
 		}
 	}
 
-	macro public function removeEventListener (type:ExprOf<String>, listener:ExprOf<EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		return macro null;
+	macro public function removeEventListener (ethis:Expr, type:ExprOf<String>, listener:ExprOf<EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
+		var params = listener.expr.getParameters();
+		var inst = (params.length > 1) ? params[0] : macro this;
+		var func = Context.makeExpr((params.length > 1) ? params[1] : switch (params[0]) { case CIdent(val): val; default: null; }, Context.currentPos());
+		return macro $ethis.__removeEventListener($inst, $type, $func, $useCapture);
 	}
 
 	public function dispatchEvent (event:Event):Bool {
+		throw "Dispatch event not available on the server.";
+		
 		return null;
 	}
 	

@@ -85,10 +85,12 @@ class Node extends EventTarget {
 				//Last child
 				childNodes[childNodes.length - 1].nextSibling = node;
 				node.previousSibling = childNodes[childNodes.length - 1];
+				lastChild = node;
 			} else if (i == 0) {
 				//First child
 				childNodes[0].previousSibling = node;
 				node.nextSibling = childNodes[0];
+				firstChild = node;
 			} else {
 				//Somewhere in the middle
 				childNodes[i - 1].nextSibling = node;
@@ -97,6 +99,9 @@ class Node extends EventTarget {
 				childNodes[i].previousSibling = node;
 				node.nextSibling = childNodes[i];
 			}
+		} else {
+			//First child
+			firstChild = lastChild = node;
 		}
 		
 		//Insert element
@@ -114,6 +119,18 @@ class Node extends EventTarget {
 		
 		//Null parent ref
 		node.parentNode = null;
+		
+		//Remove firstChild/lastChild ref if this is first or last child
+		if (childNodes.length > 1) {
+			if (i == 0) {
+				firstChild = childNodes[1];
+			} else if (i == childNodes.length - 1) {
+				lastChild = childNodes[childNodes.length - 2];
+			}
+		} else {
+			//Last node
+			firstChild = lastChild = null;
+		}
 		
 		//Remove from array
 		childNodes.splice(i, 1);

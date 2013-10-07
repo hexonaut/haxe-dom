@@ -29,6 +29,8 @@ class HTMLSerializer extends Serializer {
 			parentNode:null,
 			nextSibling:null,
 			previousSibling:null,
+			firstChild:null,
+			lastChild:null,
 			__id:null
 		};
 	
@@ -41,7 +43,7 @@ class HTMLSerializer extends Serializer {
 	}
 	
 	inline function closeTagRequired (e:Element):Bool {
-		return e.childNodes.length > 0 || e.tagName == "SCRIPT";
+		return e.childNodes.length > 0 || e.tagName == "SCRIPT" || e.tagName == "BUTTON";
 	}
 	
 	function text (cd:CharacterData):Void {
