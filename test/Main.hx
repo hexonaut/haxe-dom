@@ -24,7 +24,7 @@ class Main {
 		
 		html.add(head).add(body);
 		
-		trace(HTMLSerializer.run(html));
+		sys.io.File.saveContent("index.html", HTMLSerializer.run(html));
 		#end
 	}
 	

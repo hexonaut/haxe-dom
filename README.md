@@ -124,9 +124,11 @@ Unfortunately the JS spec can only create elements via "document.createElement(t
 A Full Example
 ==============
 
-Compile the following code with this command:
+Use this command:
 
 	haxe -cp . -neko server.n -main Main --next -cp . -js client.js -main Main
+
+To compile this example:
 
 	package ;
 
@@ -153,7 +155,7 @@ Compile the following code with this command:
 			
 			html.add(head).add(body);
 			
-			trace(HTMLSerializer.run(html));
+			sys.io.File.saveContent("index.html", HTMLSerializer.run(html));
 			#end
 		}
 		
@@ -265,3 +267,5 @@ Compile the following code with this command:
 		}
 		
 	}
+
+Run the neko binary which will produce an index.html file to which you can load into your browser. You may need to shiv missing elements depending on your browser.
