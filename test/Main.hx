@@ -7,17 +7,11 @@ import hxdom.Elements;
 
 using hxdom.DomTools;
 
-/**
- * Testing for hxdom.
- * 
- * @author Sam MacPherson
- */
-
 class Main {
 	
 	static function main () {
 		#if js
-		var html = Boot.init();
+		Boot.init();
 		#else
 		var user1 = new User(0, "Fred", "image1.png");
 		var user2 = new User(1, "John", "image2.png");

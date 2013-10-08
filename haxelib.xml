@@ -1,0 +1,6 @@
+<project name="hxdom" url="https://github.com/Blank101/haxe-dom" license="MIT">
+	<user name="Blank101"/>
+    <tag v="cross"/>
+	<description>A cross-platform implementation of the DOM. Built to reduce duplicate code across server and client.</description>
+	<version name="0.1">Initial</version>
+</project>

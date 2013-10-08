@@ -1,54 +1,267 @@
-haxe-dom provides target independant DOM manipulation.
+haxe-dom provides target independant DOM manipulation. The goal of this project is to reduce duplicate code between the server and client without having to resort to single page apps. View state can be manipulated on the server, serialized into idiomatic HTML5 and reconstructed on the client. Usage is straightforward.
 
-Data Structures
+Contruct the page (Neko/PHP/Java/etc):
+
+	import hxdom.Elements;
+	
+	var page = EHtml.create();
+	var head = EHead.create();
+	var body = EBody.create();
+	
+	page.appendChild(head);
+	page.appendChild(body);
+
+Serialize to HTML:
+
+	writeToHttpSocket(hxdom.HTMLSerializer.run(page));
+
+The following is sent across the wire:
+
+	<!DOCTYPE html><html data-class='hxdom.EHtml' data-id='0'><head data-class='hxdom.EHead' data-id='1'/><body data-class='hxdom.EBody' data-id='2'/></html>
+
+Init on client (JavaScript):
+
+	var page = hxdom.js.Boot();
+
+Custom Classes
+==============
+
+The above example is cool and all, but it's not really practical for a full scale app. We need to be able to extend and encapsulate DOM components. Doing this is also very straightforward:
+
+	class MyCustomApp extends EHtml {
+		
+		public var head(default, null):EHead;
+		public var body(default, null):EBody;
+		
+		public function new (numTexts:Int) {
+			super();
+			
+			head = EHead.create();
+			body = EBody.create();
+			
+			appendChild(head);
+			appendChild(body);
+			
+			for (i in 0 ... numTexts) {
+				addSomeTextToBody();
+			}
+		}
+		
+		public function addSomeTextToBody ():Void {
+			body.appendChild(Text.create("Some Text"));
+		}
+		
+	}
+
+Build the HTML and send it to the client:
+	
+	writeToHttpSocket(hxdom.HTMLSerializer.run(MyCustomApp.create(5)));
+
+Sends this to the client:
+
+	<!DOCTYPE html><html data-class='MyCustomApp' data-id='0' data-k0='body' data-v0='D2' data-k1='head' data-v1='D1'><head data-class='hxdom.EHead' data-id='1'/><body data-class='hxdom.EBody' data-id='2'>Some TextSome TextSome TextSome TextSome Text</body></html>
+
+Load the custom app and 2 more lines of text (JavaScript):
+
+	var myCustomApp:MyCustomApp = cast hxdom.js.Boot();
+	myCustomApp.addSomeTextToBody();
+	myCustomApp.addSomeTextToBody();
+
+Event Listeners
 ===============
 
-* CopyOnWriteArray - A data structure for read-heavy storage. As the name suggests, the array is copied when a modification is performed.
-* ConcurrentHash/ConcurrentIntHash - Provides a Hash which is thread safe.
+You can also attach event listeners on the server:
 
-Performance
-===========
+	class MyCustomApp extends EHtml {
+		
+		public function new () {
+			super();
+			
+			var body = EBody.create();
+			
+			appendChild(EHead.create());
+			appendChild(body);
+			
+			body.addEventListener("click", onClick);
+		}
+		
+		public function onClick (_):Void {
+			trace("Click!");
+		}
+		
+	}
 
-Here are some performance tests run on a win7-64bit i7 Dell Inspiron laptop (8 CPUs) under the neko target:
+Sends the following:
 
-Comparison to Non-Concurrent Data Structures
---------------------------------------------
+	<!DOCTYPE html><html data-class='MyCustomApp' data-id='0'><head data-class='hxdom.EHead' data-id='2'/><body data-class='hxdom.EBody' data-id='1' data-k0='listeners' data-v0='by5:clickloy4:funcy7:onClicky4:instD0y3:capfghh'/></html>
 
-* Array Write MOD 1000: 83 ns
-* CopyOnWriteArray Write MOD 1000: 3487 ns
-* Array Read MOD 1000: 67 ns
-* CopyOnWriteArray Read MOD 1000: 130 ns
-* IntHash Write: 149 ns
-* ConcurrentIntHash Write: 342 ns
-* IntHash Read: 66 ns
-* ConcurrentIntHash Read: 236 ns
+Load on client (JavaScript):
 
-Throughput Speed Testing
-------------------------
+	hxdom.js.Boot();
 
-* Array Read 20M items: 1363 ms
-* CopyOnWriteArray Read 20M items (2 Threads): 1431 ms
-* CopyOnWriteArray Read 20M items (4 Threads): 813 ms
-* CopyOnWriteArray Read 20M items (8 Threads): 597 ms
-* CopyOnWriteArray Read 20M items (16 Threads): 369 ms
-* CopyOnWriteArray Read 20M items (32 Threads): 182 ms
+And that's it! Clicking on the webpage will trigger a "Click!" to be traced to the console.
 
-Extras
-======
+One unavoidable restriction on events is that you cannot listen to anonymous functions. The serializer needs to be able to reference the function and this is impossible with lambdas. For example this will result in a compilation error:
 
-* neko.net.MultiThreadedServer - A fully concurrent server which is similar to neko.net.ThreadServer, except the application logic is concurrent as well.
-* sys.db.PooledConnection -  A thread-safe abstraction layer for accessing databases. Connections are pooled and automatically restarted when a failure occurs.
+	myElem.addEventListener("click", function (_) { trace("Click!"); });
 
-PooledConnection Usage
-----------------------
+Tools
+=====
 
-Usage is very simple. Instead of creating your sys.db.Mysql.connect() or sys.db.Sqlite.read() connections just create a new PooledConnection and pass in a factory constructor as shown below:
+Using the DOM directly can be kind of annoying, so I've included a DomTools class that you should usually include as a "using". DomTools is built for chaining. Here is a quick example:
+
+	using hxdom.DomTools;
 	
-	//Create a pooled connection
-	var cnx = new sys.db.PooledConnection(function ():sys.db.Connection {
-		return sys.db.Mysql.connect( { host:HOST, port:PORT, user:USER, pass:PASS, socket:null, database:DATABASE } );
-	}, NUM_CONNECTIONS);
-	
-	//Use with SPOD!
-	//A point of caution - SPOD uses a global object cache by default so you will need to deal with this when using in a multithreaded application
-	sys.db.Manager.cnx = cnx;
+	var div = EDiv.create().classes("myCssClass anotherClass").attr(id, "someId").addText("Some text in the Div!");
+
+Notes
+=====
+
+What's with the XXXX.create() instead of using the "new" operator?
+
+Unfortunately the JS spec can only create elements via "document.createElement(tagName)" which means it is impossible to use the new operator and have it return a reference to a DOM object. The next best solution as far as I could see was to use a create() static method that is generated via macros to completely replicate the signature of the constructor. The create function will always call the constructor.
+
+A Full Example
+==============
+
+Compile the following code with this command:
+
+	haxe -cp . -neko server.n -main Main --next -cp . -js client.js -main Main
+
+	package ;
+
+	import hxdom.html.Event;
+	import hxdom.HTMLSerializer;
+	import hxdom.js.Boot;
+	import hxdom.Elements;
+
+	using hxdom.DomTools;
+
+	class Main {
+		
+		static function main () {
+			#if js
+			Boot.init();
+			#else
+			var user1 = new User(0, "Fred", "image1.png");
+			var user2 = new User(1, "John", "image2.png");
+			
+			var html = EHtml.create();
+			var head = EHead.create();
+			head.add(EScript.create().attr(src, "client.js").attr(defer, true));
+			var body = ForumThreadView.create([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
+			
+			html.add(head).add(body);
+			
+			trace(HTMLSerializer.run(html));
+			#end
+		}
+		
+	}
+
+	class ForumThreadView extends EBody {
+		
+		public var posts(default, set):Array<PostView>;
+		
+		public function new (posts:Array<Post>) {
+			super();
+			
+			this.posts = posts.map(function (e) { return PostView.create(e); });
+		}
+		
+		function set_posts (posts:Array<PostView>):Array<PostView> {
+			this.posts = posts;
+			
+			this.clear();
+			for (i in posts) {
+				this.add(i);
+				var btn = EButton.create().addText("Click Me!");
+				btn.addEventListener("click", onPostClick);
+				this.add(btn);
+			}
+			
+			return posts;
+		}
+		
+		function onPostClick (e:Event):Void {
+			var pv = posts[Std.int(Math.random() * posts.length)];
+			pv.post = new Post(pv.post.user, pv.post.message + " EVENT!");
+		}
+		
+	}
+
+	class PostView extends EArticle {
+		
+		public var post(default, set):Post;
+
+		public function new (post:Post) {
+			super();
+			
+			this.classes("post");
+			
+			this.post = post;
+		}
+		
+		function set_post (post:Post):Post {
+			this.post = post;
+			
+			this.clear();
+			this.add(ProfileView.create(post.user));
+			this.add(EDiv.create().classes("post-message").addText(post.message));
+			
+			return post;
+		}
+		
+	}
+
+	class ProfileView extends EAside {
+		
+		public var user(default, set):User;
+
+		public function new (user:User) {
+			super();
+			
+			this.classes("profile");
+			
+			this.user = user;
+		}
+		
+		function set_user (user:User):User {
+			this.user = user;
+			
+			this.clear();
+			if (user != null) {
+				this.add(EImage.create().classes("profile-avatar").attr(src, user.avatar));
+				this.add(EDiv.create().classes("profile-name").addText(user.name));
+			}
+			
+			return user;
+		}
+		
+	}
+
+	class User {
+		
+		public var id(default, null):Int;
+		public var name(default, null):String;
+		public var avatar(default, null):String;
+
+		public function new (id:Int, name:String, avatar:String) {
+			this.id = id;
+			this.name = name;
+			this.avatar = avatar;
+		}
+		
+	}
+
+	class Post {
+		
+		public var user(default, null):User;
+		public var message(default, null):String;
+
+		public function new (user:User, message:String) {
+			this.user = user;
+			this.message = message;
+		}
+		
+	}
