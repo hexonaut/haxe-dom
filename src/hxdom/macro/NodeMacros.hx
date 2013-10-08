@@ -230,9 +230,11 @@ class NodeMacros {
 			var ecls = {expr:EConst(CIdent(clsRef.name)), pos:Context.currentPos()};
 			if (eInfo.tagName != null) {
 				//Element
+				newArgs.unshift( { expr:EConst(CIdent("e")), pos:pos } );
+				var ctorCall = {expr:ECall(macro ${ecls}.call, newArgs), pos:pos};
 				funcExprs.push(macro var e:Dynamic = js.Browser.document.createElement(${eInfo.tagName}.toUpperCase()));
 				funcExprs.push(macro untyped e.__proto__ = ${ecls}.prototype);
-				funcExprs.push(macro untyped ${ecls}.call(e));
+				funcExprs.push(macro untyped $ctorCall);
 			} else {
 				//Text Node
 				funcExprs.push(macro var e:Dynamic = js.Browser.document.createTextNode(${newArgs[0]}));
