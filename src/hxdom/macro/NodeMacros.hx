@@ -163,6 +163,25 @@ class NodeMacros {
 		}
 		return null;
 	}
+	
+	static function removeCtorPublic (fields:Array<Field>):Array<Field> {
+		for (i in fields) {
+			switch (i.kind) {
+				case FFun(ctor) if (i.name == "new"):
+					for (o in i.access) {
+						switch (o) {
+							case APublic:
+								i.access.remove(o);
+								break;
+							default:
+						}
+					}
+				default:
+			}
+		}
+		
+		return fields;
+	}
 
 	macro public static function build ():Array<Field> {
 		var fields = Context.getBuildFields();
@@ -210,7 +229,7 @@ class NodeMacros {
 			fields.push( { kind: FFun( { args:ctorArgs, expr: { expr: EBlock(funcExprs), pos:pos }, params: [], ret: TPath({ name: clsRef.name, pack: clsRef.pack, params: [] }) }), meta: [], name: "create", doc: null, pos: pos, access: [AStatic,APublic] });
 		}
 		
-		return fields;
+		return removeCtorPublic(fields);
 	}
 	
 	macro public static function buildJS ():Array<Field> {
@@ -244,7 +263,7 @@ class NodeMacros {
 			fields.push( { kind: FFun( { args:ctorArgs, expr: { expr: EBlock(funcExprs), pos:pos }, params: [], ret: TPath({ name: clsRef.name, pack: clsRef.pack, params: [] }) }), meta: [], name: "create", doc: null, pos: pos, access: [AStatic,APublic] });
 		}
 		
-		return fields;
+		return removeCtorPublic(fields);
 	}
 	
 }

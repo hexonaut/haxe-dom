@@ -43,7 +43,7 @@ class ForumThreadView extends EBody {
 	public function new (posts:Array<Post>) {
 		super();
 		
-		this.posts = posts.map(function (e) { return new PostView(e); });
+		this.posts = posts.map(function (e) { return PostView.create(e); });
 	}
 	
 	function set_posts (posts:Array<PostView>):Array<PostView> {
