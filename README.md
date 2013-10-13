@@ -61,7 +61,7 @@ Sends this to the client:
 
 	<!DOCTYPE html><html data-class='MyCustomApp' data-id='0' data-k0='body' data-v0='D2' data-k1='head' data-v1='D1'><head data-class='hxdom.EHead' data-id='1'/><body data-class='hxdom.EBody' data-id='2'>Some TextSome TextSome TextSome TextSome Text</body></html>
 
-Load the custom app and 2 more lines of text (JavaScript):
+Load the custom app and add 2 more lines of text (JavaScript):
 
 	var myCustomApp:MyCustomApp = cast hxdom.js.Boot();
 	myCustomApp.addSomeTextToBody();
@@ -150,6 +150,7 @@ To compile this example:
 			
 			var html = EHtml.create();
 			var head = EHead.create();
+			head.add(EScript.create().addText("HTMLDetailsElement = HTMLElement;"));
 			head.add(EScript.create().attr(src, "client.js").attr(defer, true));
 			var body = ForumThreadView.create([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
 			

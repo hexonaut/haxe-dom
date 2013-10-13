@@ -18,7 +18,7 @@ class Main {
 		
 		var html = EHtml.create();
 		var head = EHead.create();
-		head.add(EScript.create().attr(src, "shiv.js").attr(defer, true));
+		head.add(EScript.create().addText("HTMLDetailsElement = HTMLElement;"));
 		head.add(EScript.create().attr(src, "haxedom.js").attr(defer, true));
 		var body = ForumThreadView.create([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
 		
