@@ -131,6 +131,7 @@ Use this command:
 To compile this example:
 
 	import hxdom.EventDispatcher;
+	import hxdom.html.CharacterData;
 	import hxdom.html.Event;
 	import hxdom.HTMLSerializer;
 	import hxdom.js.Boot;
@@ -146,6 +147,9 @@ To compile this example:
 			
 			//Add a post on load from JS
 			body.addPost(new Post(body.posts[0].post.user, "Right back at yea John! This time from JS!"));
+			
+			//Check to see text references are maintained
+			body.markTextEnds();
 			#else
 			var user1 = new User(0, "Fred");
 			var user2 = new User(1, "John");
@@ -168,10 +172,26 @@ To compile this example:
 		
 		public var posts(default, set):Array<PostView>;
 		
+		var t1:CharacterData;
+		var t2:CharacterData;
+		var t3:CharacterData;
+		
 		public function new (posts:Array<Post>) {
 			super();
 			
-			this.posts = posts.map(function (e) { return PostView.create(e); });
+			this.posts = posts.map(function (e) { return PostView.create(e); } );
+			
+			t1 = Text.create("Testing ");
+			t2 = Text.create("inline              text ");
+			t3 = Text.create("references");
+			
+			add(t1).add(t2).add(t3);
+		}
+		
+		public function markTextEnds ():Void {
+			t1.data += "|";
+			t2.data += "|";
+			t3.data += "|";
 		}
 		
 		function set_posts (posts:Array<PostView>):Array<PostView> {
