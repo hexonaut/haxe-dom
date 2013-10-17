@@ -90,23 +90,27 @@ class Event {
 	public var type(default,null) : String;
 
 	public function new (type:String, canBubble:Bool = true, cancelable:Bool = true):Void {
-		
+		initEvent(type, canBubble, cancelable);
 	}
 
 	public function initEvent (eventTypeArg:String, canBubbleArg:Bool, cancelableArg:Bool):Void {
-		
+		this.type = eventTypeArg;
+		this.bubbles = canBubbleArg;
+		this.cancelable = cancelableArg;
+		defaultPrevented = false;
+		cancelBubble = false;
 	}
 
 	public function preventDefault ():Void {
-		
+		defaultPrevented = true;
 	}
 
 	public function stopImmediatePropagation ():Void {
-		
+		cancelBubble = true;
 	}
 
 	public function stopPropagation ():Void {
-		
+		cancelBubble = true;
 	}
 	
 }

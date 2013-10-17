@@ -68,6 +68,16 @@ class DomTools {
 	}
 	
 	/**
+	 * Sets the text of this node. This assumes that the text is the only child node.
+	 */
+	public static function setText<T:Node> (parent:T, text:String):T {
+		clear(parent);
+		parent.appendChild(Text.create(text));
+		
+		return parent;
+	}
+	
+	/**
 	 * Set an attribute for this element without type checking.
 	 */
 	public static function unsafeAttr<T:Element> (e:T, key:Attr, val:Dynamic):T {

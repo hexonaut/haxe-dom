@@ -1,6 +1,8 @@
 package ;
 
+import hxdom.EventDispatcher;
 import hxdom.html.Event;
+import hxdom.html.EventTarget;
 import hxdom.HTMLSerializer;
 import hxdom.js.Boot;
 import hxdom.Elements;
@@ -12,9 +14,11 @@ class Main {
 	static function main () {
 		#if js
 		Boot.init();
+		
+		var user3 = new User(2, "Joe");
 		#else
-		var user1 = new User(0, "Fred", "image1.png");
-		var user2 = new User(1, "John", "image2.png");
+		var user1 = new User(0, "Fred");
+		var user2 = new User(1, "John");
 		
 		var html = EHtml.create();
 		var head = EHead.create();
@@ -46,9 +50,6 @@ class ForumThreadView extends EBody {
 		this.clear();
 		for (i in posts) {
 			this.add(i);
-			var btn = EButton.create().addText("Click Me!");
-			btn.addEventListener("click", onPostClick);
-			this.add(btn);
 		}
 		
 		return posts;
@@ -64,6 +65,10 @@ class ForumThreadView extends EBody {
 class PostView extends EArticle {
 	
 	public var post(default, set):Post;
+	
+	var eprofile:ProfileView;
+	var emsg:EDiv;
+	var btn:EButton;
 
 	public function new (post:Post) {
 		super();
@@ -74,13 +79,39 @@ class PostView extends EArticle {
 	}
 	
 	function set_post (post:Post):Post {
+		//Clear last post
+		if (this.post != null) {
+			this.clear();
+			this.post.removeEventListener("change", onPostChange);
+			btn.removeEventListener("click", onClick);
+		}
+		
 		this.post = post;
 		
-		this.clear();
-		this.add(ProfileView.create(post.user));
-		this.add(EDiv.create().classes("post-message").addText(post.message));
+		//Add new post
+		if (post != null) {
+			eprofile = ProfileView.create(post.user);
+			emsg = EDiv.create();
+			
+			post.addEventListener("change", onPostChange);
+			
+			this.add(eprofile);
+			this.add(emsg.classes("post-message").addText(post.message));
+			btn = EButton.create().addText("Click Me!");
+			btn.addEventListener("click", onClick);
+			this.add(btn);
+		}
 		
 		return post;
+	}
+	
+	function onClick (_):Void {
+		post.message += " EVENT!";
+		post.update();	//Notify views of data change
+	}
+	
+	function onPostChange (_):Void {
+		this.post = post;
 	}
 	
 }
@@ -102,7 +133,6 @@ class ProfileView extends EAside {
 		
 		this.clear();
 		if (user != null) {
-			this.add(EImage.create().classes("profile-avatar").attr(src, user.avatar));
 			this.add(EDiv.create().classes("profile-name").addText(user.name));
 		}
 		
@@ -111,28 +141,34 @@ class ProfileView extends EAside {
 	
 }
 
-class User {
+class User extends EventDispatcher {
 	
-	public var id(default, null):Int;
-	public var name(default, null):String;
-	public var avatar(default, null):String;
+	public var id:Int;
+	public var name:String;
 
-	public function new (id:Int, name:String, avatar:String) {
+	public function new (id:Int, name:String) {
 		this.id = id;
 		this.name = name;
-		this.avatar = avatar;
+	}
+	
+	public function update ():Void {
+		this.dispatchEvent(new Event("change"));
 	}
 	
 }
 
-class Post {
+class Post extends EventDispatcher {
 	
-	public var user(default, null):User;
-	public var message(default, null):String;
+	public var user:User;
+	public var message:String;
 
 	public function new (user:User, message:String) {
 		this.user = user;
 		this.message = message;
+	}
+	
+	public function update ():Void {
+		this.dispatchEvent(new Event("change"));
 	}
 	
 }
