@@ -235,7 +235,9 @@ class NodeMacros {
 			}
 			var funcExprs = new Array<Expr>();
 			var enew = { expr: ENew( { name:clsRef.name, pack: clsRef.pack, params: [] }, newArgs), pos:pos };
-			funcExprs.push(macro return $enew);
+			funcExprs.push(macro var e = $enew);
+			if (domElem)funcExprs.push(macro untyped e.__noClass = true);
+			funcExprs.push(macro return e);
 			fields.push( { kind: FFun( { args:ctorArgs, expr: { expr: EBlock(funcExprs), pos:pos }, params: [], ret: TPath({ name: clsRef.name, pack: clsRef.pack, params: [] }) }), meta: [], name: "create", doc: null, pos: pos, access: [AStatic,APublic] });
 		}
 		

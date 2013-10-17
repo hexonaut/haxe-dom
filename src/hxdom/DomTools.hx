@@ -52,7 +52,7 @@ class DomTools {
 	 * Add in classes for this element. Space delimited.
 	 */
 	public static function classes<T:Element> (e:T, cls:String):T {
-		if (e.className == null) e.className = cls;
+		if (e.className == null || e.className == "") e.className = cls;
 		else e.className += " " + cls;
 		
 		return e;

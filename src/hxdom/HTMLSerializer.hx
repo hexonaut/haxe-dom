@@ -41,7 +41,8 @@ class HTMLSerializer extends Serializer {
 			previousSibling:null,
 			firstChild:null,
 			lastChild:null,
-			__id:null
+			__id:null,
+			__noClass:null
 		};
 	
 	public function new () {
@@ -100,7 +101,7 @@ class HTMLSerializer extends Serializer {
 	function attrs (e:Element):Void {
 		//Add in class data and id data
 		attr = true;
-		buf.add(" data-class='" + Type.getClassName(Type.getClass(e)) + "'");
+		if (!Reflect.hasField(e, "__noClass")) buf.add(" data-class='" + Type.getClassName(Type.getClass(e)) + "'");
 		buf.add(" data-id='" + untyped e.__id + "'");
 		var count = 0;
 		

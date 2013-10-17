@@ -32,11 +32,128 @@ class Boot extends Unserializer {
 		elementLookup = new Map<Int, Element>();
 	}
 	
+	inline function getClassFromTagName (tagName:String):Class<Dynamic> {
+		return Type.resolveClass(switch (tagName) {
+			case "A": "hxdom.EAnchor";
+			case "ABBR": "hxdom.EAbbr";
+			case "ADDRESS": "hxdom.EAddress";
+			case "AREA": "hxdom.EArea";
+			case "ARTICLE": "hxdom.EArticle";
+			case "ASIDE": "hxdom.EAside";
+			case "AUDIO": "hxdom.EAudio";
+			case "B": "hxdom.EBold";
+			case "BASE": "hxdom.EBase";
+			case "BDI": "hxdom.EBiIsolation";
+			case "BDO": "hxdom.EBiOverride";
+			case "BLOCKQUOTE": "hxdom.EBlockQuote";
+			case "BODY": "hxdom.EBody";
+			case "BR": "hxdom.EBreak";
+			case "BUTTON": "hxdom.EButton";
+			case "CANVAS": "hxdom.ECanvas";
+			case "CAPTION": "hxdom.ECaption";
+			case "CITE": "hxdom.ECite";
+			case "CODE": "hxdom.ECode";
+			case "COL": "hxdom.EColumn";
+			case "COLGROUP": "hxdom.EColumnGroup";
+			case "DATA": "hxdom.EData";
+			case "DATALIST": "hxdom.EDataList";
+			case "DD": "hxdom.EDescription";
+			case "DEL": "hxdom.EDeleted";
+			case "DETAILS": "hxdom.EDetails";
+			case "DEFINITION": "hxdom.EDefinition";
+			case "DIV": "hxdom.EDiv";
+			case "DL": "hxdom.EDescriptionList";
+			case "DT": "hxdom.EDefinitionTerm";
+			case "EM": "hxdom.EEmphasis";
+			case "EMBED": "hxdom.EEmbed";
+			case "FIELDSET": "hxdom.EFieldSet";
+			case "FIGCAPTION": "hxdom.EFigureCaption";
+			case "FIGURE": "hxdom.EFigure";
+			case "FOOTER": "hxdom.EFooter";
+			case "FORM": "hxdom.EForm";
+			case "H1": "hxdom.EHeader1";
+			case "H2": "hxdom.EHeader2";
+			case "H3": "hxdom.EHeader3";
+			case "H4": "hxdom.EHeader4";
+			case "H5": "hxdom.EHeader5";
+			case "H6": "hxdom.EHeader6";
+			case "HEAD": "hxdom.EHead";
+			case "HEADER": "hxdom.EHeader";
+			case "HR": "hxdom.EHorizontalRule";
+			case "HTML": "hxdom.EHtml";
+			case "I": "hxdom.EItalics";
+			case "IFRAME": "hxdom.EIFrame";
+			case "IMG": "hxdom.EImage";
+			case "INPUT": "hxdom.EInput";
+			case "INS": "hxdom.EInserted";
+			case "KBD": "hxdom.EKeyboard";
+			case "KEYGEN": "hxdom.EKeygen";
+			case "LABEL": "hxdom.ELabel";
+			case "LEGEND": "hxdom.ELegend";
+			case "LI": "hxdom.EListItem";
+			case "LINK": "hxdom.ELink";
+			case "MAIN": "hxdom.EMain";
+			case "MAP": "hxdom.EMap";
+			case "MARK": "hxdom.EMark";
+			case "MENU": "hxdom.EMenu";
+			case "MENUITEM": "hxdom.EMenuItem";
+			case "META": "hxdom.EMeta";
+			case "METER": "hxdom.EMeter";
+			case "NAV": "hxdom.ENav";
+			case "NOSCRIPT": "hxdom.ENoScript";
+			case "OBJECT": "hxdom.EObject";
+			case "OL": "hxdom.EOrderedList";
+			case "OPTGROUP": "hxdom.EOptionGroup";
+			case "OPTION": "hxdom.EOption";
+			case "OUTPUT": "hxdom.EOutput";
+			case "P": "hxdom.EParagraph";
+			case "PARAM": "hxdom.EParam";
+			case "PRE": "hxdom.EPre";
+			case "PROGRESS": "hxdom.EProgress";
+			case "Q": "hxdom.EQuote";
+			case "RP": "hxdom.ERubyParen";
+			case "RT": "hxdom.ERubyPrononcuation";
+			case "RUBY": "hxdom.ERuby";
+			case "S": "hxdom.EStrike";
+			case "SAMP": "hxdom.ESample";
+			case "SCRIPT": "hxdom.EScript";
+			case "SECTION": "hxdom.ESection";
+			case "SELECT": "hxdom.ESelect";
+			case "SMALL": "hxdom.ESmall";
+			case "SOURCE": "hxdom.ESource";
+			case "SPAN": "hxdom.ESpan";
+			case "STRONG": "hxdom.EStrong";
+			case "STYLE": "hxdom.EStyle";
+			case "SUB": "hxdom.ESub";
+			case "SUMMARY": "hxdom.ESummary";
+			case "SUP": "hxdom.ESup";
+			case "TABLE": "hxdom.ETable";
+			case "TBODY": "hxdom.ETableBody";
+			case "TD": "hxdom.ETableCell";
+			case "TEXTAREA": "hxdom.ETextArea";
+			case "TFOOT": "hxdom.ETableFooter";
+			case "TH": "hxdom.ETableHeaderCell";
+			case "THEAD": "hxdom.ETableHeader";
+			case "TIME": "hxdom.ETime";
+			case "TITLE": "hxdom.ETitle";
+			case "TR": "hxdom.ETableRow";
+			case "TRACK": "hxdom.ETrack";
+			case "U": "hxdom.EUnderline";
+			case "UL": "hxdom.EUnorderedList";
+			case "VAR": "hxdom.EVar";
+			case "VIDEO": "hxdom.EVideo";
+			case "WBR": "hxdom.EWordBreak";
+			default: "hxdom.html.Element";
+		});
+	}
+	
 	function element (e:Element):Void {
+		var clsFound = false;
 		for (i in e.attributes) {
 			if (i.nodeName == "data-class") {
 				//Inject the actual class's prototype into the dom element
 				var cls = Type.resolveClass(i.nodeValue);
+				clsFound = true;
 				if (cls != null) {
 					untyped e.__proto__ = cls.prototype;
 				} else {
@@ -63,6 +180,10 @@ class Boot extends Unserializer {
 					Reflect.setField(e, key, value);
 				}
 			}
+		}
+		
+		if (!clsFound) {
+			untyped e.__proto__ = getClassFromTagName(e.tagName).prototype;
 		}
 	}
 	
