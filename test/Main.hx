@@ -2,7 +2,6 @@ package ;
 
 import hxdom.EventDispatcher;
 import hxdom.html.Event;
-import hxdom.html.EventTarget;
 import hxdom.HTMLSerializer;
 import hxdom.js.Boot;
 import hxdom.Elements;
@@ -13,9 +12,10 @@ class Main {
 	
 	static function main () {
 		#if js
-		Boot.init();
+		var body:ForumThreadView = cast Boot.init().childNodes[1];
 		
-		var user3 = new User(2, "Joe");
+		//Add a post on load from JS
+		body.addPost(new Post(body.posts[0].post.user, "Right back at yea John! This time from JS!"));
 		#else
 		var user1 = new User(0, "Fred");
 		var user2 = new User(1, "John");
@@ -55,9 +55,8 @@ class ForumThreadView extends EBody {
 		return posts;
 	}
 	
-	function onPostClick (e:Event):Void {
-		var pv = posts[Std.int(Math.random() * posts.length)];
-		pv.post = new Post(pv.post.user, pv.post.message + " EVENT!");
+	public function addPost (post:Post):Void {
+		this.add(PostView.create(post));
 	}
 	
 }
