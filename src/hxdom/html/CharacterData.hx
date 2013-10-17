@@ -18,7 +18,11 @@ class CharacterData extends Node {
 	/** Setter throws DOMException. */
 	public var data : String;
 
-	public var length(default, null) : Int;
+	public var length(get, null) : Int;
+	
+	function get_length ():Int {
+		return data.length;
+	}
 
 	public function appendData( data : String ) : Void {
 		

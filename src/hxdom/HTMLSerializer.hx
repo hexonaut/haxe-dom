@@ -98,11 +98,25 @@ class HTMLSerializer extends Serializer {
 		}
 	}
 	
+	/**
+	 * Space delimited list of ids with the element's first followed by one or more for text nodes that are direct decendants.
+	 * The length is used to find node boundaries when unserializing on the client.
+	 */
+	inline function elemIds (e:Element):Void {
+		buf.add(" data-id='" + untyped e.__id);
+		for (i in e.childNodes) {
+			if (i.nodeType == Node.TEXT_NODE) {
+				buf.add(" " + untyped i.__id + "-" + untyped i.data.length);
+			}
+		}
+		buf.add("'");
+	}
+	
 	function attrs (e:Element):Void {
 		//Add in class data and id data
 		attr = true;
 		if (!Reflect.hasField(e, "__noClass")) buf.add(" data-class='" + Type.getClassName(Type.getClass(e)) + "'");
-		buf.add(" data-id='" + untyped e.__id + "'");
+		elemIds(e);
 		var count = 0;
 		
 		for (i in Reflect.fields(e)) {
@@ -140,23 +154,19 @@ class HTMLSerializer extends Serializer {
 	
 	public override function serialize (v:Dynamic):Void {
 		if (Std.is(v, Node)) {
-			var node:Node = cast v;
-			switch (node.nodeType) {
-				case Node.ELEMENT_NODE:
-					if (attr) {
-						//For attribute serialization we always use the element's id
-						//Use 'D' to mark DOM id -- it's unused by serializer
-						buf.add("D" + Std.string(untyped v.__id));
-					} else {
+			if (attr) {
+				//For attribute serialization we always use the element's id
+				//Use 'D' to mark DOM id -- it's unused by serializer
+				buf.add("D" + Std.string(untyped v.__id));
+			} else {
+				//Otherwise we have special serialization for nodes
+				var node:Node = cast v;
+				switch (node.nodeType) {
+					case Node.ELEMENT_NODE:
 						element(cast v);
-					}
-				case Node.TEXT_NODE: 
-					if (attr) {
-						//If text is in the attribute use normal serialization
-						super.serialize(v);
-					} else {
+					case Node.TEXT_NODE: 
 						text(cast v);
-					}
+				}
 			}
 		} else {
 			super.serialize(v);

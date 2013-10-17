@@ -11,9 +11,11 @@
 package hxdom.js;
 
 import haxe.Unserializer;
+import hxdom.html.CharacterData;
 import hxdom.html.Element;
 import hxdom.html.HtmlElement;
 import hxdom.html.Node;
+import hxdom.Elements;
 
 using StringTools;
 
@@ -24,12 +26,12 @@ using StringTools;
  */
 class Boot extends Unserializer {
 	
-	var elementLookup:Map<Int, Element>;		//Find elements from their id
+	var elementLookup:Map<Int, Node>;		//Find elements from their id
 	
 	public function new () {
 		super("");
 		
-		elementLookup = new Map<Int, Element>();
+		elementLookup = new Map<Int, Node>();
 	}
 	
 	inline function getClassFromTagName (tagName:String):Class<Dynamic> {
@@ -199,7 +201,49 @@ class Boot extends Unserializer {
 	
 	function buildElementLookup (node:Node):Void {
 		if (node.nodeType == Node.ELEMENT_NODE) {
-			elementLookup.set(Std.parseInt(node.attributes.getNamedItem("data-id").nodeValue), cast node);
+			var first = true;
+			var remainingStr:String = null;
+			var child = node.firstChild;
+			for (i in node.attributes.getNamedItem("data-id").nodeValue.split(" ")) {
+				if (first) {
+					//First is always the element ID
+					elementLookup.set(Std.parseInt(i), node);
+					first = false;
+				} else {
+					//Any remaining ids are for text nodes
+					var dash = i.indexOf('-');
+					var id = Std.parseInt(i.substr(0, dash));
+					var len = Std.parseInt(i.substr(dash + 1));
+					
+					while (child.nodeType != Node.TEXT_NODE) child = child.nextSibling;
+					
+					var txt:CharacterData = cast child;
+					var nodeToAdd = child;
+					if (remainingStr == null && txt.length == len) {
+						//Node is an exact fit
+						child = child.nextSibling;
+					} else {
+						//Node has been normalized -- need to split into sub-nodes
+						if (remainingStr == null) {
+							//First node gets to stay
+							remainingStr = txt.data.substr(len);
+							txt.data = txt.data.substr(0, len);
+						} else {
+							//The rest need to create new text nodes
+							nodeToAdd = Text.create(remainingStr.substr(0, len));
+							node.insertBefore(nodeToAdd, child.nextSibling);
+							if (remainingStr.length == len) {
+								remainingStr = null;
+							} else {
+								remainingStr = remainingStr.substr(len);
+							}
+							child = child.nextSibling;
+						}
+					}
+					untyped nodeToAdd.__proto__ = Text.prototype;
+					elementLookup.set(id, nodeToAdd);
+				}
+			}
 			
 			for (i in node.childNodes) {
 				buildElementLookup(i);
