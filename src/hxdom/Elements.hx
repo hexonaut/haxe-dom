@@ -70,16 +70,26 @@ import hxdom.html.VideoElement;
 import hxdom.macro.DOM;
 
 enum InputType {
+	Button;
+	Checkbox;
 	Color;
 	Date;
 	DateTime;
 	DateTimeLocal;
 	Email;
+	File;
+	Hidden;
+	Image;
 	Month;
 	Number;
+	Password;
+	Radio;
 	Range;
+	Reset;
 	Search;
+	Submit;
 	Telephone;
+	IText;
 	Time;
 	Url;
 	Week;
@@ -146,16 +156,26 @@ class EImage extends ImageElement implements DOM { public function new () {} }
 class EInput extends InputElement implements DOM {
 	public function new (type:InputType) {
 		this.type = switch (type) {
+			case Button: "button";
+			case Checkbox: "checkbox";
 			case Color: "color";
 			case Date: "date";
 			case DateTime: "datetime";
 			case DateTimeLocal: "datetime-local";
 			case Email: "email";
+			case File: "file";
+			case Hidden: "hidden";
+			case Image: "image";
 			case Month: "month";
 			case Number: "number";
+			case Password: "password";
+			case Radio: "radio";
 			case Range: "range";
+			case Reset: "reset";
 			case Search: "search";
+			case Submit: "submit";
 			case Telephone: "tel";
+			case IText: "text";
 			case Time: "time";
 			case Url: "url";
 			case Week: "week";
