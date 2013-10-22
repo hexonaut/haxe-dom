@@ -69,6 +69,22 @@ import hxdom.html.UListElement;
 import hxdom.html.VideoElement;
 import hxdom.macro.DOM;
 
+enum InputType {
+	Color;
+	Date;
+	DateTime;
+	DateTimeLocal;
+	Email;
+	Month;
+	Number;
+	Range;
+	Search;
+	Telephone;
+	Time;
+	Url;
+	Week;
+}
+
 /**
  * Thin wrappers for common elements.
  * 
@@ -127,7 +143,25 @@ class EHtml extends HtmlElement implements DOM { public function new () {} }
 class EItalics extends Element implements DOM { public function new () {} }
 class EIFrame extends IFrameElement implements DOM { public function new () {} }
 class EImage extends ImageElement implements DOM { public function new () {} }
-class EInput extends InputElement implements DOM { public function new () {} }
+class EInput extends InputElement implements DOM {
+	public function new (type:InputType) {
+		this.type = switch (type) {
+			case Color: "color";
+			case Date: "date";
+			case DateTime: "datetime";
+			case DateTimeLocal: "datetime-local";
+			case Email: "email";
+			case Month: "month";
+			case Number: "number";
+			case Range: "range";
+			case Search: "search";
+			case Telephone: "tel";
+			case Time: "time";
+			case Url: "url";
+			case Week: "week";
+		};
+	}
+}
 class EInserted extends Element implements DOM { public function new () {} }
 class EKeyboard extends Element implements DOM { public function new () {} }
 class EKeygen extends KeygenElement implements DOM { public function new () {} }
