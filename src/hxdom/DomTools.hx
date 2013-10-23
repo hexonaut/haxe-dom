@@ -59,6 +59,27 @@ class DomTools {
 	}
 	
 	/**
+	 * Remove classes for this element. Space delimited.
+	 */
+	public static function removeClasses<T:Element> (e:T, cls:String):T {
+		if (e.className != null && e.className != "") {
+			var clsArr = cls.split(" ");
+			var ecls = e.className.split(" ");
+			var newCls = new Array<String>();
+			for (i in ecls) {
+				for (o in clsArr) {
+					if (i != o) {
+						newCls.push(i);
+					}
+				}
+			}
+			e.className = newCls.join(" ");
+		}
+		
+		return e;
+	}
+	
+	/**
 	 * Shortcut for adding text.
 	 */
 	public static function addText<T:Node> (parent:T, text:String):T {
