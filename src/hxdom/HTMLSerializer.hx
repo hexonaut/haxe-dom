@@ -42,7 +42,8 @@ class HTMLSerializer extends Serializer {
 			firstChild:null,
 			lastChild:null,
 			__id:null,
-			__noClass:null
+			__noClass:null,
+			dataset:null
 		};
 	
 	public function new () {
@@ -112,12 +113,30 @@ class HTMLSerializer extends Serializer {
 		buf.add("'");
 	}
 	
+	inline function camelCaseToDash (str:String):String {
+		var outStr = "";
+		for (i in 0 ... str.length) {
+			var chr = str.charCodeAt(i);
+			if (chr >= 'A'.code && chr <= 'Z'.code) {
+				outStr += '-' + String.fromCharCode(chr - 'A'.code + 'a'.code);
+			} else {
+				outStr += String.fromCharCode(chr);
+			}
+		}
+		return outStr;
+	}
+	
 	function attrs (e:Element):Void {
 		//Add in class data and id data
 		attr = true;
 		if (!Reflect.hasField(e, "__noClass")) buf.add(" data-class='" + Type.getClassName(Type.getClass(e)) + "'");
 		elemIds(e);
 		var count = 0;
+		
+		for (i in Reflect.fields(e.dataset)) {
+			//Add in actual 'data-' attrs
+			buf.add(" data-" + camelCaseToDash(i) + "='" + Std.string(Reflect.field(e.dataset, i)).htmlEscape(true) + "'");
+		}
 		
 		for (i in Reflect.fields(e)) {
 			//Skip over some redundant fields

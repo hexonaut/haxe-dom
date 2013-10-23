@@ -216,9 +216,10 @@ class NodeMacros {
 							switch (func.expr.expr) {
 								case EBlock(exprs):
 									exprs.push(macro untyped this.__id = hxdom.ElementId.ID++);
-									exprs.push(macro untyped childNodes = new hxdom.html.NodeList());
-									exprs.push(macro untyped nodeType = ${eInfo.nodeType});
-									if (eInfo.tagName != null) exprs.push(macro untyped tagName = ${eInfo.tagName} );
+									exprs.push(macro childNodes = new hxdom.html.NodeList());
+									exprs.push(macro if (Std.is(this, hxdom.html.Element)) untyped dataset = { });
+									exprs.push(macro nodeType = ${eInfo.nodeType});
+									if (eInfo.tagName != null) exprs.push(macro tagName = ${eInfo.tagName} );
 								default:
 							}
 							default:
