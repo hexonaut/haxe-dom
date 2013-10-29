@@ -13,5 +13,7 @@ package hxdom.html;
 #if js
 typedef DOMStringMap = js.html.DOMStringMap;
 #else
-typedef DOMStringMap = Dynamic;
+class DOMStringMap {
+	
+}
 #end
