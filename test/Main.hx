@@ -30,6 +30,7 @@ class Main {
 		head.add(EScript.create().attr(src, "haxedom.js").attr(defer, true));
 		var body = ForumThreadView.create([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
 		body.dataset.testingCustomDataAttr = "data'.data.data'.data";
+		body.style.backgroundColor = "red";
 		
 		html.add(head).add(body);
 		

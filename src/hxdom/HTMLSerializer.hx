@@ -43,7 +43,8 @@ class HTMLSerializer extends Serializer {
 			lastChild:null,
 			__id:null,
 			__noClass:null,
-			dataset:null
+			dataset:null,
+			style:null
 		};
 	
 	public function new () {
@@ -133,10 +134,18 @@ class HTMLSerializer extends Serializer {
 		elemIds(e);
 		var count = 0;
 		
+		//Add in actual 'data-' attrs
 		for (i in Reflect.fields(e.dataset)) {
-			//Add in actual 'data-' attrs
 			buf.add(" data-" + camelCaseToDash(i) + "='" + Std.string(Reflect.field(e.dataset, i)).htmlEscape(true) + "'");
 		}
+		
+		//Add in style attribute
+		var style = null;
+		for (i in Reflect.fields(e.style)) {
+			if (style == null) style = " style='";
+			style += Std.string(camelCaseToDash(i) + ":" + Reflect.field(e.style, i)).htmlEscape(true) + ";";
+		}
+		if (style != null) buf.add(style + "'");
 		
 		for (i in Reflect.fields(e)) {
 			//Skip over some redundant fields
