@@ -1,7 +1,0 @@
-bin/
-.gitignore
-.mlib
-haxe-dom.hxproj
-js.hxml
-LICENSE.txt
-Run.bat

@@ -1,4 +1,0 @@
--cp src
--cp test
--js bin/haxedom.js
--main Main
