@@ -173,7 +173,9 @@ class Boot extends Unserializer {
 					for (eventType in listeners.keys()) {
 						for (eh in listeners.get(eventType)) {
 							#if js
-							e.addEventListener(eventType, function (e) { Reflect.callMethod(eh.inst, Reflect.field(eh.inst, eh.func), [e]); }, eh.cap);
+							//If the instance is a string then treat it as a class path (The event handler was static)
+							var inst = Std.is(eh.inst, String) ? Type.resolveClass(eh.inst) : eh.inst;
+							e.addEventListener(eventType, function (e) { Reflect.callMethod(inst, Reflect.field(inst, eh.func), [e]); }, eh.cap);
 							#end
 						}
 					}
