@@ -217,7 +217,7 @@ class NodeMacros {
 								case EBlock(exprs):
 									exprs.push(macro untyped this.__id = hxdom.ElementId.ID++);
 									exprs.push(macro childNodes = new hxdom.html.NodeList());
-									exprs.push(macro if (Std.is(this, hxdom.html.Element)) { untyped dataset = { }; untyped style = { } } );
+									exprs.push(macro if (Std.is(this, hxdom.html.Element)) { untyped dataset = { }; untyped style = { }; } );
 									exprs.push(macro nodeType = ${eInfo.nodeType});
 									if (eInfo.tagName != null) exprs.push(macro tagName = ${eInfo.tagName} );
 								default:
@@ -270,7 +270,7 @@ class NodeMacros {
 			} else {
 				//Text Node
 				funcExprs.push(macro var e:Dynamic = js.Browser.document.createTextNode(${newArgs[0]}));
-				funcExprs.push(macro untyped e.__proto__ = ${ecls}.prototype);
+				funcExprs.push(macro untyped e.__proto__ = $ { ecls } .prototype);
 			}
 			funcExprs.push(macro return cast e);
 			fields.push( { kind: FFun( { args:ctorArgs, expr: { expr: EBlock(funcExprs), pos:pos }, params: [], ret: TPath({ name: clsRef.name, pack: clsRef.pack, params: [] }) }), meta: [], name: "create", doc: null, pos: pos, access: [AStatic,APublic] });

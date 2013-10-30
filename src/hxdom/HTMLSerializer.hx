@@ -55,26 +55,20 @@ class HTMLSerializer extends Serializer {
 		attr = false;
 	}
 	
-	inline function closeTagRequired (e:Element):Bool {
-		return e.childNodes.length > 0 || e.tagName == "SCRIPT" || e.tagName == "BUTTON";
-	}
-	
 	function text (cd:CharacterData):Void {
 		buf.add(cd.data);
 	}
 	
 	function element (e:Element):Void {
 		openTag(e);
-		if (closeTagRequired(e)) {
-			children(e);
-			closeTag(e);
-		}
+		children(e);
+		closeTag(e);
 	}
 	
 	function openTag (e:Element):Void {
 		buf.add("<" + e.tagName.toLowerCase());
 		attrs(e);
-		buf.add(closeTagRequired(e) ? ">" : "/>");
+		buf.add(">");
 	}
 	
 	function closeTag (e:Element):Void {
