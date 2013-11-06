@@ -114,12 +114,16 @@ Using the DOM directly can be kind of annoying, so I've included a DomTools clas
 	
 	var div = EDiv.create().classes("myCssClass anotherClass").attr(id, "someId").addText("Some text in the Div!");
 
-Notes
-=====
+FAQ
+===
 
 What's with the XXXX.create() instead of using the "new" operator?
 
 Unfortunately the JS spec can only create elements via "document.createElement(tagName)" which means it is impossible to use the new operator and have it return a reference to a DOM object. The next best solution as far as I could see was to use a create() static method that is generated via macros to completely replicate the signature of the constructor. The create function will always call the constructor.
+
+Can I use this with NodeJS?
+
+Although I have not tested this yet you can use NodeJS by adding the -D use_vdom compiler flag. This flag makes the library use the virtual DOM instead of the actual one (which doesn't exist in NodeJS).
 
 A Full Example
 ==============
