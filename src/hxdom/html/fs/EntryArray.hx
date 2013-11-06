@@ -13,7 +13,7 @@ package hxdom.html.fs;
 import hxdom.html.Element;
 import hxdom.html.NodeList;
 
-#if js
+#if (js && !use_vdom)
 typedef EntryArray = js.html.fs.EntryArray;
 #else
 class EntryArray implements ArrayAccess<Entry> {

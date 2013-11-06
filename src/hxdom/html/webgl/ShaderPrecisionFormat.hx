@@ -10,7 +10,7 @@
 
 package hxdom.html.webgl;
 
-#if js
+#if (js && !use_vdom)
 typedef ShaderPrecisionFormat = js.html.webgl.ShaderPrecisionFormat;
 #else
 class ShaderPrecisionFormat {

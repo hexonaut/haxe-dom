@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef CSSRuleList = js.html.CSSRuleList;
 #else
 class CSSRuleList implements ArrayAccess<CSSRule> {

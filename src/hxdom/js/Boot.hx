@@ -172,7 +172,7 @@ class Boot extends Unserializer {
 					var listeners:Map<String, List<{inst:Dynamic, func:String, cap:Bool}>> = cast value;
 					for (eventType in listeners.keys()) {
 						for (eh in listeners.get(eventType)) {
-							#if js
+							#if (js && !use_vdom)
 							//If the instance is a string then treat it as a class path (The event handler was static)
 							var inst = Std.is(eh.inst, String) ? Type.resolveClass(eh.inst) : eh.inst;
 							e.addEventListener(eventType, function (e) { Reflect.callMethod(inst, Reflect.field(inst, eh.func), [e]); }, eh.cap);
@@ -277,7 +277,7 @@ class Boot extends Unserializer {
 	}
 	
 	public static function init ():HtmlElement {
-		#if js
+		#if (js && !use_vdom)
 		var html = js.Browser.document.childNodes[1];
 		var boot = new Boot();
 		boot.buildElementLookup(html);

@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef InputElement = js.html.InputElement;
 #else
 class InputElement extends Element {

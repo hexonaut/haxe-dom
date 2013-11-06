@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef DataListElement = js.html.DataListElement;
 #else
 class DataListElement extends Element {

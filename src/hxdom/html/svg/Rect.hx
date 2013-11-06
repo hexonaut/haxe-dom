@@ -13,7 +13,7 @@ package hxdom.html.svg;
 import hxdom.html.Element;
 import hxdom.html.NodeList;
 
-#if js
+#if (js && !use_vdom)
 typedef Rect = js.html.svg.Rect;
 #else
 class Rect {

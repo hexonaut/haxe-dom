@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef ParamElement = js.html.ParamElement;
 #else
 class ParamElement extends Element {

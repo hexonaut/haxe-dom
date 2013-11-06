@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef OptGroupElement = js.html.OptGroupElement;
 #else
 class OptGroupElement extends Element {

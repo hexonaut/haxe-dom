@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef LIElement = js.html.LIElement;
 #else
 class LIElement extends Element {

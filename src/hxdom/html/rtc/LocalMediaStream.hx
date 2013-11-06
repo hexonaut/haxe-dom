@@ -13,7 +13,7 @@ package hxdom.html.rtc;
 import hxdom.html.Element;
 import hxdom.html.NodeList;
 
-#if js
+#if (js && !use_vdom)
 typedef LocalMediaStream = js.html.rtc.LocalMediaStream;
 #else
 class LocalMediaStream extends MediaStream {

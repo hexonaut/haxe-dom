@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef TextTrackList = js.html.TextTrackList;
 #else
 class TextTrackList extends EventTarget implements ArrayAccess<TextTrack> {

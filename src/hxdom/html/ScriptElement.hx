@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef ScriptElement = js.html.ScriptElement;
 #else
 class ScriptElement extends Element {

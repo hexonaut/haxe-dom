@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef DOMWindow = js.html.DOMWindow;
 #else
 class DOMWindow extends EventTarget {

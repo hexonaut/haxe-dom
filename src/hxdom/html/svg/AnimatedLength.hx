@@ -13,7 +13,7 @@ package hxdom.html.svg;
 import hxdom.html.Element;
 import hxdom.html.NodeList;
 
-#if js
+#if (js && !use_vdom)
 typedef AnimatedLength = js.html.svg.AnimatedLength;
 #else
 class AnimatedLength {

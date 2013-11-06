@@ -10,7 +10,7 @@
 
 package hxdom.html.webgl;
 
-#if js
+#if (js && !use_vdom)
 typedef ActiveInfo = js.html.webgl.ActiveInfo;
 #else
 class ActiveInfo {

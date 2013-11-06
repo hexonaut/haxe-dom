@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef NotificationCenter = js.html.NotificationCenter;
 #else
 class NotificationCenter {

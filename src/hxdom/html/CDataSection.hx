@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef CDATASection = js.html.CDATASection;
 #else
 class CDATASection extends Text {

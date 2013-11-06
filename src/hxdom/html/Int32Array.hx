@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef Int32Array = js.html.Int32Array;
 #else
 class Int32Array extends ArrayBufferView implements ArrayAccess<Int> {

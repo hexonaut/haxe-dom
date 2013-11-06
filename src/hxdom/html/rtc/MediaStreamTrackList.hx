@@ -14,7 +14,7 @@ import hxdom.html.Element;
 import hxdom.html.EventTarget;
 import hxdom.html.NodeList;
 
-#if js
+#if (js && !use_vdom)
 typedef MediaStreamTrackList = js.html.rtc.MediaStreamTrackList;
 #else
 class MediaStreamTrackList extends hxdom.html.EventTarget implements ArrayAccess<MediaStreamTrack> {

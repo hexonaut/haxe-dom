@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef Comment = js.html.Comment;
 #else
 class Comment extends CharacterData {

@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef MetaElement = js.html.MetaElement;
 #else
 class MetaElement extends Element {

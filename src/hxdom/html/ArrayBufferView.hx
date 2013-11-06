@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef ArrayBufferView = js.html.ArrayBufferView;
 #else
 class ArrayBufferView {

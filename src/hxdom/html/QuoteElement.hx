@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef QuoteElement = js.html.QuoteElement;
 #else
 class QuoteElement extends Element {

@@ -12,7 +12,7 @@ package hxdom.html;
 
 import hxdom.EventDispatcher;
 
-#if js
+#if (js && !use_vdom)
 typedef EventTarget = js.html.EventTarget;
 #else
 typedef EventTarget = EventDispatcher;

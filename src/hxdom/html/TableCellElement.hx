@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef TableCellElement = js.html.TableCellElement;
 #else
 class TableCellElement extends Element {

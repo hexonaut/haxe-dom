@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef CanvasRenderingContext2D = js.html.CanvasRenderingContext2D;
 #else
 class CanvasRenderingContext2D extends CanvasRenderingContext {

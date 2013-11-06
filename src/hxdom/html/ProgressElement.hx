@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef ProgressElement = js.html.ProgressElement;
 #else
 class ProgressElement extends Element {

@@ -14,7 +14,7 @@ import hxdom.html.Element;
 import hxdom.html.EventTarget;
 import hxdom.html.NodeList;
 
-#if js
+#if (js && !use_vdom)
 typedef NavigatorUserMediaError = js.html.rtc.NavigatorUserMediaError;
 #else
 class NavigatorUserMediaError {

@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef FontElement = js.html.FontElement;
 #else
 class FontElement extends Element {

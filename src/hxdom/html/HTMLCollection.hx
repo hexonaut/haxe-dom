@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef HTMLCollection = js.html.HTMLCollection;
 #else
 class HTMLCollection implements ArrayAccess<Node> {

@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef CanvasElement = js.html.CanvasElement;
 #else
 class CanvasElement extends Element {

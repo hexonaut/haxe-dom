@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef MeterElement = js.html.MeterElement;
 #else
 class MeterElement extends Element {

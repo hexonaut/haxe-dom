@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef TrackElement = js.html.TrackElement;
 #else
 class TrackElement extends Element {

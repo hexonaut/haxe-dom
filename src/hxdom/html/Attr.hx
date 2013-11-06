@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef Attr = js.html.Attr;
 #else
 class Attr extends Node {

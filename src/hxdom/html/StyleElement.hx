@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef StyleElement = js.html.StyleElement;
 #else
 class StyleElement extends Element {

@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef IFrameElement = js.html.IFrameElement;
 #else
 class IFrameElement extends Element {

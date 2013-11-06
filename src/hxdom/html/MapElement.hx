@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef MapElement = js.html.MapElement;
 #else
 class MapElement extends Element {

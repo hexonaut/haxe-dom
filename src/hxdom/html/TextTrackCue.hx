@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef TextTrackCue = js.html.TextTrackCue;
 #else
 class TextTrackCue extends EventTarget {

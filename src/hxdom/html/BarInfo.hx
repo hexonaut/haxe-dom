@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef BarInfo = js.html.BarInfo;
 #else
 class BarInfo {

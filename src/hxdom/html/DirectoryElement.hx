@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef DirectoryElement = js.html.DirectoryElement;
 #else
 class DirectoryElement extends Element {

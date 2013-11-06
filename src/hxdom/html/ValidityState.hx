@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef ValidityState = js.html.ValidityState;
 #else
 class ValidityState {

@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef MediaController = js.html.MediaController;
 #else
 class MediaController extends EventTarget {

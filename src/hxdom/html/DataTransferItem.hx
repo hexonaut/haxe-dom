@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef DataTransferItem = js.html.DataTransferItem;
 #else
 class DataTransferItem {

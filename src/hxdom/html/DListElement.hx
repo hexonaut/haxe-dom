@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef DListElement = js.html.DListElement;
 #else
 class DListElement extends Element {

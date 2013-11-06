@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef DataTransferItemList = js.html.DataTransferItemList;
 #else
 class DataTransferItemList implements ArrayAccess<DataTransferItem> {

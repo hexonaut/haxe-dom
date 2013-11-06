@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef Clipboard = js.html.Clipboard;
 #else
 class Clipboard extends Element {

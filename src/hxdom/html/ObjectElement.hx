@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef ObjectElement = js.html.ObjectElement;
 #else
 class ObjectElement extends Element {

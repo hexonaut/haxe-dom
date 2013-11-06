@@ -13,7 +13,7 @@ package hxdom.html.fs;
 import hxdom.html.Element;
 import hxdom.html.NodeList;
 
-#if js
+#if (js && !use_vdom)
 typedef Metadata = js.html.fs.Metadata;
 #else
 class Metadata {

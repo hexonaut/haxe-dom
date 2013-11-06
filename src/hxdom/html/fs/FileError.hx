@@ -13,7 +13,7 @@ package hxdom.html.fs;
 import hxdom.html.Element;
 import hxdom.html.NodeList;
 
-#if js
+#if (js && !use_vdom)
 typedef FileError = js.html.fs.FileError;
 #else
 class FileError {

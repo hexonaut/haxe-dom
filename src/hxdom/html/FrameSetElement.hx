@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef FrameSetElement = js.html.FrameSetElement;
 #else
 class FrameSetElement extends Element {

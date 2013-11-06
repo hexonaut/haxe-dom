@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef CSSStyleDeclaration = js.html.CSSStyleDeclaration;
 #else
 class CSSStyleDeclaration implements ArrayAccess<String> {

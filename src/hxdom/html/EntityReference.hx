@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef EntityReference = js.html.EntityReference;
 #else
 class EntityReference extends Node {

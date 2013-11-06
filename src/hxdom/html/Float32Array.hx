@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef Float32Array = js.html.Float32Array;
 #else
 class Float32Array extends ArrayBufferView implements ArrayAccess<Float> {

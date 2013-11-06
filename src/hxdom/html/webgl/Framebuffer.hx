@@ -10,7 +10,7 @@
 
 package hxdom.html.webgl;
 
-#if js
+#if (js && !use_vdom)
 typedef Framebuffer = js.html.webgl.Framebuffer;
 #else
 class Framebuffer {

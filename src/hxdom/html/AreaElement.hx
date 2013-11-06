@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef AreaElement = js.html.AreaElement;
 #else
 class AreaElement extends Element {

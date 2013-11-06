@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef ClientRectList = js.html.ClientRectList;
 #else
 class ClientRectList implements ArrayAccess<ClientRect> {

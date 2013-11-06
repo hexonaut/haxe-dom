@@ -14,7 +14,7 @@ import hxdom.html.Element;
 import hxdom.html.EventTarget;
 import hxdom.html.NodeList;
 
-#if js
+#if (js && !use_vdom)
 typedef MediaStream = js.html.rtc.MediaStream;
 #else
 class MediaStream extends EventTarget {

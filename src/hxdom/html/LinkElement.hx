@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef LinkElement = js.html.LinkElement;
 #else
 class LinkElement extends Element {

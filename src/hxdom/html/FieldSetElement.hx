@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef FieldSetElement = js.html.FieldSetElement;
 #else
 class FieldSetElement extends Element {

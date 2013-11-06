@@ -10,7 +10,7 @@
 
 package hxdom.html.webgl;
 
-#if js
+#if (js && !use_vdom)
 typedef Texture = js.html.webgl.Texture;
 #else
 class Texture {

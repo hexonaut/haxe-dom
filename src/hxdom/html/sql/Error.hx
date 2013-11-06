@@ -13,7 +13,7 @@ package hxdom.html.sql;
 import hxdom.html.Element;
 import hxdom.html.NodeList;
 
-#if js
+#if (js && !use_vdom)
 typedef Error = js.html.sql.Error;
 #else
 class Error {

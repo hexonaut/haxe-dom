@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef Uint8Array = js.html.Uint8Array;
 #else
 class Uint8Array extends ArrayBufferView implements ArrayAccess<Int> {

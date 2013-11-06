@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef BRElement = js.html.BRElement;
 #else
 class BRElement extends Element {

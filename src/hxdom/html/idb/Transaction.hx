@@ -14,7 +14,7 @@ import hxdom.html.Element;
 import hxdom.html.EventTarget;
 import hxdom.html.NodeList;
 
-#if js
+#if (js && !use_vdom)
 typedef Transaction = js.html.idb.Transaction;
 #else
 class Transaction extends EventTarget {

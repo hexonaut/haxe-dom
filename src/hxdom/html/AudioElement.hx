@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef AudioElement = js.html.AudioElement;
 #else
 class AudioElement extends MediaElement {

@@ -10,7 +10,7 @@
 
 package hxdom.html.svg;
 
-#if js
+#if (js && !use_vdom)
 typedef Document = js.html.svg.Document;
 #else
 class Document extends hxdom.html.Document {

@@ -10,7 +10,7 @@
 
 package hxdom.html.webgl;
 
-#if js
+#if (js && !use_vdom)
 typedef Renderbuffer = js.html.webgl.Renderbuffer;
 #else
 class Renderbuffer {

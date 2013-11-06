@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef DocumentFragment = js.html.DocumentFragment;
 #else
 class DocumentFragment extends Node {

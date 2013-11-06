@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef AppletElement = js.html.AppletElement;
 #else
 class AppletElement extends Element {

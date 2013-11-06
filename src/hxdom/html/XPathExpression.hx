@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef XPathExpression = js.html.XPathExpression;
 #else
 class XPathExpression {

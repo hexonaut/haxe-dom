@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef NodeIterator = js.html.NodeIterator;
 #else
 class NodeIterator {

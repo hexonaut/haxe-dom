@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef CSSStyleSheet = js.html.CSSStyleSheet;
 #else
 class CSSStyleSheet extends StyleSheet {

@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef NodeList = js.html.NodeList;
 #else
 typedef NodeList = Array<Node>;

@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef SelectElement = js.html.SelectElement;
 #else
 class SelectElement extends Element implements ArrayAccess<Node> {

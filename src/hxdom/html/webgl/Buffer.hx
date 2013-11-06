@@ -10,7 +10,7 @@
 
 package hxdom.html.webgl;
 
-#if js
+#if (js && !use_vdom)
 typedef Buffer = js.html.webgl.Buffer;
 #else
 class Buffer {

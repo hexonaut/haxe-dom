@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef ShadowElement = js.html.ShadowElement;
 #else
 class ShadowElement extends Element {

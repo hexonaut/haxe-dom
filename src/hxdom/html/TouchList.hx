@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef TouchList = js.html.TouchList;
 #else
 class TouchList implements ArrayAccess<Touch> {

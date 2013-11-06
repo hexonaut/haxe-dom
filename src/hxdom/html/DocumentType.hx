@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef DocumentType = js.html.DocumentType;
 #else
 class DocumentType extends Node {

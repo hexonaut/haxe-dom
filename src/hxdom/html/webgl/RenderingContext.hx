@@ -10,7 +10,7 @@
 
 package hxdom.html.webgl;
 
-#if js
+#if (js && !use_vdom)
 typedef RenderingContext = js.html.webgl.RenderingContext;
 #else
 class RenderingContext {

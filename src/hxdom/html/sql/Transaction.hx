@@ -13,7 +13,7 @@ package hxdom.html.sql;
 import hxdom.html.Element;
 import hxdom.html.NodeList;
 
-#if js
+#if (js && !use_vdom)
 typedef Transaction = js.html.sql.Transaction;
 #else
 class Transaction {

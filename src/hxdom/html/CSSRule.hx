@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef CSSRule = js.html.CSSRule;
 #else
 class CSSRule {

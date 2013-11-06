@@ -13,7 +13,7 @@ package hxdom.html.idb;
 import hxdom.html.Element;
 import hxdom.html.NodeList;
 
-#if js
+#if (js && !use_vdom)
 typedef VersionChangeRequest = js.html.idb.VersionChangeRequest;
 #else
 class VersionChangeRequest extends Request {

@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef MediaList = js.html.MediaList;
 #else
 class MediaList implements ArrayAccess<String> {

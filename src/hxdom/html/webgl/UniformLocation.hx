@@ -10,7 +10,7 @@
 
 package hxdom.html.webgl;
 
-#if js
+#if (js && !use_vdom)
 typedef UniformLocation = js.html.webgl.UniformLocation;
 #else
 class UniformLocation {

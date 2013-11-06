@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef Node = js.html.Node;
 #else
 class Node extends EventTarget {

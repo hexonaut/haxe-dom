@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef LabelElement = js.html.LabelElement;
 #else
 class LabelElement extends Element {

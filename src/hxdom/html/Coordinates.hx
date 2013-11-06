@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef Coordinates = js.html.Coordinates;
 #else
 class Coordinates {

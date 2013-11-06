@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef TextTrackCueList = js.html.TextTrackCueList;
 #else
 class TextTrackCueList implements ArrayAccess<TextTrackCue> {

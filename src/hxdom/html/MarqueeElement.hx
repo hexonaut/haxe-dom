@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef MarqueeElement = js.html.MarqueeElement;
 #else
 class MarqueeElement extends Element {

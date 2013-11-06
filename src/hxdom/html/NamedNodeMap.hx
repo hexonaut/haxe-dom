@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef NamedNodeMap = js.html.NamedNodeMap;
 #else
 class NamedNodeMap implements ArrayAccess<Node> {

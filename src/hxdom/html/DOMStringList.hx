@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef DOMStringList = js.html.DOMStringList;
 #else
 class DOMStringList implements ArrayAccess<String> {

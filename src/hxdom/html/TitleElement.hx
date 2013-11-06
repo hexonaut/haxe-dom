@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef TitleElement = js.html.TitleElement;
 #else
 class TitleElement extends Element {

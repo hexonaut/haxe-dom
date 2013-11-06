@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef Text = js.html.Text;
 #else
 class Text extends CharacterData {

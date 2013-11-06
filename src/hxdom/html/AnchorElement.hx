@@ -10,7 +10,7 @@
 
 package hxdom.html;
 
-#if js
+#if (js && !use_vdom)
 typedef AnchorElement = js.html.AnchorElement;
 #else
 class AnchorElement extends Element {
