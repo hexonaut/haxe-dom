@@ -104,7 +104,7 @@ enum InputType {
  * @author Sam MacPherson
  */
 
-class VirtualNode<T:Node> {
+class VirtualNode<T:Node> extends EventDispatcher {
 	
 	static var ID:Int = 0;
 	

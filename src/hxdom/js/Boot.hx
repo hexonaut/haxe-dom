@@ -44,9 +44,7 @@ class Boot extends Unserializer {
 					for (eventType in listeners.keys()) {
 						for (eh in listeners.get(eventType)) {
 							#if (js && !use_vdom)
-							//If the instance is a string then treat it as a class path (The event handler was static)
-							var inst = Std.is(eh.inst, String) ? Type.resolveClass(eh.inst) : eh.inst;
-							e.addEventListener(eventType, function (e) { Reflect.callMethod(inst, Reflect.field(inst, eh.func), [e]); }, eh.cap);
+							e.addEventListener(eventType, function (e) { Reflect.callMethod(eh.inst, Reflect.field(eh.inst, eh.func), [e]); }, eh.cap);
 							#end
 						}
 					}
@@ -149,14 +147,19 @@ class Boot extends Unserializer {
 	}
 	
 	public override function unserialize ():Dynamic {
-		if (get(pos) == 'D'.code) {
-			//Element ID reference
-			pos++;
-			var e = elementLookup.get(readDigits());
-			if (e == null) throw "Missing element reference!";
-			return Reflect.field(e, "__vdom");
-		} else {
-			return super.unserialize();
+		switch (get(pos)) {
+			case 'D'.code:
+				//Element ID reference
+				pos++;
+				var e = elementLookup.get(readDigits());
+				if (e == null) throw "Missing element reference!";
+				return Reflect.field(e, "__vdom");
+			case 'O'.code:
+				pos++;
+				var name = super.unserialize();
+				return Type.resolveClass(name);
+			default:
+				return super.unserialize();
 		}
 	}
 	

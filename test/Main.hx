@@ -1,7 +1,6 @@
 package ;
 
 import hxdom.EventDispatcher;
-import hxdom.html.CharacterData;
 import hxdom.html.Event;
 import hxdom.HTMLSerializer;
 import hxdom.js.Boot;
@@ -49,7 +48,7 @@ class ForumApp extends EHtml {
 		threads = new ForumThreadView([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
 		untyped threads.node.dataset.testingCustomDataAttr = "data'.data.data'.data";
 		threads.node.style.backgroundColor = "red";
-		//threads.node.addEventListener("click", Main.staticEventListener);
+		threads.node.addEventListener("click", Main.staticEventListener);
 		
 		add(head);
 		add(threads);

@@ -126,7 +126,7 @@ class HTMLSerializer extends Serializer {
 		}
 		
 		//Add in event handlers
-		var events = Reflect.field(e.node, "__listeners");
+		var events:Map<String, List<{inst:Dynamic, func:String, cap:Bool}>> = Reflect.field(e.node, "__listeners");
 		if (events != null) {
 			buf.add(" data-hxevents='");
 			serialize(events);
@@ -167,6 +167,20 @@ class HTMLSerializer extends Serializer {
 					case Node.TEXT_NODE:
 						text(cast vn);
 				}
+			}
+		} else if (Type.typeof(v) == TObject) {
+			var name = null;
+			try {
+				name = Type.getClassName(v);
+			} catch (e:Dynamic) {
+			}
+			if (name != null) {
+				//This is a reference to a static class -- just serialize the name
+				buf.add("O");
+				serializeString(name);
+			} else {
+				//Regular object
+				super.serialize(v);
 			}
 		} else {
 			super.serialize(v);

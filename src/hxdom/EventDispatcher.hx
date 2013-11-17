@@ -12,6 +12,7 @@ package hxdom;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
+import haxe.macro.Type;
 import hxdom.html.Event;
 import hxdom.html.EventListener;
 
@@ -41,22 +42,93 @@ class EventDispatcher {
 		}
 	}
 	
-	macro public function addEventListener (ethis:Expr, type:ExprOf<String>, listener:ExprOf<EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		var params = listener.expr.getParameters();
-		var isStatic = false;
-		var cls = Context.getLocalClass().get();
+	#if macro
+	/**
+	 * Check through full inheritance chain to find the method.
+	 */
+	static function hasMethod (cls:ClassType, name:String):Bool {
+		while (cls != null) {
+			for (i in cls.fields.get()) {
+				if (i.name == name) {
+					return true;
+				}
+			}
+			
+			if (cls.superClass == null) break;
+			
+			cls = cls.superClass.t.get();
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Check if this class has a static function with the given name.
+	 */
+	static function hasStaticFunction (cls:ClassType, name:String):Bool {
 		for (i in cls.statics.get()) {
-			switch (params[0]) {
-				case CIdent(name):
-					if (i.name == name) isStatic = true;
-				default:
+			if (i.name == name) {
+				return true;
 			}
 		}
-		var fullName = (cls.pack.length > 0 ? (cls.pack.join(".") + ".") : "") + cls.name;
-		var ecls = {expr:EConst(CString(fullName)), pos:Context.currentPos()};
-		var inst = (params.length > 1) ? params[0] : (isStatic ? ecls : macro this);
-		var func = Context.makeExpr((params.length > 1) ? params[1] : switch (params[0]) { case CIdent(val): val; default: null; }, Context.currentPos());
-		return macro $ethis.__addEventListener($inst, $type, $func, $useCapture);
+		
+		return false;
+	}
+	
+	/**
+	 * Build a fully qualified class name reference.
+	 */
+	static function getFullClassName (cls:ClassType):Expr {
+		if (cls.pack.length > 0) {
+			var expr = { expr:EConst(CIdent(cls.pack[0])), pos:Context.currentPos() };
+			for (i in 1 ... cls.pack.length) {
+				expr = { expr:EField(expr, cls.pack[i]), pos:Context.currentPos() };
+			}
+			expr = { expr:EField(expr, cls.name), pos:Context.currentPos() };
+			return expr;
+		} else {
+			return { expr:EConst(CIdent(cls.name)), pos:Context.currentPos() };
+		}
+	}
+	
+	/**
+	 * Split a function reference into an instance and a function name so it can be serialized.
+	 */
+	static function splitFunction (listener:ExprOf<EventListener>): { inst:Expr, func:Expr } {
+		var split = null;
+		switch (listener.expr) {
+			case EField(e, f):
+				split = { inst: e, func:{expr:EConst(CString(f)), pos:Context.currentPos()} };
+			case EConst(c):
+				switch (c) {
+					case CIdent(name):
+						//Instance is implicitly "this" or "ClassName" depending on static reference or not
+						var cls = Context.getLocalClass().get();
+						
+						//Check class methods first
+						if (hasMethod(cls, name)) {
+							split = { inst: macro this, func:{expr:EConst(CString(name)), pos:Context.currentPos()} };
+						}
+						
+						//Check class statics
+						if (hasStaticFunction(cls, name)) {
+							split = { inst:getFullClassName(cls), func:{expr:EConst(CString(name)), pos:Context.currentPos()} };
+						}
+					default:
+						throw "Unsupported function reference.";
+				}
+			case EFunction(_, _):
+				throw "Anonymous functions are not supported.";
+			default:
+				throw "Unsupported event handler.";
+		}
+		return split;
+	}
+	#end
+	
+	macro public function addEventListener (ethis:Expr, type:ExprOf<String>, listener:ExprOf<EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
+		var split = splitFunction(listener);
+		return macro $ethis.__addEventListener(${split.inst}, $type, ${split.func}, $useCapture);
 	}
 	
 	public function __removeEventListener (inst:Dynamic, type:String, func:String, ?useCapture:Bool = false):Void {
@@ -71,21 +143,8 @@ class EventDispatcher {
 	}
 
 	macro public function removeEventListener (ethis:Expr, type:ExprOf<String>, listener:ExprOf<EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		var params = listener.expr.getParameters();
-		var isStatic = false;
-		var cls = Context.getLocalClass().get();
-		for (i in cls.statics.get()) {
-			switch (params[0]) {
-				case CIdent(name):
-					if (i.name == name) isStatic = true;
-				default:
-			}
-		}
-		var fullName = (cls.pack.length > 0 ? (cls.pack.join(".") + ".") : "") + cls.name;
-		var ecls = {expr:EConst(CString(fullName)), pos:Context.currentPos()};
-		var inst = (params.length > 1) ? params[0] : (isStatic ? ecls : macro this);
-		var func = Context.makeExpr((params.length > 1) ? params[1] : switch (params[0]) { case CIdent(val): val; default: null; }, Context.currentPos());
-		return macro $ethis.__removeEventListener($inst, $type, $func, $useCapture);
+		var split = splitFunction(listener);
+		return macro $ethis.__removeEventListener(${split.inst}, $type, ${split.func}, $useCapture);
 	}
 
 	public function dispatchEvent (event:Event):Bool {
