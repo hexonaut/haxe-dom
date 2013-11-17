@@ -18,6 +18,7 @@ import hxdom.html.Element;
 import hxdom.html.HtmlElement;
 import hxdom.html.Node;
 import hxdom.html.Text;
+import hxdom.Elements;
 
 using StringTools;
 
@@ -41,10 +42,10 @@ class HTMLSerializer extends Serializer {
 			previousSibling:null,
 			firstChild:null,
 			lastChild:null,
-			__id:null,
-			__noClass:null,
 			dataset:null,
-			style:null
+			style:null,
+			__listeners:null,
+			__vdom:null
 		};
 	
 	public function new () {
@@ -55,139 +56,116 @@ class HTMLSerializer extends Serializer {
 		attr = false;
 	}
 	
-	function text (cd:CharacterData):Void {
-		buf.add(cd.data);
+	function text (t:VirtualNode<hxdom.html.Text>):Void {
+		buf.add(t.node.data);
 	}
 	
-	function element (e:Element):Void {
+	function element (e:VirtualNode<Element>):Void {
 		openTag(e);
 		children(e);
 		closeTag(e);
 	}
 	
-	function openTag (e:Element):Void {
-		buf.add("<" + e.tagName.toLowerCase());
+	function openTag (e:VirtualNode<Element>):Void {
+		buf.add("<" + e.node.tagName.toLowerCase());
 		attrs(e);
 		buf.add(">");
 	}
 	
-	function closeTag (e:Element):Void {
-		buf.add("</" + e.tagName.toLowerCase() + ">");
-	}
-	
-	/**
-	 * @return The HTML attribute this field coresponds to or null if it is not a standard attribute.
-	 */
-	inline function attrMapping (attr:String):Null<String> {
-		if (Reflect.hasField(Attr, attr)) {
-			//Take care of exceptions
-			attr = switch (attr) {
-				case "acceptCharset": "accept-charset";
-				case "className": "class";
-				case "httpEquiv": "http-equiv";
-				default: attr;
-			}
-			
-			return attr;
-		} else {
-			return null;
-		}
+	function closeTag (e:VirtualNode<Element>):Void {
+		buf.add("</" + e.node.tagName.toLowerCase() + ">");
 	}
 	
 	/**
 	 * Space delimited list of ids with the element's first followed by one or more for text nodes that are direct decendants.
 	 * The length is used to find node boundaries when unserializing on the client.
 	 */
-	inline function elemIds (e:Element):Void {
-		buf.add(" data-id='" + untyped e.__id);
-		for (i in e.childNodes) {
+	inline function elemIds (e:VirtualNode<Element>):Void {
+		buf.add(" data-hxid='" + Reflect.field(e, "id"));
+		for (i in e.node.childNodes) {
 			if (i.nodeType == Node.TEXT_NODE) {
-				buf.add(" " + untyped i.__id + "-" + untyped i.data.length);
+				var text:Text = Reflect.field(i, "__vdom");
+				buf.add(" " + Reflect.field(text, "id") + "-" + untyped i.data.length);
 			}
 		}
 		buf.add("'");
 	}
 	
-	inline function camelCaseToDash (str:String):String {
-		var outStr = "";
-		for (i in 0 ... str.length) {
-			var chr = str.charCodeAt(i);
-			if (chr >= 'A'.code && chr <= 'Z'.code) {
-				outStr += '-' + String.fromCharCode(chr - 'A'.code + 'a'.code);
-			} else {
-				outStr += String.fromCharCode(chr);
-			}
-		}
-		return outStr;
-	}
-	
-	function attrs (e:Element):Void {
+	function attrs (e:VirtualNode<Element>):Void {
 		//Add in class data and id data
 		attr = true;
-		if (!Reflect.hasField(e, "__noClass")) buf.add(" data-class='" + Type.getClassName(Type.getClass(e)) + "'");
 		elemIds(e);
-		var count = 0;
 		
 		//Add in actual 'data-' attrs
-		for (i in Reflect.fields(e.dataset)) {
-			buf.add(" data-" + camelCaseToDash(i) + "='" + Std.string(Reflect.field(e.dataset, i)).htmlEscape(true) + "'");
+		for (i in Reflect.fields(e.node.dataset)) {
+			buf.add(" data-" + DomTools.camelCaseToDash(i) + "='" + Std.string(Reflect.field(e.node.dataset, i)).htmlEscape(true) + "'");
 		}
 		
 		//Add in style attribute
 		var style = null;
-		for (i in Reflect.fields(e.style)) {
+		for (i in Reflect.fields(e.node.style)) {
 			if (style == null) style = " style='";
-			style += Std.string(camelCaseToDash(i) + ":" + Reflect.field(e.style, i)).htmlEscape(true) + ";";
+			style += (DomTools.camelCaseToDash(i) + ":" + Reflect.field(e.node.style, i)).htmlEscape(true) + ";";
 		}
 		if (style != null) buf.add(style + "'");
 		
-		for (i in Reflect.fields(e)) {
+		for (i in Reflect.fields(e.node)) {
 			//Skip over some redundant fields
 			if (Reflect.hasField(fieldsToIgnore, i)) continue;
 			
-			var attrName = attrMapping(i);
-			if (attrName != null) {
-				//This is a core html attribute
-				var val = Reflect.field(e, i);
-				switch (Type.typeof(val)) {
-					case TBool:
-						if (val) buf.add(" " + attrName);
-					default:
-						buf.add(" " + attrName + "='" + val + "'");
-				}
-			} else {
-				//This is extra data
-				buf.add(" data-k" + count + "='" + i + "'");
-				buf.add(" data-v" + count + "='");
-				serialize(Reflect.field(e, i));
-				buf.add("'");
-				
-				count++;
+			//This is a core html attribute
+			var attrName = i;
+			if (attrName == "className") attrName = "class";	//className maps to class
+			var val = Reflect.field(e.node, i);
+			switch (Type.typeof(val)) {
+				case TBool:
+					if (val) buf.add(" " + DomTools.camelCaseToDash(attrName));
+				default:
+					buf.add(" " + DomTools.camelCaseToDash(attrName) + "='" + val + "'");
 			}
 		}
+		
+		//Add in event handlers
+		var events = Reflect.field(e.node, "__listeners");
+		if (events != null) {
+			buf.add(" data-hxevents='");
+			serialize(events);
+			buf.add("'");
+		}
+		
+		//Add in vdom fields
+		buf.add(" data-hxclass='" + Type.getClassName(Type.getClass(e)) + "'");
+		for (i in Reflect.fields(e)) {
+			if (i != "node" && i != "id") {
+				buf.add(" data-hx-" + DomTools.camelCaseToDash(i) + "='");
+				serialize(Reflect.field(e, i));
+				buf.add("'");
+			}
+		}
+		
 		attr = false;
 	}
 	
-	function children (e:Element):Void {
-		for (i in e.childNodes) {
-			serialize(i);
+	function children (e:VirtualNode<Element>):Void {
+		for (i in e.node.childNodes) {
+			serialize(Reflect.field(i, "__vdom"));
 		}
 	}
 	
 	public override function serialize (v:Dynamic):Void {
-		if (Std.is(v, Node)) {
+		if (Std.is(v, VirtualNode)) {
+			var vn:VirtualNode<Node> = cast v;
 			if (attr) {
 				//For attribute serialization we always use the element's id
 				//Use 'D' to mark DOM id -- it's unused by serializer
-				buf.add("D" + Std.string(untyped v.__id));
+				buf.add("D" + Std.string(v.id));
 			} else {
-				//Otherwise we have special serialization for nodes
-				var node:Node = cast v;
-				switch (node.nodeType) {
+				//Otherwise we have special serialization for elements
+				switch (vn.node.nodeType) {
 					case Node.ELEMENT_NODE:
-						element(cast v);
-					case Node.TEXT_NODE: 
-						text(cast v);
+						element(cast vn);
+					case Node.TEXT_NODE:
+						text(cast vn);
 				}
 			}
 		} else {
@@ -195,7 +173,7 @@ class HTMLSerializer extends Serializer {
 		}
 	}
 
-	public static function run (html:HtmlElement):String {
+	public static function run (html:VirtualNode<HtmlElement>):String {
 		var s = new HTMLSerializer();
 		s.buf.add("<!DOCTYPE html>");
 		s.serialize(html);

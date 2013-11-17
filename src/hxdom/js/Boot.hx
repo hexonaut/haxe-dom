@@ -34,142 +34,13 @@ class Boot extends Unserializer {
 		elementLookup = new Map<Int, Node>();
 	}
 	
-	inline function getClassFromTagName (tagName:String):Class<Dynamic> {
-		return Type.resolveClass(switch (tagName) {
-			case "A": "hxdom.EAnchor";
-			case "ABBR": "hxdom.EAbbr";
-			case "ADDRESS": "hxdom.EAddress";
-			case "AREA": "hxdom.EArea";
-			case "ARTICLE": "hxdom.EArticle";
-			case "ASIDE": "hxdom.EAside";
-			case "AUDIO": "hxdom.EAudio";
-			case "B": "hxdom.EBold";
-			case "BASE": "hxdom.EBase";
-			case "BDI": "hxdom.EBiIsolation";
-			case "BDO": "hxdom.EBiOverride";
-			case "BLOCKQUOTE": "hxdom.EBlockQuote";
-			case "BODY": "hxdom.EBody";
-			case "BR": "hxdom.EBreak";
-			case "BUTTON": "hxdom.EButton";
-			case "CANVAS": "hxdom.ECanvas";
-			case "CAPTION": "hxdom.ECaption";
-			case "CITE": "hxdom.ECite";
-			case "CODE": "hxdom.ECode";
-			case "COL": "hxdom.EColumn";
-			case "COLGROUP": "hxdom.EColumnGroup";
-			case "DATA": "hxdom.EData";
-			case "DATALIST": "hxdom.EDataList";
-			case "DD": "hxdom.EDescription";
-			case "DEL": "hxdom.EDeleted";
-			case "DETAILS": "hxdom.EDetails";
-			case "DEFINITION": "hxdom.EDefinition";
-			case "DIV": "hxdom.EDiv";
-			case "DL": "hxdom.EDescriptionList";
-			case "DT": "hxdom.EDefinitionTerm";
-			case "EM": "hxdom.EEmphasis";
-			case "EMBED": "hxdom.EEmbed";
-			case "FIELDSET": "hxdom.EFieldSet";
-			case "FIGCAPTION": "hxdom.EFigureCaption";
-			case "FIGURE": "hxdom.EFigure";
-			case "FOOTER": "hxdom.EFooter";
-			case "FORM": "hxdom.EForm";
-			case "H1": "hxdom.EHeader1";
-			case "H2": "hxdom.EHeader2";
-			case "H3": "hxdom.EHeader3";
-			case "H4": "hxdom.EHeader4";
-			case "H5": "hxdom.EHeader5";
-			case "H6": "hxdom.EHeader6";
-			case "HEAD": "hxdom.EHead";
-			case "HEADER": "hxdom.EHeader";
-			case "HR": "hxdom.EHorizontalRule";
-			case "HTML": "hxdom.EHtml";
-			case "I": "hxdom.EItalics";
-			case "IFRAME": "hxdom.EIFrame";
-			case "IMG": "hxdom.EImage";
-			case "INPUT": "hxdom.EInput";
-			case "INS": "hxdom.EInserted";
-			case "KBD": "hxdom.EKeyboard";
-			case "KEYGEN": "hxdom.EKeygen";
-			case "LABEL": "hxdom.ELabel";
-			case "LEGEND": "hxdom.ELegend";
-			case "LI": "hxdom.EListItem";
-			case "LINK": "hxdom.ELink";
-			case "MAIN": "hxdom.EMain";
-			case "MAP": "hxdom.EMap";
-			case "MARK": "hxdom.EMark";
-			case "MENU": "hxdom.EMenu";
-			case "MENUITEM": "hxdom.EMenuItem";
-			case "META": "hxdom.EMeta";
-			case "METER": "hxdom.EMeter";
-			case "NAV": "hxdom.ENav";
-			case "NOSCRIPT": "hxdom.ENoScript";
-			case "OBJECT": "hxdom.EObject";
-			case "OL": "hxdom.EOrderedList";
-			case "OPTGROUP": "hxdom.EOptionGroup";
-			case "OPTION": "hxdom.EOption";
-			case "OUTPUT": "hxdom.EOutput";
-			case "P": "hxdom.EParagraph";
-			case "PARAM": "hxdom.EParam";
-			case "PRE": "hxdom.EPre";
-			case "PROGRESS": "hxdom.EProgress";
-			case "Q": "hxdom.EQuote";
-			case "RP": "hxdom.ERubyParen";
-			case "RT": "hxdom.ERubyPrononcuation";
-			case "RUBY": "hxdom.ERuby";
-			case "S": "hxdom.EStrike";
-			case "SAMP": "hxdom.ESample";
-			case "SCRIPT": "hxdom.EScript";
-			case "SECTION": "hxdom.ESection";
-			case "SELECT": "hxdom.ESelect";
-			case "SMALL": "hxdom.ESmall";
-			case "SOURCE": "hxdom.ESource";
-			case "SPAN": "hxdom.ESpan";
-			case "STRONG": "hxdom.EStrong";
-			case "STYLE": "hxdom.EStyle";
-			case "SUB": "hxdom.ESub";
-			case "SUMMARY": "hxdom.ESummary";
-			case "SUP": "hxdom.ESup";
-			case "TABLE": "hxdom.ETable";
-			case "TBODY": "hxdom.ETableBody";
-			case "TD": "hxdom.ETableCell";
-			case "TEXTAREA": "hxdom.ETextArea";
-			case "TFOOT": "hxdom.ETableFooter";
-			case "TH": "hxdom.ETableHeaderCell";
-			case "THEAD": "hxdom.ETableHeader";
-			case "TIME": "hxdom.ETime";
-			case "TITLE": "hxdom.ETitle";
-			case "TR": "hxdom.ETableRow";
-			case "TRACK": "hxdom.ETrack";
-			case "U": "hxdom.EUnderline";
-			case "UL": "hxdom.EUnorderedList";
-			case "VAR": "hxdom.EVar";
-			case "VIDEO": "hxdom.EVideo";
-			case "WBR": "hxdom.EWordBreak";
-			default: "hxdom.html.Element";
-		});
-	}
-	
 	function element (e:Element):Void {
-		var clsFound = false;
-		for (i in e.attributes) {
-			if (i.nodeName == "data-class") {
-				//Inject the actual class's prototype into the dom element
-				var cls = Type.resolveClass(i.nodeValue);
-				clsFound = true;
-				if (cls != null) {
-					untyped e.__proto__ = cls.prototype;
-				} else {
-					throw "Class " + i.nodeValue + " not found. Be sure the class is available to the client.";
-				}
-			} else if (i.nodeName == "data-id") {
-				//The element's id -- keep moving
-			} else if (i.nodeName.startsWith("data-k")) {
-				var index = Std.parseInt(i.nodeName.substr("data-k".length));
-				var key = i.nodeValue;
-				var value = doUnserialize(e.attributes.getNamedItem("data-v" + index).nodeValue);
-				if (key == "listeners") {
-					//Apply event listeners
-					var listeners:Map<String, List<{inst:Dynamic, func:String, cap:Bool}>> = cast value;
+		var velem = Reflect.field(e, "__vdom");
+		for (i in Reflect.fields(e.dataset)) {
+			switch (i) {
+				case "hxevents":
+					//Event listeners
+					var listeners:Map<String, List<{inst:Dynamic, func:String, cap:Bool}>> = doUnserialize(Reflect.field(e.dataset, i));
 					for (eventType in listeners.keys()) {
 						for (eh in listeners.get(eventType)) {
 							#if (js && !use_vdom)
@@ -179,15 +50,15 @@ class Boot extends Unserializer {
 							#end
 						}
 					}
-				} else {
-					//This is just some random variable
-					Reflect.setField(e, key, value);
-				}
+				case "hxclass", "hxid":
+					//Do nothing
+				default:
+					if (i.startsWith("hx")) {
+						var key = i.substr(2);
+						key = key.charAt(0).toLowerCase() + key.substr(1);
+						Reflect.setField(velem, key, doUnserialize(Reflect.field(e.dataset, i)));
+					}
 			}
-		}
-		
-		if (!clsFound) {
-			untyped e.__proto__ = getClassFromTagName(e.tagName).prototype;
 		}
 	}
 	
@@ -203,13 +74,21 @@ class Boot extends Unserializer {
 	
 	function buildElementLookup (node:Node):Void {
 		if (node.nodeType == Node.ELEMENT_NODE) {
+			//Setup virtual dom element
+			var velem:VirtualNode<Element> = Type.createEmptyInstance(Type.resolveClass(Reflect.field(cast(node, Element).dataset, "hxclass")));
+			Reflect.setField(node, "__vdom", velem);
+			Reflect.setField(velem, "node", node);
+			
+			//Place node into lookup
 			var first = true;
 			var remainingStr:String = null;
 			var child = node.firstChild;
-			for (i in node.attributes.getNamedItem("data-id").nodeValue.split(" ")) {
+			for (i in node.attributes.getNamedItem("data-hxid").nodeValue.split(" ")) {
 				if (first) {
 					//First is always the element ID
-					elementLookup.set(Std.parseInt(i), node);
+					var id = Std.parseInt(i);
+					Reflect.setField(velem, "id", id);
+					elementLookup.set(id, node);
 					first = false;
 				} else {
 					//Any remaining ids are for text nodes
@@ -219,7 +98,7 @@ class Boot extends Unserializer {
 					
 					while (child.nodeType != Node.TEXT_NODE) child = child.nextSibling;
 					
-					var txt:CharacterData = cast child;
+					var txt:hxdom.html.Text = cast child;
 					var nodeToAdd = child;
 					if (remainingStr == null && txt.length == len) {
 						//Node is an exact fit
@@ -232,7 +111,9 @@ class Boot extends Unserializer {
 							txt.data = txt.data.substr(0, len);
 						} else {
 							//The rest need to create new text nodes
-							nodeToAdd = Text.create(remainingStr.substr(0, len));
+							#if (js && !use_vdom)
+							nodeToAdd = js.Browser.document.createTextNode(remainingStr.substr(0, len));
+							#end
 							node.insertBefore(nodeToAdd, child.nextSibling);
 							if (remainingStr.length == len) {
 								remainingStr = null;
@@ -242,7 +123,10 @@ class Boot extends Unserializer {
 							child = child.nextSibling;
 						}
 					}
-					untyped nodeToAdd.__proto__ = Text.prototype;
+					var vdomText = Type.createEmptyInstance(Text);
+					Reflect.setField(vdomText, "id", id);
+					Reflect.setField(vdomText, "node", nodeToAdd);
+					Reflect.setField(nodeToAdd, "__vdom", vdomText);
 					elementLookup.set(id, nodeToAdd);
 				}
 			}
@@ -270,19 +154,19 @@ class Boot extends Unserializer {
 			pos++;
 			var e = elementLookup.get(readDigits());
 			if (e == null) throw "Missing element reference!";
-			return e;
+			return Reflect.field(e, "__vdom");
 		} else {
 			return super.unserialize();
 		}
 	}
 	
-	public static function init ():HtmlElement {
+	public static function init ():VirtualNode<HtmlElement> {
 		#if (js && !use_vdom)
 		var html = js.Browser.document.childNodes[1];
 		var boot = new Boot();
 		boot.buildElementLookup(html);
 		boot.unserializeNode(html);
-		return cast html;
+		return Reflect.field(html, "__vdom");
 		#else
 		throw "Only available to JS.";
 		return null;

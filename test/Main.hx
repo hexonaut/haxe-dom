@@ -13,29 +13,15 @@ class Main {
 	
 	static function main () {
 		#if js
-		var body:ForumThreadView = cast Boot.init().childNodes[1];
+		var app:ForumApp = cast Boot.init();
 		
 		//Add a post on load from JS
-		body.addPost(new Post(body.posts[0].post.user, "Right back at yea John! This time from JS!"));
+		app.threads.addPost(new Post(app.threads.posts[0].post.user, "Right back at yea John! This time from JS!"));
 		
 		//Check to see text references are maintained
-		body.markTextEnds();
+		app.threads.markTextEnds();
 		#else
-		var user1 = new User(0, "Fred");
-		var user2 = new User(1, "John");
-		
-		var html = EHtml.create();
-		var head = EHead.create();
-		head.add(EScript.create().addText("HTMLDetailsElement = HTMLElement;"));
-		head.add(EScript.create().attr(src, "haxedom.js").attr(defer, true));
-		var body = ForumThreadView.create([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
-		untyped body.dataset.testingCustomDataAttr = "data'.data.data'.data";
-		body.style.backgroundColor = "red";
-		body.addEventListener("click", staticEventListener);
-		
-		html.add(head).add(body);
-		
-		sys.io.File.saveContent("index.html", HTMLSerializer.run(html));
+		sys.io.File.saveContent("index.html", HTMLSerializer.run(new ForumApp()));
 		#end
 	}
 	
@@ -45,30 +31,56 @@ class Main {
 	
 }
 
+class ForumApp extends EHtml {
+	
+	public var head(default, null):EHead;
+	public var threads(default, null):ForumThreadView;
+	
+	public function new () {
+		super();
+		
+		var user1 = new User(0, "Fred");
+		var user2 = new User(1, "John");
+		
+		head = new EHead();
+		head.add(new EScript().addText("HTMLDetailsElement = HTMLElement;"));
+		head.add(new EScript().attr(src, "haxedom.js").attr(defer, true));
+		
+		threads = new ForumThreadView([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
+		untyped threads.node.dataset.testingCustomDataAttr = "data'.data.data'.data";
+		threads.node.style.backgroundColor = "red";
+		//threads.node.addEventListener("click", Main.staticEventListener);
+		
+		add(head);
+		add(threads);
+	}
+	
+}
+
 class ForumThreadView extends EBody {
 	
 	public var posts(default, set):Array<PostView>;
 	
-	var t1:CharacterData;
-	var t2:CharacterData;
-	var t3:CharacterData;
+	var t1:Text;
+	var t2:Text;
+	var t3:Text;
 	
 	public function new (posts:Array<Post>) {
 		super();
 		
-		this.posts = posts.map(function (e) { return PostView.create(e); } );
+		this.posts = posts.map(function (e) { return new PostView(e); } );
 		
-		t1 = Text.create("Testing ");
-		t2 = Text.create("inline              text ");
-		t3 = Text.create("references");
+		t1 = new Text("Testing ");
+		t2 = new Text("inline              text ");
+		t3 = new Text("references");
 		
 		add(t1).add(t2).add(t3);
 	}
 	
 	public function markTextEnds ():Void {
-		t1.data += "|";
-		t2.data += "|";
-		t3.data += "|";
+		t1.node.data += "|";
+		t2.node.data += "|";
+		t3.node.data += "|";
 	}
 	
 	function set_posts (posts:Array<PostView>):Array<PostView> {
@@ -83,7 +95,7 @@ class ForumThreadView extends EBody {
 	}
 	
 	public function addPost (post:Post):Void {
-		this.add(PostView.create(post));
+		this.add(new PostView(post));
 	}
 	
 }
@@ -109,22 +121,22 @@ class PostView extends EArticle {
 		if (this.post != null) {
 			this.clear();
 			this.post.removeEventListener("change", onPostChange);
-			btn.removeEventListener("click", onClick);
+			btn.node.removeEventListener("click", onClick);
 		}
 		
 		this.post = post;
 		
 		//Add new post
 		if (post != null) {
-			eprofile = ProfileView.create(post.user);
-			emsg = EDiv.create();
+			eprofile = new ProfileView(post.user);
+			emsg = new EDiv();
 			
 			post.addEventListener("change", onPostChange);
 			
 			this.add(eprofile);
 			this.add(emsg.classes("post-message").addText(post.message));
-			btn = EButton.create().addText("Click Me!");
-			btn.addEventListener("click", onClick);
+			btn = new EButton().addText("Click Me!");
+			btn.node.addEventListener("click", onClick);
 			this.add(btn);
 		}
 		
@@ -159,7 +171,7 @@ class ProfileView extends EAside {
 		
 		this.clear();
 		if (user != null) {
-			this.add(EDiv.create().classes("profile-name").addText(user.name));
+			this.add(new EDiv().classes("profile-name").addText(user.name));
 		}
 		
 		return user;

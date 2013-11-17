@@ -22,17 +22,17 @@ import hxdom.html.EventListener;
  */
 class EventDispatcher {
 
-	var listeners:Map<String, List<{inst:Dynamic, func:String, cap:Bool}>>;
+	var __listeners:Map<String, List<{inst:Dynamic, func:String, cap:Bool}>>;
 	
 	public function __addEventListener (inst:Dynamic, type:String, func:String, ?useCapture:Bool = false):Void {
-		if (listeners == null) listeners = new Map<String, List<{inst:Dynamic, func:String, cap:Bool}>>();
+		if (__listeners == null) __listeners = new Map<String, List<{inst:Dynamic, func:String, cap:Bool}>>();
 		
-		var list = listeners.get(type);
+		var list = __listeners.get(type);
 		var obj = { inst:inst, func:func, cap:useCapture };
 		if (list == null) {
 			list = new List<{inst:Dynamic, func:String, cap:Bool}>();
 			list.add(obj);
-			listeners.set(type, list);
+			__listeners.set(type, list);
 		} else {
 			for (i in list) {
 				if (i.inst == inst && i.func == func && i.cap == useCapture) return;
@@ -60,9 +60,9 @@ class EventDispatcher {
 	}
 	
 	public function __removeEventListener (inst:Dynamic, type:String, func:String, ?useCapture:Bool = false):Void {
-		if (listeners == null || !listeners.exists(type)) return;
+		if (__listeners == null || !__listeners.exists(type)) return;
 		
-		var list = listeners.get(type);
+		var list = __listeners.get(type);
 		for (i in list) {
 			if (i.inst == inst && i.func == func && i.cap == useCapture) {
 				list.remove(i);
@@ -91,7 +91,7 @@ class EventDispatcher {
 	public function dispatchEvent (event:Event):Bool {
 		//TODO capture/bubbling?
 		//May not be necessary
-		var list = listeners.get(event.type);
+		var list = __listeners.get(event.type);
 		for (i in list) {
 			Reflect.callMethod(i.inst, Reflect.field(i.inst, i.func), [event]);
 		}

@@ -27,12 +27,11 @@ import hxdom.Elements;
  */
 class DomTools {
 	
-	#if !macro
 	/**
 	 * Does an appendChild, but returns the current node for chaining.
 	 */
-	public static function add<T:Node> (parent:T, child:Node):T {
-		parent.appendChild(child);
+	public static function add<T:VirtualNode<Dynamic>> (parent:T, child:VirtualNode<Dynamic>):T {
+		parent.node.appendChild(child.node);
 		
 		return parent;
 	}
@@ -40,9 +39,9 @@ class DomTools {
 	/**
 	 * Clear all children.
 	 */
-	public static function clear<T:Node> (node:T):T {
-		while (node.childNodes.length > 0) {
-			node.removeChild(node.firstChild);
+	public static function clear<T:VirtualNode<Dynamic>> (node:T):T {
+		while (node.node.childNodes.length > 0) {
+			node.node.removeChild(node.node.firstChild);
 		}
 		
 		return node;
@@ -51,9 +50,9 @@ class DomTools {
 	/**
 	 * Add in classes for this element. Space delimited.
 	 */
-	public static function classes<T:Element> (e:T, cls:String):T {
-		if (e.className == null || e.className == "") e.className = cls;
-		else e.className += " " + cls;
+	public static function classes<T:VirtualNode<Dynamic>> (e:T, cls:String):T {
+		if (e.node.className == null || e.node.className == "") e.node.className = cls;
+		else e.node.className += " " + cls;
 		
 		return e;
 	}
@@ -61,10 +60,10 @@ class DomTools {
 	/**
 	 * Remove classes for this element. Space delimited.
 	 */
-	public static function removeClasses<T:Element> (e:T, cls:String):T {
-		if (e.className != null && e.className != "") {
+	public static function removeClasses<T:VirtualNode<Dynamic>> (e:T, cls:String):T {
+		if (e.node.className != null && e.node.className != "") {
 			var clsArr = cls.split(" ");
-			var ecls = e.className.split(" ");
+			var ecls:Array<String> = e.node.className.split(" ");
 			var newCls = new Array<String>();
 			for (i in ecls) {
 				for (o in clsArr) {
@@ -73,7 +72,7 @@ class DomTools {
 					}
 				}
 			}
-			e.className = newCls.join(" ");
+			e.node.className = newCls.join(" ");
 		}
 		
 		return e;
@@ -82,8 +81,8 @@ class DomTools {
 	/**
 	 * Shortcut for adding text.
 	 */
-	public static function addText<T:Node> (parent:T, text:String):T {
-		parent.appendChild(Text.create(text));
+	public static function addText<T:VirtualNode<Dynamic>> (parent:T, text:String):T {
+		parent.node.appendChild(new Text(text).node);
 		
 		return parent;
 	}
@@ -91,63 +90,74 @@ class DomTools {
 	/**
 	 * Sets the text of this node. This assumes that the text is the only child node.
 	 */
-	public static function setText<T:Node> (parent:T, text:String):T {
+	public static function setText<T:VirtualNode<Dynamic>> (parent:T, text:String):T {
 		clear(parent);
-		parent.appendChild(Text.create(text));
+		parent.node.appendChild(new Text(text).node);
 		
 		return parent;
 	}
 	
 	/**
-	 * Set an attribute for this element without type checking.
+	 * Set any attribute for this element.
 	 */
-	public static function unsafeAttr<T:Element> (e:T, key:Attr, val:Dynamic):T {
-		Reflect.setField(e, Std.string(key), val);
+	public static function unsafeAttr<T:VirtualNode<Dynamic>> (e:T, key:String, val:Dynamic):T {
+		Reflect.setField(e.node, key, val);
 		
 		return e;
 	}
-	#end
 	
 	/**
-	 * Set an attribute for this element.
+	 * Set an attribute from a preset list of valid attributes.
 	 */
-	macro public static function attr (e:ExprOf<Element>, key:ExprOf<Attr>, val:ExprOf<Dynamic>):ExprOf<Element> {
-		var pos = Context.currentPos();
+	public static function attr<T:VirtualNode<Dynamic>> (e:T, key:Attr, val:Dynamic):T {
+		unsafeAttr(e, Std.string(key), val);
 		
-		//Do type check
-		switch (Context.typeof(e)) {
-			case TInst(t, params):
-				var key = switch (key.expr) { case EConst(CIdent(s)): s; case EField(_, s): s; default: null; };
-				if (key != null) {
-					var type = getClassFieldType(t.get(), key);
-					if (type == null) {
-						Context.error("Attribute does not exist on this element.", pos);
-					} else {
-						if (!Context.unify(type, Context.typeof(val))) {
-							Context.error("Type mismatch.", pos);
-						}
-					}
-				}
-			default:
-		}
-		
-		return macro DomTools.unsafeAttr($e, $key, $val);
+		return e;
 	}
 	
-	#if macro
-	static function getClassFieldType (cls:ClassType, key:String):Type {
-		while (cls != null) {
-			for (i in cls.fields.get()) {
-				if (i.name == key) return i.type;
+	/**
+	 * Converts dash seperated to camel case.
+	 * 
+	 * Example:
+	 * 		my-custom-attr => myCustomAttr
+	 */
+	public static inline function dashToCamelCase (str:String):String {
+		var outStr = "";
+		var caps = false;
+		for (i in 0 ... str.length) {
+			var chr = str.charCodeAt(i);
+			if (chr == '-'.code) {
+				caps = true;
+			} else {
+				if (caps) {
+					if (chr >= 'a'.code && chr <= 'z'.code) {
+						chr += 'A'.code - 'a'.code;
+					}
+					caps = false;
+				}
+				outStr += String.fromCharCode(chr);
 			}
-			
-			if (cls.superClass == null) break;
-			
-			cls = cls.superClass.t.get();
 		}
-		
-		return null;
+		return outStr;
 	}
-	#end
+	
+	/**
+	 * Converts camel case to dash seperated.
+	 * 
+	 * Example:
+	 * 		myCustomAttr => my-custom-attr
+	 */
+	public static inline function camelCaseToDash (str:String):String {
+		var outStr = "";
+		for (i in 0 ... str.length) {
+			var chr = str.charCodeAt(i);
+			if (chr >= 'A'.code && chr <= 'Z'.code) {
+				outStr += '-' + String.fromCharCode(chr - 'A'.code + 'a'.code);
+			} else {
+				outStr += String.fromCharCode(chr);
+			}
+		}
+		return outStr;
+	}
 	
 }

@@ -4,9 +4,9 @@ Contruct the page (Neko/PHP/Java/etc):
 
 	import hxdom.Elements;
 	
-	var page = EHtml.create();
-	var head = EHead.create();
-	var body = EBody.create();
+	var page = new EHtml();
+	var head = new EHead();
+	var body = new EBody();
 	
 	page.appendChild(head);
 	page.appendChild(body);
@@ -36,8 +36,8 @@ The above example is cool and all, but it's not really practical for a full scal
 		public function new (numTexts:Int) {
 			super();
 			
-			head = EHead.create();
-			body = EBody.create();
+			head = new EHead();
+			body = new EBody();
 			
 			appendChild(head);
 			appendChild(body);
@@ -48,14 +48,14 @@ The above example is cool and all, but it's not really practical for a full scal
 		}
 		
 		public function addSomeTextToBody ():Void {
-			body.appendChild(Text.create("Some Text"));
+			body.appendChild(new Text("Some Text"));
 		}
 		
 	}
 
 Build the HTML and send it to the client:
 	
-	writeToHttpSocket(hxdom.HTMLSerializer.run(MyCustomApp.create(5)));
+	writeToHttpSocket(hxdom.HTMLSerializer.run(new MyCustomApp(5)));
 
 Sends this to the client:
 
@@ -77,9 +77,9 @@ You can also attach event listeners on the server:
 		public function new () {
 			super();
 			
-			var body = EBody.create();
+			var body = new EBody();
 			
-			appendChild(EHead.create());
+			appendChild(new EHead());
 			appendChild(body);
 			
 			body.addEventListener("click", onClick);
@@ -112,14 +112,10 @@ Using the DOM directly can be kind of annoying, so I've included a DomTools clas
 
 	using hxdom.DomTools;
 	
-	var div = EDiv.create().classes("myCssClass anotherClass").attr(id, "someId").addText("Some text in the Div!");
+	var div = new EDiv().classes("myCssClass anotherClass").attr(id, "someId").addText("Some text in the Div!");
 
 FAQ
 ===
-
-What's with the XXXX.create() instead of using the "new" operator?
-
-Unfortunately the JS spec can only create elements via "document.createElement(tagName)" which means it is impossible to use the new operator and have it return a reference to a DOM object. The next best solution as far as I could see was to use a create() static method that is generated via macros to completely replicate the signature of the constructor. The create function will always call the constructor.
 
 Can I use this with NodeJS?
 
@@ -134,6 +130,8 @@ Use this command:
 
 To compile this example:
 
+	package ;
+	
 	import hxdom.EventDispatcher;
 	import hxdom.html.CharacterData;
 	import hxdom.html.Event;
@@ -147,27 +145,46 @@ To compile this example:
 		
 		static function main () {
 			#if js
-			var body:ForumThreadView = cast Boot.init().childNodes[1];
+			var app:ForumApp = cast Boot.init();
 			
 			//Add a post on load from JS
-			body.addPost(new Post(body.posts[0].post.user, "Right back at yea John! This time from JS!"));
+			app.threads.addPost(new Post(app.threads.posts[0].post.user, "Right back at yea John! This time from JS!"));
 			
 			//Check to see text references are maintained
-			body.markTextEnds();
+			app.threads.markTextEnds();
 			#else
+			sys.io.File.saveContent("index.html", HTMLSerializer.run(new ForumApp()));
+			#end
+		}
+		
+		public static function staticEventListener (e:Event):Void {
+			trace("Static listener");
+		}
+		
+	}
+
+	class ForumApp extends EHtml {
+		
+		public var head(default, null):EHead;
+		public var threads(default, null):ForumThreadView;
+		
+		public function new () {
+			super();
+			
 			var user1 = new User(0, "Fred");
 			var user2 = new User(1, "John");
 			
-			var html = EHtml.create();
-			var head = EHead.create();
-			head.add(EScript.create().addText("HTMLDetailsElement = HTMLElement;"));
-			head.add(EScript.create().attr(src, "haxedom.js").attr(defer, true));
-			var body = ForumThreadView.create([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
+			head = new EHead();
+			head.add(new EScript().addText("HTMLDetailsElement = HTMLElement;"));
+			head.add(new EScript().attr(src, "haxedom.js").attr(defer, true));
 			
-			html.add(head).add(body);
+			threads = new ForumThreadView([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
+			untyped threads.node.dataset.testingCustomDataAttr = "data'.data.data'.data";
+			threads.node.style.backgroundColor = "red";
+			//threads.node.addEventListener("click", Main.staticEventListener);
 			
-			sys.io.File.saveContent("index.html", HTMLSerializer.run(html));
-			#end
+			add(head);
+			add(threads);
 		}
 		
 	}
@@ -176,26 +193,26 @@ To compile this example:
 		
 		public var posts(default, set):Array<PostView>;
 		
-		var t1:CharacterData;
-		var t2:CharacterData;
-		var t3:CharacterData;
+		var t1:Text;
+		var t2:Text;
+		var t3:Text;
 		
 		public function new (posts:Array<Post>) {
 			super();
 			
-			this.posts = posts.map(function (e) { return PostView.create(e); } );
+			this.posts = posts.map(function (e) { return new PostView(e); } );
 			
-			t1 = Text.create("Testing ");
-			t2 = Text.create("inline              text ");
-			t3 = Text.create("references");
+			t1 = new Text("Testing ");
+			t2 = new Text("inline              text ");
+			t3 = new Text("references");
 			
 			add(t1).add(t2).add(t3);
 		}
 		
 		public function markTextEnds ():Void {
-			t1.data += "|";
-			t2.data += "|";
-			t3.data += "|";
+			t1.node.data += "|";
+			t2.node.data += "|";
+			t3.node.data += "|";
 		}
 		
 		function set_posts (posts:Array<PostView>):Array<PostView> {
@@ -210,7 +227,7 @@ To compile this example:
 		}
 		
 		public function addPost (post:Post):Void {
-			this.add(PostView.create(post));
+			this.add(new PostView(post));
 		}
 		
 	}
@@ -236,22 +253,22 @@ To compile this example:
 			if (this.post != null) {
 				this.clear();
 				this.post.removeEventListener("change", onPostChange);
-				btn.removeEventListener("click", onClick);
+				btn.node.removeEventListener("click", onClick);
 			}
 			
 			this.post = post;
 			
 			//Add new post
 			if (post != null) {
-				eprofile = ProfileView.create(post.user);
-				emsg = EDiv.create();
+				eprofile = new ProfileView(post.user);
+				emsg = new EDiv();
 				
 				post.addEventListener("change", onPostChange);
 				
 				this.add(eprofile);
 				this.add(emsg.classes("post-message").addText(post.message));
-				btn = EButton.create().addText("Click Me!");
-				btn.addEventListener("click", onClick);
+				btn = new EButton().addText("Click Me!");
+				btn.node.addEventListener("click", onClick);
 				this.add(btn);
 			}
 			
@@ -286,7 +303,7 @@ To compile this example:
 			
 			this.clear();
 			if (user != null) {
-				this.add(EDiv.create().classes("profile-name").addText(user.name));
+				this.add(new EDiv().classes("profile-name").addText(user.name));
 			}
 			
 			return user;
