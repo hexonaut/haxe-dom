@@ -26,6 +26,9 @@ import hxdom.html.DivElement;
 import hxdom.html.DListElement;
 import hxdom.html.Element;
 import hxdom.html.EmbedElement;
+import hxdom.html.Event;
+import hxdom.html.EventListener;
+import hxdom.html.EventTarget;
 import hxdom.html.FieldSetElement;
 import hxdom.html.FormElement;
 import hxdom.html.HeadElement;
@@ -104,7 +107,7 @@ enum InputType {
  * @author Sam MacPherson
  */
 
-class VirtualNode<T:Node> extends EventDispatcher {
+class VirtualNode<T:Node> extends EventTarget {
 	
 	static var ID:Int = 0;
 	
@@ -147,6 +150,28 @@ class VirtualNode<T:Node> extends EventDispatcher {
 		text.data = txt;
 		#end
 		return cast text;
+	}
+	
+	#if (js && !use_vdom)
+	public override function addEventListener (type:String, listener:EventListener, ?useCapture:Bool = false):Void {
+		node.addEventListener(type, listener, useCapture);
+	}
+	
+	public override function removeEventListener (type:String, listener:EventListener, ?useCapture:Bool = false):Void {
+		node.removeEventListener(type, listener, useCapture);
+	}
+	#else
+	public override function __addEventListener (inst:Dynamic, type:String, func:String, ?useCapture:Bool = false):Void {
+		node.__addEventListener(inst, type, func, useCapture);
+	}
+	
+	public override function __removeEventListener (inst:Dynamic, type:String, func:String, ?useCapture:Bool = false):Void {
+		node.__removeEventListener(inst, type, func, useCapture);
+	}
+	#end
+	
+	public override function dispatchEvent (event:Event):Bool {
+		return node.dispatchEvent(event);
 	}
 	
 }
