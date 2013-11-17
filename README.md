@@ -8,8 +8,8 @@ Contruct the page (Neko/PHP/Java/etc):
 	var head = new EHead();
 	var body = new EBody();
 	
-	page.appendChild(head);
-	page.appendChild(body);
+	page.element.appendChild(head);
+	page.element.appendChild(body);
 
 Serialize to HTML:
 
@@ -39,8 +39,8 @@ The above example is cool and all, but it's not really practical for a full scal
 			head = new EHead();
 			body = new EBody();
 			
-			appendChild(head);
-			appendChild(body);
+			element.appendChild(head);
+			element.appendChild(body);
 			
 			for (i in 0 ... numTexts) {
 				addSomeTextToBody();
@@ -48,7 +48,7 @@ The above example is cool and all, but it's not really practical for a full scal
 		}
 		
 		public function addSomeTextToBody ():Void {
-			body.appendChild(new Text("Some Text"));
+			body.element.appendChild(new Text("Some Text"));
 		}
 		
 	}
@@ -79,8 +79,8 @@ You can also attach event listeners on the server:
 			
 			var body = new EBody();
 			
-			appendChild(new EHead());
-			appendChild(body);
+			element.appendChild(new EHead());
+			element.appendChild(body);
 			
 			body.addEventListener("click", onClick);
 		}
