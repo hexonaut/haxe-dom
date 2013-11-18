@@ -160,4 +160,11 @@ class DomTools {
 		return outStr;
 	}
 	
+	/**
+	 * Retrieve the virtual node from this real node.
+	 */
+	public static inline function vnode (node:Node):VirtualNode<Node> {
+		return Reflect.field(node, "__vdom");
+	}
+	
 }

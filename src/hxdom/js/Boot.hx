@@ -51,9 +51,8 @@ class Boot extends Unserializer {
 				case "hxclass", "hxid":
 					//Do nothing
 				default:
-					if (i.startsWith("hx")) {
-						var key = i.substr(2);
-						key = key.charAt(0).toLowerCase() + key.substr(1);
+					if (i.startsWith("hxd")) {
+						var key = i.substr(3);
 						Reflect.setField(velem, key, doUnserialize(Reflect.field(e.dataset, i)));
 					}
 			}

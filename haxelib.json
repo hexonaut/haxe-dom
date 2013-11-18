@@ -4,8 +4,8 @@
   "tags": ["cross"],
   "description": "A cross-platform implementation of the DOM. Built to reduce duplicate code across server and client.",
   "contributors": ["Blank101"],
-  "releasenote": "Initial relase.",
-  "version": "0.0.1",
+  "releasenote": "Switched from inheritance to composition for the virtual DOM.",
+  "version": "0.1.1",
   "url": "https://github.com/Blank101/haxe-dom",
   "dependencies": {
     

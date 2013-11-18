@@ -137,7 +137,7 @@ class HTMLSerializer extends Serializer {
 		buf.add(" data-hxclass='" + Type.getClassName(Type.getClass(e)) + "'");
 		for (i in Reflect.fields(e)) {
 			if (i != "node" && i != "id") {
-				buf.add(" data-hx-" + DomTools.camelCaseToDash(i) + "='");
+				buf.add(" data-hxd" + DomTools.camelCaseToDash(i) + "='");
 				serialize(Reflect.field(e, i));
 				buf.add("'");
 			}
@@ -175,7 +175,7 @@ class HTMLSerializer extends Serializer {
 			} catch (e:Dynamic) {
 			}
 			if (name != null) {
-				//This is a reference to a static class -- just serialize the name
+				//This is a reference to a class -- just serialize the name
 				buf.add("O");
 				serializeString(name);
 			} else {
