@@ -31,7 +31,16 @@ class DomTools {
 	 * Does an appendChild, but returns the current node for chaining.
 	 */
 	public static function add<T:VirtualNode<Dynamic>> (parent:T, child:VirtualNode<Dynamic>):T {
-		parent.node.appendChild(child.node);
+		parent.appendChild(child);
+		
+		return parent;
+	}
+	
+	/**
+	 * Does an insertBefore, but returns the current node for chaining.
+	 */
+	public static function insert<T:VirtualNode<Dynamic>> (parent:T, child:VirtualNode<Dynamic>, ?ref:VirtualNode<Dynamic>):T {
+		parent.insertBefore(child, ref);
 		
 		return parent;
 	}
@@ -50,7 +59,7 @@ class DomTools {
 	/**
 	 * Add in classes for this element. Space delimited.
 	 */
-	public static function classes<T:VirtualNode<Dynamic>> (e:T, cls:String):T {
+	public static function classes<T:VirtualElement<Dynamic>> (e:T, cls:String):T {
 		if (e.node.className == null || e.node.className == "") e.node.className = cls;
 		else e.node.className += " " + cls;
 		
@@ -60,7 +69,7 @@ class DomTools {
 	/**
 	 * Remove classes for this element. Space delimited.
 	 */
-	public static function removeClasses<T:VirtualNode<Dynamic>> (e:T, cls:String):T {
+	public static function removeClasses<T:VirtualElement<Dynamic>> (e:T, cls:String):T {
 		if (e.node.className != null && e.node.className != "") {
 			var clsArr = cls.split(" ");
 			var ecls:Array<String> = e.node.className.split(" ");
@@ -81,8 +90,8 @@ class DomTools {
 	/**
 	 * Shortcut for adding text.
 	 */
-	public static function addText<T:VirtualNode<Dynamic>> (parent:T, text:String):T {
-		parent.node.appendChild(new Text(text).node);
+	public static function addText<T:VirtualElement<Dynamic>> (parent:T, text:String):T {
+		parent.appendChild(new Text(text));
 		
 		return parent;
 	}
@@ -90,9 +99,9 @@ class DomTools {
 	/**
 	 * Sets the text of this node. This assumes that the text is the only child node.
 	 */
-	public static function setText<T:VirtualNode<Dynamic>> (parent:T, text:String):T {
+	public static function setText<T:VirtualElement<Dynamic>> (parent:T, text:String):T {
 		clear(parent);
-		parent.node.appendChild(new Text(text).node);
+		parent.appendChild(new Text(text));
 		
 		return parent;
 	}
@@ -100,7 +109,7 @@ class DomTools {
 	/**
 	 * Set any attribute for this element.
 	 */
-	public static function unsafeAttr<T:VirtualNode<Dynamic>> (e:T, key:String, val:Dynamic):T {
+	public static function unsafeAttr<T:VirtualElement<Dynamic>> (e:T, key:String, val:Dynamic):T {
 		Reflect.setField(e.node, key, val);
 		
 		return e;
@@ -109,7 +118,7 @@ class DomTools {
 	/**
 	 * Set an attribute from a preset list of valid attributes.
 	 */
-	public static function attr<T:VirtualNode<Dynamic>> (e:T, key:Attr, val:Dynamic):T {
+	public static function attr<T:VirtualElement<Dynamic>> (e:T, key:Attr, val:Dynamic):T {
 		unsafeAttr(e, Std.string(key), val);
 		
 		return e;

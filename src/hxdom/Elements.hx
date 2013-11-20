@@ -121,6 +121,38 @@ class VirtualNode<T:Node> extends EventTarget {
 		this.id = ID++;
 	}
 	
+	public function appendChild (newChild:VirtualNode<Dynamic>):VirtualNode<Dynamic> {
+		node.appendChild(newChild.node);
+		
+		return newChild;
+	}
+	
+	public function contains (other:VirtualNode<Dynamic>):Bool {
+		return node.contains(other.node);
+	}
+	
+	public function hasChildNodes ():Bool {
+		return node.childNodes.length > 0;
+	}
+
+	public function insertBefore (newChild:VirtualNode<Dynamic>, ?refChild:VirtualNode<Dynamic>):VirtualNode<Dynamic> {
+		node.insertBefore(newChild.node, refChild != null ? refChild.node : null);
+		
+		return newChild;
+	}
+
+	public function removeChild (oldChild:VirtualNode<Dynamic>):VirtualNode<Dynamic> {
+		node.removeChild(oldChild.node);
+		
+		return oldChild;
+	}
+
+	public function replaceChild (newChild:VirtualNode<Dynamic>, oldChild:VirtualNode<Dynamic>):VirtualNode<Dynamic> {
+		node.replaceChild(newChild.node, oldChild.node);
+		
+		return oldChild;
+	}
+	
 	/**
 	 * Construct and initialize element.
 	 */
@@ -176,57 +208,65 @@ class VirtualNode<T:Node> extends EventTarget {
 	
 }
 
-class EAnchor extends VirtualNode<AnchorElement> { public function new () { super(VirtualNode.buildElement(AnchorElement, "A")); } }
-class EAbbr extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "ABBR")); } }
-class EAddress extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "ADDRESS")); } }
-class EArea extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "AREA")); } }
-class EArticle extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "ARTICLE")); } }
-class EAside extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "ASIDE")); } }
-class EAudio extends VirtualNode<AudioElement> { public function new () { super(VirtualNode.buildElement(AudioElement, "AUDIO")); } }
-class EBold extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "B")); } }
-class EBase extends VirtualNode<BaseElement> { public function new () { super(VirtualNode.buildElement(BaseElement, "BASE")); } }
-class EBiIsolation extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "BDI")); } }
-class EBiOverride extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "BDO")); } }
-class EBlockQuote extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "BLOCKQUOTE")); } }
-class EBody extends VirtualNode<BodyElement> { public function new () { super(VirtualNode.buildElement(BodyElement, "BODY")); } }
-class EBreak extends VirtualNode<BRElement> { public function new () { super(VirtualNode.buildElement(BRElement, "BR")); } }
-class EButton extends VirtualNode<ButtonElement> { public function new () { super(VirtualNode.buildElement(ButtonElement, "BUTTON")); } }
-class ECanvas extends VirtualNode<CanvasElement> { public function new () { super(VirtualNode.buildElement(CanvasElement, "CANVAS")); } }
-class ECaption extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "CAPTION")); } }
-class ECite extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "CITE")); } }
-class ECode extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "CODE")); } }
-class EColumn extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "COL")); } }
-class EColumnGroup extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "COLGROUP")); } }
-class EData extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "DATA")); } }
-class EDataList extends VirtualNode<DataListElement> { public function new () { super(VirtualNode.buildElement(DataListElement, "DATALIST")); } }
-class EDescription extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "DD")); } }
-class EDeleted extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "DEL")); } }
-class EDetails extends VirtualNode<DetailsElement> { public function new () { super(VirtualNode.buildElement(DetailsElement, "DETAILS")); } }
-class EDefinition extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "DEFINITION")); } }
-class EDiv extends VirtualNode<DivElement> { public function new () { super(VirtualNode.buildElement(DivElement, "DIV")); } }
-class EDescriptionList extends VirtualNode<DListElement> { public function new () { super(VirtualNode.buildElement(DListElement, "DL")); } }
-class EDefinitionTerm extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "DT")); } }
-class EEmphasis extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "EM")); } }
-class EEmbed extends VirtualNode<EmbedElement> { public function new () { super(VirtualNode.buildElement(EmbedElement, "EMBED")); } }
-class EFieldSet extends VirtualNode<FieldSetElement> { public function new () { super(VirtualNode.buildElement(FieldSetElement, "FIELDSET")); } }
-class EFigureCaption extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "FIGCAPTION")); } }
-class EFigure extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "FIGURE")); } }
-class EFooter extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "FOOTER")); } }
-class EForm extends VirtualNode<FormElement> { public function new () { super(VirtualNode.buildElement(FormElement, "FORM")); } }
-class EHeader1 extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "H1")); } }
-class EHeader2 extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "H2")); } }
-class EHeader3 extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "H3")); } }
-class EHeader4 extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "H4")); } }
-class EHeader5 extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "H5")); } }
-class EHeader6 extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "H6")); } }
-class EHead extends VirtualNode<HeadElement> { public function new () { super(VirtualNode.buildElement(HeadElement, "HEAD")); } }
-class EHeader extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "HEADER")); } }
-class EHorizontalRule extends VirtualNode<HRElement> { public function new () { super(VirtualNode.buildElement(HRElement, "HR")); } }
-class EHtml extends VirtualNode<HtmlElement> { public function new () { super(VirtualNode.buildElement(HtmlElement, "HTML")); } }
-class EItalics extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "I")); } }
-class EIFrame extends VirtualNode<IFrameElement> { public function new () { super(VirtualNode.buildElement(IFrameElement, "IFRAME")); } }
-class EImage extends VirtualNode<ImageElement> { public function new () { super(VirtualNode.buildElement(ImageElement, "IMG")); } }
-class EInput extends VirtualNode<InputElement> {
+class VirtualElement<T:Element> extends VirtualNode<T> {
+	
+	public function new (element:T) {
+		super(element);
+	}
+	
+}
+
+class EAnchor extends VirtualElement<AnchorElement> { public function new () { super(VirtualNode.buildElement(AnchorElement, "A")); } }
+class EAbbr extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "ABBR")); } }
+class EAddress extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "ADDRESS")); } }
+class EArea extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "AREA")); } }
+class EArticle extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "ARTICLE")); } }
+class EAside extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "ASIDE")); } }
+class EAudio extends VirtualElement<AudioElement> { public function new () { super(VirtualNode.buildElement(AudioElement, "AUDIO")); } }
+class EBold extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "B")); } }
+class EBase extends VirtualElement<BaseElement> { public function new () { super(VirtualNode.buildElement(BaseElement, "BASE")); } }
+class EBiIsolation extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "BDI")); } }
+class EBiOverride extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "BDO")); } }
+class EBlockQuote extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "BLOCKQUOTE")); } }
+class EBody extends VirtualElement<BodyElement> { public function new () { super(VirtualNode.buildElement(BodyElement, "BODY")); } }
+class EBreak extends VirtualElement<BRElement> { public function new () { super(VirtualNode.buildElement(BRElement, "BR")); } }
+class EButton extends VirtualElement<ButtonElement> { public function new () { super(VirtualNode.buildElement(ButtonElement, "BUTTON")); } }
+class ECanvas extends VirtualElement<CanvasElement> { public function new () { super(VirtualNode.buildElement(CanvasElement, "CANVAS")); } }
+class ECaption extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "CAPTION")); } }
+class ECite extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "CITE")); } }
+class ECode extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "CODE")); } }
+class EColumn extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "COL")); } }
+class EColumnGroup extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "COLGROUP")); } }
+class EData extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "DATA")); } }
+class EDataList extends VirtualElement<DataListElement> { public function new () { super(VirtualNode.buildElement(DataListElement, "DATALIST")); } }
+class EDescription extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "DD")); } }
+class EDeleted extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "DEL")); } }
+class EDetails extends VirtualElement<DetailsElement> { public function new () { super(VirtualNode.buildElement(DetailsElement, "DETAILS")); } }
+class EDefinition extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "DEFINITION")); } }
+class EDiv extends VirtualElement<DivElement> { public function new () { super(VirtualNode.buildElement(DivElement, "DIV")); } }
+class EDescriptionList extends VirtualElement<DListElement> { public function new () { super(VirtualNode.buildElement(DListElement, "DL")); } }
+class EDefinitionTerm extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "DT")); } }
+class EEmphasis extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "EM")); } }
+class EEmbed extends VirtualElement<EmbedElement> { public function new () { super(VirtualNode.buildElement(EmbedElement, "EMBED")); } }
+class EFieldSet extends VirtualElement<FieldSetElement> { public function new () { super(VirtualNode.buildElement(FieldSetElement, "FIELDSET")); } }
+class EFigureCaption extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "FIGCAPTION")); } }
+class EFigure extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "FIGURE")); } }
+class EFooter extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "FOOTER")); } }
+class EForm extends VirtualElement<FormElement> { public function new () { super(VirtualNode.buildElement(FormElement, "FORM")); } }
+class EHeader1 extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "H1")); } }
+class EHeader2 extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "H2")); } }
+class EHeader3 extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "H3")); } }
+class EHeader4 extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "H4")); } }
+class EHeader5 extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "H5")); } }
+class EHeader6 extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "H6")); } }
+class EHead extends VirtualElement<HeadElement> { public function new () { super(VirtualNode.buildElement(HeadElement, "HEAD")); } }
+class EHeader extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "HEADER")); } }
+class EHorizontalRule extends VirtualElement<HRElement> { public function new () { super(VirtualNode.buildElement(HRElement, "HR")); } }
+class EHtml extends VirtualElement<HtmlElement> { public function new () { super(VirtualNode.buildElement(HtmlElement, "HTML")); } }
+class EItalics extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "I")); } }
+class EIFrame extends VirtualElement<IFrameElement> { public function new () { super(VirtualNode.buildElement(IFrameElement, "IFRAME")); } }
+class EImage extends VirtualElement<ImageElement> { public function new () { super(VirtualNode.buildElement(ImageElement, "IMG")); } }
+class EInput extends VirtualElement<InputElement> {
 	public function new (type:InputType) {
 		super(VirtualNode.buildElement(InputElement, "INPUT"));
 		node.type = switch (type) {
@@ -256,62 +296,62 @@ class EInput extends VirtualNode<InputElement> {
 		};
 	}
 }
-class EInserted extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "INS")); } }
-class EKeyboard extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "KBD")); } }
-class EKeygen extends VirtualNode<KeygenElement> { public function new () { super(VirtualNode.buildElement(KeygenElement, "KEYGEN")); } }
-class ELabel extends VirtualNode<LabelElement> { public function new () { super(VirtualNode.buildElement(LabelElement, "LABEL")); } }
-class ELegend extends VirtualNode<LegendElement> { public function new () { super(VirtualNode.buildElement(LegendElement, "LEGEND")); } }
-class EListItem extends VirtualNode<LIElement> { public function new () { super(VirtualNode.buildElement(LIElement, "LI")); } }
-class ELink extends VirtualNode<LinkElement> { public function new () { super(VirtualNode.buildElement(LinkElement, "LINK")); } }
-class EMain extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "MAIN")); } }
-class EMap extends VirtualNode<MapElement> { public function new () { super(VirtualNode.buildElement(MapElement, "MAP")); } }
-class EMark extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "MARK")); } }
-class EMenu extends VirtualNode<MenuElement> { public function new () { super(VirtualNode.buildElement(MenuElement, "MENU")); } }
-class EMenuItem extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "MENUITEM")); } }
-class EMeta extends VirtualNode<MetaElement> { public function new () { super(VirtualNode.buildElement(MetaElement, "META")); } }
-class EMeter extends VirtualNode<MeterElement> { public function new () { super(VirtualNode.buildElement(MeterElement, "METER")); } }
-class ENav extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "NAV")); } }
-class ENoScript extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "NOSCRIPT")); } }
-class EObject extends VirtualNode<ObjectElement> { public function new () { super(VirtualNode.buildElement(ObjectElement, "OBJECT")); } }
-class EOrderedList extends VirtualNode<OListElement> { public function new () { super(VirtualNode.buildElement(OListElement, "OL")); } }
-class EOptionGroup extends VirtualNode<OptGroupElement> { public function new () { super(VirtualNode.buildElement(OptGroupElement, "OPTGROUP")); } }
-class EOption extends VirtualNode<OptionElement> { public function new () { super(VirtualNode.buildElement(OptionElement, "OPTION")); } }
-class EOutput extends VirtualNode<OutputElement> { public function new () { super(VirtualNode.buildElement(OutputElement, "OUTPUT")); } }
-class EParagraph extends VirtualNode<ParagraphElement> { public function new () { super(VirtualNode.buildElement(ParagraphElement, "P")); } }
-class EParam extends VirtualNode<ParamElement> { public function new () { super(VirtualNode.buildElement(ParamElement, "PARAM")); } }
-class EPre extends VirtualNode<PreElement> { public function new () { super(VirtualNode.buildElement(PreElement, "PRE")); } }
-class EProgress extends VirtualNode<ProgressElement> { public function new () { super(VirtualNode.buildElement(ProgressElement, "PROGRESS")); } }
-class EQuote extends VirtualNode<QuoteElement> { public function new () { super(VirtualNode.buildElement(QuoteElement, "Q")); } }
-class ERubyParen extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "RP")); } }
-class ERubyPrononcuation extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "RT")); } }
-class ERuby extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "RUBY")); } }
-class EStrike extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "S")); } }
-class ESample extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "SAMP")); } }
-class EScript extends VirtualNode<ScriptElement> { public function new () { super(VirtualNode.buildElement(ScriptElement, "SCRIPT")); } }
-class ESection extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "SECTION")); } }
-class ESelect extends VirtualNode<SelectElement> { public function new () { super(VirtualNode.buildElement(SelectElement, "SELECT")); } }
-class ESmall extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "SMALL")); } }
-class ESource extends VirtualNode<SourceElement> { public function new () { super(VirtualNode.buildElement(SourceElement, "SOURCE")); } }
-class ESpan extends VirtualNode<SpanElement> { public function new () { super(VirtualNode.buildElement(SpanElement, "SPAN")); } }
-class EStrong extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "STRONG")); } }
-class EStyle extends VirtualNode<StyleElement> { public function new () { super(VirtualNode.buildElement(StyleElement, "STYLE")); } }
-class ESub extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "SUB")); } }
-class ESummary extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "SUMMARY")); } }
-class ESup extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "SUP")); } }
-class ETable extends VirtualNode<TableElement> { public function new () { super(VirtualNode.buildElement(TableElement, "TABLE")); } }
-class ETableBody extends VirtualNode<TableSectionElement> { public function new () { super(VirtualNode.buildElement(TableSectionElement, "TBODY")); } }
-class ETableCell extends VirtualNode<TableCellElement> { public function new () { super(VirtualNode.buildElement(TableCellElement, "TD")); } }
-class ETextArea extends VirtualNode<TextAreaElement> { public function new () { super(VirtualNode.buildElement(TextAreaElement, "TEXTAREA")); } }
-class ETableFooter extends VirtualNode<TableSectionElement> { public function new () { super(VirtualNode.buildElement(TableSectionElement, "TFOOT")); } }
-class ETableHeaderCell extends VirtualNode<TableCellElement> { public function new () { super(VirtualNode.buildElement(TableCellElement, "TH")); } }
-class ETableHeader extends VirtualNode<TableSectionElement> { public function new () { super(VirtualNode.buildElement(TableSectionElement, "THEAD")); } }
-class ETime extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "TIME")); } }
-class ETitle extends VirtualNode<TitleElement> { public function new () { super(VirtualNode.buildElement(TitleElement, "TITLE")); } }
-class ETableRow extends VirtualNode<TableRowElement> { public function new () { super(VirtualNode.buildElement(TableRowElement, "TR")); } }
-class ETrack extends VirtualNode<TrackElement> { public function new () { super(VirtualNode.buildElement(TrackElement, "TRACK")); } }
-class EUnderline extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "U")); } }
-class EUnorderedList extends VirtualNode<UListElement> { public function new () { super(VirtualNode.buildElement(UListElement, "UL")); } }
-class EVar extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "VAR")); } }
-class EVideo extends VirtualNode<VideoElement> { public function new () { super(VirtualNode.buildElement(VideoElement, "VIDEO")); } }
-class EWordBreak extends VirtualNode<Element> { public function new () { super(VirtualNode.buildElement(Element, "WBR")); } }
+class EInserted extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "INS")); } }
+class EKeyboard extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "KBD")); } }
+class EKeygen extends VirtualElement<KeygenElement> { public function new () { super(VirtualNode.buildElement(KeygenElement, "KEYGEN")); } }
+class ELabel extends VirtualElement<LabelElement> { public function new () { super(VirtualNode.buildElement(LabelElement, "LABEL")); } }
+class ELegend extends VirtualElement<LegendElement> { public function new () { super(VirtualNode.buildElement(LegendElement, "LEGEND")); } }
+class EListItem extends VirtualElement<LIElement> { public function new () { super(VirtualNode.buildElement(LIElement, "LI")); } }
+class ELink extends VirtualElement<LinkElement> { public function new () { super(VirtualNode.buildElement(LinkElement, "LINK")); } }
+class EMain extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "MAIN")); } }
+class EMap extends VirtualElement<MapElement> { public function new () { super(VirtualNode.buildElement(MapElement, "MAP")); } }
+class EMark extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "MARK")); } }
+class EMenu extends VirtualElement<MenuElement> { public function new () { super(VirtualNode.buildElement(MenuElement, "MENU")); } }
+class EMenuItem extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "MENUITEM")); } }
+class EMeta extends VirtualElement<MetaElement> { public function new () { super(VirtualNode.buildElement(MetaElement, "META")); } }
+class EMeter extends VirtualElement<MeterElement> { public function new () { super(VirtualNode.buildElement(MeterElement, "METER")); } }
+class ENav extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "NAV")); } }
+class ENoScript extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "NOSCRIPT")); } }
+class EObject extends VirtualElement<ObjectElement> { public function new () { super(VirtualNode.buildElement(ObjectElement, "OBJECT")); } }
+class EOrderedList extends VirtualElement<OListElement> { public function new () { super(VirtualNode.buildElement(OListElement, "OL")); } }
+class EOptionGroup extends VirtualElement<OptGroupElement> { public function new () { super(VirtualNode.buildElement(OptGroupElement, "OPTGROUP")); } }
+class EOption extends VirtualElement<OptionElement> { public function new () { super(VirtualNode.buildElement(OptionElement, "OPTION")); } }
+class EOutput extends VirtualElement<OutputElement> { public function new () { super(VirtualNode.buildElement(OutputElement, "OUTPUT")); } }
+class EParagraph extends VirtualElement<ParagraphElement> { public function new () { super(VirtualNode.buildElement(ParagraphElement, "P")); } }
+class EParam extends VirtualElement<ParamElement> { public function new () { super(VirtualNode.buildElement(ParamElement, "PARAM")); } }
+class EPre extends VirtualElement<PreElement> { public function new () { super(VirtualNode.buildElement(PreElement, "PRE")); } }
+class EProgress extends VirtualElement<ProgressElement> { public function new () { super(VirtualNode.buildElement(ProgressElement, "PROGRESS")); } }
+class EQuote extends VirtualElement<QuoteElement> { public function new () { super(VirtualNode.buildElement(QuoteElement, "Q")); } }
+class ERubyParen extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "RP")); } }
+class ERubyPrononcuation extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "RT")); } }
+class ERuby extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "RUBY")); } }
+class EStrike extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "S")); } }
+class ESample extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "SAMP")); } }
+class EScript extends VirtualElement<ScriptElement> { public function new () { super(VirtualNode.buildElement(ScriptElement, "SCRIPT")); } }
+class ESection extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "SECTION")); } }
+class ESelect extends VirtualElement<SelectElement> { public function new () { super(VirtualNode.buildElement(SelectElement, "SELECT")); } }
+class ESmall extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "SMALL")); } }
+class ESource extends VirtualElement<SourceElement> { public function new () { super(VirtualNode.buildElement(SourceElement, "SOURCE")); } }
+class ESpan extends VirtualElement<SpanElement> { public function new () { super(VirtualNode.buildElement(SpanElement, "SPAN")); } }
+class EStrong extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "STRONG")); } }
+class EStyle extends VirtualElement<StyleElement> { public function new () { super(VirtualNode.buildElement(StyleElement, "STYLE")); } }
+class ESub extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "SUB")); } }
+class ESummary extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "SUMMARY")); } }
+class ESup extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "SUP")); } }
+class ETable extends VirtualElement<TableElement> { public function new () { super(VirtualNode.buildElement(TableElement, "TABLE")); } }
+class ETableBody extends VirtualElement<TableSectionElement> { public function new () { super(VirtualNode.buildElement(TableSectionElement, "TBODY")); } }
+class ETableCell extends VirtualElement<TableCellElement> { public function new () { super(VirtualNode.buildElement(TableCellElement, "TD")); } }
+class ETextArea extends VirtualElement<TextAreaElement> { public function new () { super(VirtualNode.buildElement(TextAreaElement, "TEXTAREA")); } }
+class ETableFooter extends VirtualElement<TableSectionElement> { public function new () { super(VirtualNode.buildElement(TableSectionElement, "TFOOT")); } }
+class ETableHeaderCell extends VirtualElement<TableCellElement> { public function new () { super(VirtualNode.buildElement(TableCellElement, "TH")); } }
+class ETableHeader extends VirtualElement<TableSectionElement> { public function new () { super(VirtualNode.buildElement(TableSectionElement, "THEAD")); } }
+class ETime extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "TIME")); } }
+class ETitle extends VirtualElement<TitleElement> { public function new () { super(VirtualNode.buildElement(TitleElement, "TITLE")); } }
+class ETableRow extends VirtualElement<TableRowElement> { public function new () { super(VirtualNode.buildElement(TableRowElement, "TR")); } }
+class ETrack extends VirtualElement<TrackElement> { public function new () { super(VirtualNode.buildElement(TrackElement, "TRACK")); } }
+class EUnderline extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "U")); } }
+class EUnorderedList extends VirtualElement<UListElement> { public function new () { super(VirtualNode.buildElement(UListElement, "UL")); } }
+class EVar extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "VAR")); } }
+class EVideo extends VirtualElement<VideoElement> { public function new () { super(VirtualNode.buildElement(VideoElement, "VIDEO")); } }
+class EWordBreak extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "WBR")); } }
 class Text extends VirtualNode<hxdom.html.Text> { public function new (txt:String) { super(VirtualNode.buildText(txt)); } }
