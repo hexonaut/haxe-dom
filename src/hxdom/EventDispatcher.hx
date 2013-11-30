@@ -148,8 +148,8 @@ class EventDispatcher {
 	}
 
 	public function dispatchEvent (event:Event):Bool {
-		//TODO capture/bubbling?
-		//May not be necessary
+		if (__listeners == null) __listeners = new Map<String, List<{inst:Dynamic, func:String, cap:Bool}>>();
+		
 		var list = __listeners.get(event.type);
 		for (i in list) {
 			Reflect.callMethod(i.inst, Reflect.field(i.inst, i.func), [event]);
