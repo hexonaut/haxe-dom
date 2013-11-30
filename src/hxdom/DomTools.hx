@@ -37,6 +37,15 @@ class DomTools {
 	}
 	
 	/**
+	 * Does an removeChild, but returns the current node for chaining.
+	 */
+	public static function remove<T:VirtualNode<Dynamic>> (parent:T, child:VirtualNode<Dynamic>):T {
+		parent.removeChild(child);
+		
+		return parent;
+	}
+	
+	/**
 	 * Does an insertBefore, but returns the current node for chaining.
 	 */
 	public static function insert<T:VirtualNode<Dynamic>> (parent:T, child:VirtualNode<Dynamic>, ?ref:VirtualNode<Dynamic>):T {
