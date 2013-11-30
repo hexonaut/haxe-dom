@@ -151,8 +151,10 @@ class EventDispatcher {
 		if (__listeners == null) __listeners = new Map<String, List<{inst:Dynamic, func:String, cap:Bool}>>();
 		
 		var list = __listeners.get(event.type);
-		for (i in list) {
-			Reflect.callMethod(i.inst, Reflect.field(i.inst, i.func), [event]);
+		if (list != null) {
+			for (i in list) {
+				Reflect.callMethod(i.inst, Reflect.field(i.inst, i.func), [event]);
+			}
 		}
 		
 		return !event.defaultPrevented;
