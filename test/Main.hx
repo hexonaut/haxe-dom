@@ -2,7 +2,7 @@ package ;
 
 import hxdom.EventDispatcher;
 import hxdom.html.Event;
-import hxdom.HTMLSerializer;
+import hxdom.HtmlSerializer;
 import hxdom.js.Boot;
 import hxdom.Elements;
 
@@ -20,7 +20,7 @@ class Main {
 		//Check to see text references are maintained
 		app.threads.markTextEnds();
 		#else
-		sys.io.File.saveContent("index.html", HTMLSerializer.run(new ForumApp()));
+		sys.io.File.saveContent("index.html", HtmlSerializer.run(new ForumApp()));
 		#end
 	}
 	
