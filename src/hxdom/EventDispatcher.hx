@@ -13,16 +13,35 @@ package hxdom;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
-import hxdom.html.Event;
-import hxdom.html.EventListener;
+
+using Lambda;
 
 /**
  * Cross-platform event dispatcher with the ability to be serialized.
  * 
  * @author Sam MacPherson
  */
-class EventDispatcher {
+class EventDispatcher implements IEventDispatcher {
+	
+	macro public function addEventListener (ethis:Expr, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
+		var split = EventDispatcherMacro.splitFunction(listener);
+		return macro $ethis.__addEventListener(${split.inst}, $type, ${split.func}, $useCapture);
+	}
 
+	macro public function removeEventListener (ethis:Expr, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
+		var split = EventDispatcherMacro.splitFunction(listener);
+		return macro $ethis.__removeEventListener(${split.inst}, $type, ${split.func}, $useCapture);
+	}
+	
+}
+
+#if !macro
+@:build(hxdom.EventDispatcherMacro.store())
+@:autoBuild(hxdom.EventDispatcherMacro.build())
+#end
+interface IEventDispatcher {
+	
+	#if !macro
 	var __listeners:Map<String, List<{inst:Dynamic, func:String, cap:Bool}>>;
 	
 	public function __addEventListener (inst:Dynamic, type:String, func:String, ?useCapture:Bool = false):Void {
@@ -42,7 +61,38 @@ class EventDispatcher {
 		}
 	}
 	
+	public function __removeEventListener (inst:Dynamic, type:String, func:String, ?useCapture:Bool = false):Void {
+		if (__listeners == null || !__listeners.exists(type)) return;
+		
+		var list = __listeners.get(type);
+		for (i in list) {
+			if (i.inst == inst && i.func == func && i.cap == useCapture) {
+				list.remove(i);
+			}
+		}
+	}
+
+	public function dispatchEvent (event:hxdom.html.Event):Bool {
+		if (__listeners == null) __listeners = new Map<String, List<{inst:Dynamic, func:String, cap:Bool}>>();
+		
+		var list = __listeners.get(event.type);
+		if (list != null) {
+			for (i in list) {
+				Reflect.callMethod(i.inst, Reflect.field(i.inst, i.func), [event]);
+			}
+		}
+		
+		return !event.defaultPrevented;
+	}
+	#end
+	
+}
+
+class EventDispatcherMacro {
+	
 	#if macro
+	static var edFields:Array<Field> = new Array<Field>();
+	
 	/**
 	 * Check through full inheritance chain to find the method.
 	 */
@@ -94,7 +144,7 @@ class EventDispatcher {
 	/**
 	 * Split a function reference into an instance and a function name so it can be serialized.
 	 */
-	static function splitFunction (listener:ExprOf<EventListener>): { inst:Expr, func:Expr } {
+	public static function splitFunction (listener:ExprOf<hxdom.html.EventListener>): { inst:Expr, func:Expr } {
 		var split = null;
 		switch (listener.expr) {
 			case EField(e, f):
@@ -124,40 +174,48 @@ class EventDispatcher {
 		}
 		return split;
 	}
+	
+	macro static function store ():Array<Field> {
+		var fields = Context.getBuildFields();
+		var _fields = new Array<Field>();
+		
+		for (i in fields) {
+			//Remove __listeners, public keyword and body content
+			switch (i.kind) {
+				case FFun(f):
+					_fields.push( {
+						pos:i.pos,
+						name:i.name,
+						meta:i.meta,
+						kind:FFun( {
+								ret:f.ret,
+								params:f.params,
+								expr:null,
+								args:f.args
+							}),
+						doc:i.doc,
+						access:[]
+					});
+				default:
+			}
+			
+			edFields.push(i);
+		}
+		
+		return _fields;
+	}
+	
+	macro static function build ():Array<Field> {
+		var fields = Context.getBuildFields();
+		
+		if (!hasMethod(Context.getLocalClass().get(), edFields[0].name)) {
+			for (i in edFields) {
+				fields.push(i);
+			}
+		}
+		
+		return fields;
+	}
 	#end
-	
-	macro public function addEventListener (ethis:Expr, type:ExprOf<String>, listener:ExprOf<EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		var split = splitFunction(listener);
-		return macro $ethis.__addEventListener(${split.inst}, $type, ${split.func}, $useCapture);
-	}
-	
-	public function __removeEventListener (inst:Dynamic, type:String, func:String, ?useCapture:Bool = false):Void {
-		if (__listeners == null || !__listeners.exists(type)) return;
-		
-		var list = __listeners.get(type);
-		for (i in list) {
-			if (i.inst == inst && i.func == func && i.cap == useCapture) {
-				list.remove(i);
-			}
-		}
-	}
-
-	macro public function removeEventListener (ethis:Expr, type:ExprOf<String>, listener:ExprOf<EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		var split = splitFunction(listener);
-		return macro $ethis.__removeEventListener(${split.inst}, $type, ${split.func}, $useCapture);
-	}
-
-	public function dispatchEvent (event:Event):Bool {
-		if (__listeners == null) __listeners = new Map<String, List<{inst:Dynamic, func:String, cap:Bool}>>();
-		
-		var list = __listeners.get(event.type);
-		if (list != null) {
-			for (i in list) {
-				Reflect.callMethod(i.inst, Reflect.field(i.inst, i.func), [event]);
-			}
-		}
-		
-		return !event.defaultPrevented;
-	}
 	
 }

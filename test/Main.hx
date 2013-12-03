@@ -178,7 +178,7 @@ class ProfileView extends EAside {
 	
 }
 
-class User extends EventDispatcher {
+class User implements IEventDispatcher {
 	
 	public var id:Int;
 	public var name:String;
@@ -194,7 +194,7 @@ class User extends EventDispatcher {
 	
 }
 
-class Post extends EventDispatcher {
+class Post implements IEventDispatcher {
 	
 	public var user:User;
 	public var message:String;

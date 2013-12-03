@@ -13,12 +13,15 @@ package hxdom;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
+#if !macro
 import hxdom.html.Element;
 import hxdom.html.EventListener;
 import hxdom.html.EventTarget;
 import hxdom.html.Node;
 import hxdom.html.ScriptElement;
 import hxdom.Elements;
+#end
+import hxdom.EventDispatcher;
 
 /**
  * Utility functions for common DOM operations. Most functions are built for chaining.
@@ -27,6 +30,7 @@ import hxdom.Elements;
  */
 class DomTools {
 	
+	#if !macro
 	/**
 	 * Does an appendChild, but returns the current node for chaining.
 	 */
@@ -183,6 +187,23 @@ class DomTools {
 	 */
 	public static inline function vnode (node:Node):VirtualNode<Node> {
 		return Reflect.field(node, "__vdom");
+	}
+	#end
+	
+	/**
+	 * Add event listeners to classes implementing IEventDispatcher.
+	 */
+	macro public static function addEventListener (ethis:ExprOf<IEventDispatcher>, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
+		var split = EventDispatcherMacro.splitFunction(listener);
+		return macro $ethis.__addEventListener(${split.inst}, $type, ${split.func}, $useCapture);
+	}
+	
+	/**
+	 * Remove event listeners to classes implementing IEventDispatcher.
+	 */
+	macro public static function removeEventListener (ethis:ExprOf<IEventDispatcher>, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
+		var split = EventDispatcherMacro.splitFunction(listener);
+		return macro $ethis.__addEventListener(${split.inst}, $type, ${split.func}, $useCapture);
 	}
 	
 }
