@@ -13,7 +13,7 @@ Contruct the page (Neko/PHP/Java/etc):
 
 Serialize to HTML:
 
-	writeToHttpSocket(hxdom.HTMLSerializer.run(page));
+	writeToHttpSocket(hxdom.HtmlSerializer.run(page));
 
 The following is sent across the wire:
 
@@ -55,7 +55,7 @@ The above example is cool and all, but it's not really practical for a full scal
 
 Build the HTML and send it to the client:
 	
-	writeToHttpSocket(hxdom.HTMLSerializer.run(new MyCustomApp(5)));
+	writeToHttpSocket(hxdom.HtmlSerializer.run(new MyCustomApp(5)));
 
 Sends this to the client:
 
@@ -135,7 +135,7 @@ To compile this example:
 	import hxdom.EventDispatcher;
 	import hxdom.html.CharacterData;
 	import hxdom.html.Event;
-	import hxdom.HTMLSerializer;
+	import hxdom.HtmlSerializer;
 	import hxdom.js.Boot;
 	import hxdom.Elements;
 
@@ -153,7 +153,7 @@ To compile this example:
 			//Check to see text references are maintained
 			app.threads.markTextEnds();
 			#else
-			sys.io.File.saveContent("index.html", HTMLSerializer.run(new ForumApp()));
+			sys.io.File.saveContent("index.html", HtmlSerializer.run(new ForumApp()));
 			#end
 		}
 		
