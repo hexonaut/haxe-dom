@@ -42,7 +42,7 @@ class EventDispatcher implements IEventDispatcher {
 interface IEventDispatcher {
 	
 	#if !macro
-	var __listeners:Map<String, List<{inst:Dynamic, func:String, cap:Bool}>>;
+	@:skip var __listeners:Map<String, List<{inst:Dynamic, func:String, cap:Bool}>>;
 	
 	public function __addEventListener (inst:Dynamic, type:String, func:String, ?useCapture:Bool = false):Void {
 		if (__listeners == null) __listeners = new Map<String, List<{inst:Dynamic, func:String, cap:Bool}>>();
