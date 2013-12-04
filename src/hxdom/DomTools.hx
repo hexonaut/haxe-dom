@@ -210,16 +210,14 @@ class DomTools {
 	 * Add event listeners to classes implementing IEventDispatcher.
 	 */
 	macro public static function addEventListener (ethis:ExprOf<IEventDispatcher>, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		var split = EventDispatcherMacro.splitFunction(listener);
-		return macro $ethis.__addEventListener(${split.inst}, $type, ${split.func}, $useCapture);
+		return macro $ethis.__addEventListener($type, ${EventDispatcherMacro.splitFunction(listener)}, $useCapture);
 	}
 	
 	/**
 	 * Remove event listeners to classes implementing IEventDispatcher.
 	 */
 	macro public static function removeEventListener (ethis:ExprOf<IEventDispatcher>, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		var split = EventDispatcherMacro.splitFunction(listener);
-		return macro $ethis.__addEventListener(${split.inst}, $type, ${split.func}, $useCapture);
+		return macro $ethis.__addEventListener($type, ${EventDispatcherMacro.splitFunction(listener)}, $useCapture);
 	}
 	
 }

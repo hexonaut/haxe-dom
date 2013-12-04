@@ -13,8 +13,17 @@ package hxdom;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
+import hxdom.EventDispatcher.EventHandler;
 
 using Lambda;
+
+/**
+ * A representation of an arbitrary function split into two serializable components.
+ */
+typedef EventHandler = {
+	inst:Dynamic,
+	func:String
+};
 
 /**
  * Cross-platform event dispatcher with the ability to be serialized.
@@ -24,13 +33,15 @@ using Lambda;
 class EventDispatcher implements IEventDispatcher {
 	
 	macro public function addEventListener (ethis:Expr, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		var split = EventDispatcherMacro.splitFunction(listener);
-		return macro $ethis.__addEventListener(${split.inst}, $type, ${split.func}, $useCapture);
+		return macro $ethis.__addEventListener($type, ${EventDispatcherMacro.splitFunction(listener)}, $useCapture);
 	}
 
 	macro public function removeEventListener (ethis:Expr, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		var split = EventDispatcherMacro.splitFunction(listener);
-		return macro $ethis.__removeEventListener(${split.inst}, $type, ${split.func}, $useCapture);
+		return macro $ethis.__removeEventListener($type, ${EventDispatcherMacro.splitFunction(listener)}, $useCapture);
+	}
+
+	macro public static function make (listener:ExprOf<hxdom.html.EventListener>):ExprOf<EventHandler> {
+		return EventDispatcherMacro.splitFunction(listener);
 	}
 	
 }
@@ -42,43 +53,43 @@ class EventDispatcher implements IEventDispatcher {
 interface IEventDispatcher {
 	
 	#if !macro
-	@:skip var __listeners:Map<String, List<{inst:Dynamic, func:String, cap:Bool}>>;
+	@:skip var __listeners:Map<String, List<{handler:EventHandler, cap:Bool}>>;
 	
-	public function __addEventListener (inst:Dynamic, type:String, func:String, ?useCapture:Bool = false):Void {
-		if (__listeners == null) __listeners = new Map<String, List<{inst:Dynamic, func:String, cap:Bool}>>();
+	public function __addEventListener (type:String, handler:EventHandler, ?useCapture:Bool = false):Void {
+		if (__listeners == null) __listeners = new Map<String, List<{handler:EventHandler, cap:Bool}>>();
 		
 		var list = __listeners.get(type);
-		var obj = { inst:inst, func:func, cap:useCapture };
+		var obj = { handler:handler, cap:useCapture };
 		if (list == null) {
-			list = new List<{inst:Dynamic, func:String, cap:Bool}>();
+			list = new List<{handler:EventHandler, cap:Bool}>();
 			list.add(obj);
 			__listeners.set(type, list);
 		} else {
 			for (i in list) {
-				if (i.inst == inst && i.func == func && i.cap == useCapture) return;
+				if (i.handler.inst == handler.inst && i.handler.func == handler.func && i.cap == useCapture) return;
 			}
 			list.add(obj);
 		}
 	}
 	
-	public function __removeEventListener (inst:Dynamic, type:String, func:String, ?useCapture:Bool = false):Void {
+	public function __removeEventListener (type:String, handler:EventHandler, ?useCapture:Bool = false):Void {
 		if (__listeners == null || !__listeners.exists(type)) return;
 		
 		var list = __listeners.get(type);
 		for (i in list) {
-			if (i.inst == inst && i.func == func && i.cap == useCapture) {
+			if (i.handler.inst == handler.inst && i.handler.func == handler.func && i.cap == useCapture) {
 				list.remove(i);
 			}
 		}
 	}
 
 	public function dispatchEvent (event:hxdom.html.Event):Bool {
-		if (__listeners == null) __listeners = new Map<String, List<{inst:Dynamic, func:String, cap:Bool}>>();
+		if (__listeners == null) __listeners = new Map<String, List<{handler:EventHandler, cap:Bool}>>();
 		
 		var list = __listeners.get(event.type);
 		if (list != null) {
 			for (i in list) {
-				Reflect.callMethod(i.inst, Reflect.field(i.inst, i.func), [event]);
+				Reflect.callMethod(i.handler.inst, Reflect.field(i.handler.inst, i.handler.func), [event]);
 			}
 		}
 		
@@ -144,7 +155,7 @@ class EventDispatcherMacro {
 	/**
 	 * Split a function reference into an instance and a function name so it can be serialized.
 	 */
-	public static function splitFunction (listener:ExprOf<hxdom.html.EventListener>): { inst:Expr, func:Expr } {
+	public static function splitFunction (listener:ExprOf<hxdom.html.EventListener>):ExprOf<EventHandler> {
 		var split = null;
 		switch (listener.expr) {
 			case EField(e, f):
@@ -172,7 +183,7 @@ class EventDispatcherMacro {
 			default:
 				throw "Unsupported event handler.";
 		}
-		return split;
+		return macro { inst:${split.inst}, func:${split.func} };
 	}
 	
 	macro static function store ():Array<Field> {

@@ -16,6 +16,7 @@ import hxdom.html.Element;
 import hxdom.html.HtmlElement;
 import hxdom.html.Node;
 import hxdom.Elements;
+import hxdom.EventDispatcher;
 
 using StringTools;
 
@@ -40,11 +41,11 @@ class Boot extends Unserializer {
 			switch (i) {
 				case "hxevents":
 					//Event listeners
-					var listeners:Map<String, List<{inst:Dynamic, func:String, cap:Bool}>> = doUnserialize(Reflect.field(e.dataset, i));
+					var listeners:Map<String, List<{handler:EventHandler, cap:Bool}>> = doUnserialize(Reflect.field(e.dataset, i));
 					for (eventType in listeners.keys()) {
 						for (eh in listeners.get(eventType)) {
 							#if (js && !use_vdom)
-							e.addEventListener(eventType, function (e) { Reflect.callMethod(eh.inst, Reflect.field(eh.inst, eh.func), [e]); }, eh.cap);
+							e.addEventListener(eventType, function (e) { Reflect.callMethod(eh.handler.inst, Reflect.field(eh.handler.inst, eh.handler.func), [e]); }, eh.cap);
 							#end
 						}
 					}

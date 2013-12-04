@@ -11,6 +11,7 @@
 package hxdom;
 
 import haxe.Json;
+import hxdom.EventDispatcher.EventHandler;
 import hxdom.html.AnchorElement;
 import hxdom.html.AudioElement;
 import hxdom.html.BaseElement;
@@ -193,12 +194,12 @@ class VirtualNode<T:Node> extends EventTarget {
 		node.removeEventListener(type, listener, useCapture);
 	}
 	#else
-	public override function __addEventListener (inst:Dynamic, type:String, func:String, ?useCapture:Bool = false):Void {
-		node.__addEventListener(inst, type, func, useCapture);
+	public override function __addEventListener (type:String, handler:EventHandler, ?useCapture:Bool = false):Void {
+		node.__addEventListener(type, handler, useCapture);
 	}
 	
-	public override function __removeEventListener (inst:Dynamic, type:String, func:String, ?useCapture:Bool = false):Void {
-		node.__removeEventListener(inst, type, func, useCapture);
+	public override function __removeEventListener (type:String, handler:EventHandler, ?useCapture:Bool = false):Void {
+		node.__removeEventListener(type, handler, useCapture);
 	}
 	#end
 	

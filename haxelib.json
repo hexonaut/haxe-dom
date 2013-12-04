@@ -5,7 +5,7 @@
   "description": "A cross-platform implementation of the DOM. Built to reduce duplicate code across server and client.",
   "contributors": ["Blank101"],
   "releasenote": "Capitalized Attr values to get around language keyword collision. Added traverse function to DomTools.",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "url": "https://github.com/Blank101/haxe-dom",
   "dependencies": {
     
