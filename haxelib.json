@@ -4,8 +4,8 @@
   "tags": ["cross", "web"],
   "description": "A cross-platform implementation of the DOM. Built to reduce duplicate code across server and client.",
   "contributors": ["Blank101"],
-  "releasenote": "Added IEventDispatcher for cross-platform events via mixin.",
-  "version": "0.1.3",
+  "releasenote": "Capitalized Attr values to get around language keyword collision. Added traverse function to DomTools.",
+  "version": "0.1.4",
   "url": "https://github.com/Blank101/haxe-dom",
   "dependencies": {
     

@@ -132,7 +132,8 @@ class DomTools {
 	 * Set an attribute from a preset list of valid attributes.
 	 */
 	public static function attr<T:VirtualElement<Dynamic>> (e:T, key:Attr, val:Dynamic):T {
-		unsafeAttr(e, Std.string(key), val);
+		var keyStr = Std.string(key);
+		unsafeAttr(e, keyStr.charAt(0).toLowerCase() + keyStr.substr(1), val);
 		
 		return e;
 	}
@@ -187,6 +188,21 @@ class DomTools {
 	 */
 	public static inline function vnode (node:Node):VirtualNode<Node> {
 		return Reflect.field(node, "__vdom");
+	}
+	
+	/**
+	 * Executes the function on every descendant element including the root.
+	 * 
+	 * Order is depth first.
+	 */
+	public static function traverse<T:VirtualElement<Dynamic>> (e:T, func:VirtualElement<Dynamic> -> Void):T {
+		func(e);
+		for (i in cast(e.node, Node).childNodes) {
+			if (i.nodeType == Node.ELEMENT_NODE) {
+				traverse(cast(vnode(i), VirtualElement<Dynamic>), func);
+			}
+		}
+		return e;
 	}
 	#end
 	
