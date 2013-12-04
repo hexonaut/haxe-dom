@@ -43,7 +43,7 @@ class ForumApp extends EHtml {
 		
 		head = new EHead();
 		head.add(new EScript().addText("HTMLDetailsElement = HTMLElement;"));
-		head.add(new EScript().attr(src, "haxedom.js").attr(defer, true));
+		head.add(new EScript().attr(Src, "haxedom.js").attr(Defer, true));
 		
 		threads = new ForumThreadView([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
 		untyped threads.node.dataset.testingCustomDataAttr = "data'.data.data'.data";

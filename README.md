@@ -112,7 +112,7 @@ Using the DOM directly can be kind of annoying, so I've included a DomTools clas
 
 	using hxdom.DomTools;
 	
-	var div = new EDiv().classes("myCssClass anotherClass").attr(id, "someId").addText("Some text in the Div!");
+	var div = new EDiv().classes("myCssClass anotherClass").attr(Id, "someId").addText("Some text in the Div!");
 
 FAQ
 ===
@@ -176,7 +176,7 @@ To compile this example:
 			
 			head = new EHead();
 			head.add(new EScript().addText("HTMLDetailsElement = HTMLElement;"));
-			head.add(new EScript().attr(src, "haxedom.js").attr(defer, true));
+			head.add(new EScript().attr(Src, "haxedom.js").attr(Defer, true));
 			
 			threads = new ForumThreadView([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
 			untyped threads.node.dataset.testingCustomDataAttr = "data'.data.data'.data";
