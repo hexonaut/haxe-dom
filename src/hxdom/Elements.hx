@@ -11,7 +11,7 @@
 package hxdom;
 
 import haxe.Json;
-import hxdom.EventDispatcher.EventHandler;
+import hxdom.EventHandler;
 import hxdom.html.AnchorElement;
 import hxdom.html.AudioElement;
 import hxdom.html.BaseElement;

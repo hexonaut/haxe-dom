@@ -13,17 +13,9 @@ package hxdom;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
-import hxdom.EventDispatcher.EventHandler;
+import hxdom.EventHandler;
 
 using Lambda;
-
-/**
- * A representation of an arbitrary function split into two serializable components.
- */
-typedef EventHandler = {
-	inst:Dynamic,
-	func:String
-};
 
 /**
  * Cross-platform event dispatcher with the ability to be serialized.
@@ -33,15 +25,11 @@ typedef EventHandler = {
 class EventDispatcher implements IEventDispatcher {
 	
 	macro public function addEventListener (ethis:Expr, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		return macro $ethis.__addEventListener($type, ${EventDispatcherMacro.splitFunction(listener)}, $useCapture);
+		return macro $ethis.__addEventListener($type, ${EventHandler.doMake(listener)}, $useCapture);
 	}
 
 	macro public function removeEventListener (ethis:Expr, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		return macro $ethis.__removeEventListener($type, ${EventDispatcherMacro.splitFunction(listener)}, $useCapture);
-	}
-
-	macro public static function make (listener:ExprOf<hxdom.html.EventListener>):ExprOf<EventHandler> {
-		return EventDispatcherMacro.splitFunction(listener);
+		return macro $ethis.__removeEventListener($type, ${EventHandler.doMake(listener)}, $useCapture);
 	}
 	
 }
@@ -53,15 +41,15 @@ class EventDispatcher implements IEventDispatcher {
 interface IEventDispatcher {
 	
 	#if !macro
-	@:skip var __listeners:Map<String, List<{handler:EventHandler, cap:Bool}>>;
+	@:skip var __listeners:Map<String, List<{handler:hxdom.EventHandler, cap:Bool}>>;
 	
-	public function __addEventListener (type:String, handler:EventHandler, ?useCapture:Bool = false):Void {
-		if (__listeners == null) __listeners = new Map<String, List<{handler:EventHandler, cap:Bool}>>();
+	public function __addEventListener (type:String, handler:hxdom.EventHandler, ?useCapture:Bool = false):Void {
+		if (__listeners == null) __listeners = new Map<String, List<{handler:hxdom.EventHandler, cap:Bool}>>();
 		
 		var list = __listeners.get(type);
 		var obj = { handler:handler, cap:useCapture };
 		if (list == null) {
-			list = new List<{handler:EventHandler, cap:Bool}>();
+			list = new List<{handler:hxdom.EventHandler, cap:Bool}>();
 			list.add(obj);
 			__listeners.set(type, list);
 		} else {
@@ -72,7 +60,7 @@ interface IEventDispatcher {
 		}
 	}
 	
-	public function __removeEventListener (type:String, handler:EventHandler, ?useCapture:Bool = false):Void {
+	public function __removeEventListener (type:String, handler:hxdom.EventHandler, ?useCapture:Bool = false):Void {
 		if (__listeners == null || !__listeners.exists(type)) return;
 		
 		var list = __listeners.get(type);
@@ -84,7 +72,7 @@ interface IEventDispatcher {
 	}
 
 	public function dispatchEvent (event:hxdom.html.Event):Bool {
-		if (__listeners == null) __listeners = new Map<String, List<{handler:EventHandler, cap:Bool}>>();
+		if (__listeners == null) __listeners = new Map<String, List<{handler:hxdom.EventHandler, cap:Bool}>>();
 		
 		var list = __listeners.get(event.type);
 		if (list != null) {
@@ -121,69 +109,6 @@ class EventDispatcherMacro {
 		}
 		
 		return false;
-	}
-	
-	/**
-	 * Check if this class has a static function with the given name.
-	 */
-	static function hasStaticFunction (cls:ClassType, name:String):Bool {
-		for (i in cls.statics.get()) {
-			if (i.name == name) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Build a fully qualified class name reference.
-	 */
-	static function getFullClassName (cls:ClassType):Expr {
-		if (cls.pack.length > 0) {
-			var expr = { expr:EConst(CIdent(cls.pack[0])), pos:Context.currentPos() };
-			for (i in 1 ... cls.pack.length) {
-				expr = { expr:EField(expr, cls.pack[i]), pos:Context.currentPos() };
-			}
-			expr = { expr:EField(expr, cls.name), pos:Context.currentPos() };
-			return expr;
-		} else {
-			return { expr:EConst(CIdent(cls.name)), pos:Context.currentPos() };
-		}
-	}
-	
-	/**
-	 * Split a function reference into an instance and a function name so it can be serialized.
-	 */
-	public static function splitFunction (listener:ExprOf<hxdom.html.EventListener>):ExprOf<EventHandler> {
-		var split = null;
-		switch (listener.expr) {
-			case EField(e, f):
-				split = { inst: e, func:{expr:EConst(CString(f)), pos:Context.currentPos()} };
-			case EConst(c):
-				switch (c) {
-					case CIdent(name):
-						//Instance is implicitly "this" or "ClassName" depending on static reference or not
-						var cls = Context.getLocalClass().get();
-						
-						//Check class methods first
-						if (hasMethod(cls, name)) {
-							split = { inst: macro this, func:{expr:EConst(CString(name)), pos:Context.currentPos()} };
-						}
-						
-						//Check class statics
-						if (hasStaticFunction(cls, name)) {
-							split = { inst:getFullClassName(cls), func:{expr:EConst(CString(name)), pos:Context.currentPos()} };
-						}
-					default:
-						throw "Unsupported function reference.";
-				}
-			case EFunction(_, _):
-				throw "Anonymous functions are not supported.";
-			default:
-				throw "Unsupported event handler.";
-		}
-		return macro { inst:${split.inst}, func:${split.func} };
 	}
 	
 	macro static function store ():Array<Field> {

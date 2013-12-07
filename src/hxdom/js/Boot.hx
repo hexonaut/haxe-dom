@@ -45,7 +45,7 @@ class Boot extends Unserializer {
 					for (eventType in listeners.keys()) {
 						for (eh in listeners.get(eventType)) {
 							#if (js && !use_vdom)
-							e.addEventListener(eventType, function (e) { Reflect.callMethod(eh.handler.inst, Reflect.field(eh.handler.inst, eh.handler.func), [e]); }, eh.cap);
+							e.addEventListener(eventType, function (e) { eh.handler.call([e]); }, eh.cap);
 							#end
 						}
 					}
