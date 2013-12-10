@@ -45,7 +45,8 @@ class HtmlSerializer extends Serializer {
 			dataset:null,
 			style:null,
 			__listeners:null,
-			__vdom:null
+			__vdom:null,
+			__htmlSnippet:null
 		};
 	
 	public function new () {
@@ -82,10 +83,12 @@ class HtmlSerializer extends Serializer {
 	 */
 	inline function elemIds (e:VirtualNode<Element>):Void {
 		buf.add(" data-hxid='" + Reflect.field(e, "id"));
-		for (i in e.node.childNodes) {
-			if (i.nodeType == Node.TEXT_NODE) {
-				var text:Text = Reflect.field(i, "__vdom");
-				buf.add(" " + Reflect.field(text, "id") + "-" + untyped i.data.length);
+		if (!Reflect.hasField(e.node, "__htmlSnippet")) {
+			for (i in e.node.childNodes) {
+				if (i.nodeType == Node.TEXT_NODE) {
+					var text:Text = Reflect.field(i, "__vdom");
+					buf.add(" " + Reflect.field(text, "id") + "-" + untyped i.data.length);
+				}
 			}
 		}
 		buf.add("'");
