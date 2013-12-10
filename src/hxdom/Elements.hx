@@ -180,7 +180,7 @@ class VirtualNode<T:Node> extends EventTarget {
 		#else
 		var text = Type.createEmptyInstance(hxdom.html.Text);
 		Reflect.setField(text, "nodeType", Node.TEXT_NODE);
-		text.data = txt;
+		text.data = StringTools.htmlEscape(txt);
 		#end
 		return cast text;
 	}

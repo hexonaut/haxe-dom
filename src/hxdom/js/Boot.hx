@@ -72,65 +72,69 @@ class Boot extends Unserializer {
 	
 	function buildElementLookup (node:Node):Void {
 		if (node.nodeType == Node.ELEMENT_NODE) {
-			//Setup virtual dom element
-			var velem:VirtualNode<Element> = Type.createEmptyInstance(Type.resolveClass(Reflect.field(cast(node, Element).dataset, "hxclass")));
-			Reflect.setField(node, "__vdom", velem);
-			Reflect.setField(velem, "node", node);
-			
-			//Place node into lookup
-			var first = true;
-			var remainingStr:String = null;
-			var child = node.firstChild;
-			for (i in node.attributes.getNamedItem("data-hxid").nodeValue.split(" ")) {
-				if (first) {
-					//First is always the element ID
-					var id = Std.parseInt(i);
-					Reflect.setField(velem, "id", id);
-					elementLookup.set(id, node);
-					first = false;
-				} else {
-					//Any remaining ids are for text nodes
-					var dash = i.indexOf('-');
-					var id = Std.parseInt(i.substr(0, dash));
-					var len = Std.parseInt(i.substr(dash + 1));
-					
-					while (child.nodeType != Node.TEXT_NODE) child = child.nextSibling;
-					
-					var txt:hxdom.html.Text = cast child;
-					var nodeToAdd = child;
-					if (remainingStr == null && txt.length == len) {
-						//Node is an exact fit
-						child = child.nextSibling;
+			var cls = Type.resolveClass(Reflect.field(cast(node, Element).dataset, "hxclass"));
+			//If this is not a hxdom element then just continue
+			if (cls != null) {
+				//Setup virtual dom element
+				var velem:VirtualNode<Element> = Type.createEmptyInstance(cls);
+				Reflect.setField(node, "__vdom", velem);
+				Reflect.setField(velem, "node", node);
+				
+				//Place node into lookup
+				var first = true;
+				var remainingStr:String = null;
+				var child = node.firstChild;
+				for (i in node.attributes.getNamedItem("data-hxid").nodeValue.split(" ")) {
+					if (first) {
+						//First is always the element ID
+						var id = Std.parseInt(i);
+						Reflect.setField(velem, "id", id);
+						elementLookup.set(id, node);
+						first = false;
 					} else {
-						//Node has been normalized -- need to split into sub-nodes
-						if (remainingStr == null) {
-							//First node gets to stay
-							remainingStr = txt.data.substr(len);
-							txt.data = txt.data.substr(0, len);
-						} else {
-							//The rest need to create new text nodes
-							#if (js && !use_vdom)
-							nodeToAdd = js.Browser.document.createTextNode(remainingStr.substr(0, len));
-							#end
-							node.insertBefore(nodeToAdd, child.nextSibling);
-							if (remainingStr.length == len) {
-								remainingStr = null;
-							} else {
-								remainingStr = remainingStr.substr(len);
-							}
+						//Any remaining ids are for text nodes
+						var dash = i.indexOf('-');
+						var id = Std.parseInt(i.substr(0, dash));
+						var len = Std.parseInt(i.substr(dash + 1));
+						
+						while (child.nodeType != Node.TEXT_NODE) child = child.nextSibling;
+						
+						var txt:hxdom.html.Text = cast child;
+						var nodeToAdd = child;
+						if (remainingStr == null && txt.length == len) {
+							//Node is an exact fit
 							child = child.nextSibling;
+						} else {
+							//Node has been normalized -- need to split into sub-nodes
+							if (remainingStr == null) {
+								//First node gets to stay
+								remainingStr = txt.data.substr(len);
+								txt.data = txt.data.substr(0, len);
+							} else {
+								//The rest need to create new text nodes
+								#if (js && !use_vdom)
+								nodeToAdd = js.Browser.document.createTextNode(remainingStr.substr(0, len));
+								#end
+								node.insertBefore(nodeToAdd, child.nextSibling);
+								if (remainingStr.length == len) {
+									remainingStr = null;
+								} else {
+									remainingStr = remainingStr.substr(len);
+								}
+								child = child.nextSibling;
+							}
 						}
+						var vdomText = Type.createEmptyInstance(Text);
+						Reflect.setField(vdomText, "id", id);
+						Reflect.setField(vdomText, "node", nodeToAdd);
+						Reflect.setField(nodeToAdd, "__vdom", vdomText);
+						elementLookup.set(id, nodeToAdd);
 					}
-					var vdomText = Type.createEmptyInstance(Text);
-					Reflect.setField(vdomText, "id", id);
-					Reflect.setField(vdomText, "node", nodeToAdd);
-					Reflect.setField(nodeToAdd, "__vdom", vdomText);
-					elementLookup.set(id, nodeToAdd);
 				}
-			}
-			
-			for (i in node.childNodes) {
-				buildElementLookup(i);
+				
+				for (i in node.childNodes) {
+					buildElementLookup(i);
+				}
 			}
 		}
 	}
