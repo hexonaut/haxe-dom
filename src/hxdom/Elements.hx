@@ -11,6 +11,7 @@
 package hxdom;
 
 import haxe.Json;
+import hxdom.Elements.VirtualNode;
 import hxdom.EventHandler;
 import hxdom.html.AnchorElement;
 import hxdom.html.AudioElement;
@@ -154,6 +155,10 @@ class VirtualNode<T:Node> extends EventTarget {
 		return oldChild;
 	}
 	
+	public function iterator ():Iterator<VirtualNode<Dynamic>> {
+		return new VirtualNodeIterator(this);
+	}
+	
 	/**
 	 * Construct and initialize element.
 	 */
@@ -205,6 +210,30 @@ class VirtualNode<T:Node> extends EventTarget {
 	
 	public override function dispatchEvent (event:Event):Bool {
 		return node.dispatchEvent(event);
+	}
+	
+}
+
+private class VirtualNodeIterator {
+	
+	var child:Node;
+	
+	public function new (node:VirtualNode<Dynamic>) {
+		child = node.node.firstChild;
+	}
+	
+	public function iterator ():Iterator<VirtualNode<Dynamic>> { 
+		return this;
+	}
+	
+	public function hasNext ():Bool {
+		return child != null;
+	}
+	
+	public function next ():VirtualNode<Dynamic> { 
+		var c = child;
+		child = child.nextSibling;
+		return DomTools.vnode(c);
 	}
 	
 }
