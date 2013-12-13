@@ -15,6 +15,7 @@ import haxe.macro.Expr;
 import haxe.macro.Type;
 #if !macro
 import hxdom.html.Element;
+import hxdom.html.Event;
 import hxdom.html.EventListener;
 import hxdom.html.EventTarget;
 import hxdom.html.Node;
@@ -203,6 +204,22 @@ class DomTools {
 			}
 		}
 		return e;
+	}
+	
+	/**
+	 * Will return the element of the given type along the event path.
+	 */
+	public static function delegate<T:VirtualNode<Dynamic>> (event:Event, type:Class<T>):Null<T> {
+		var currNode = cast(event.target, Node);
+		while (currNode != event.currentTarget) {
+			var vnode = vnode(currNode);
+			if (Std.is(vnode, type)) {
+				return cast vnode;
+			}
+			
+			currNode = currNode.parentNode;
+		}
+		return null;
 	}
 	#end
 	
