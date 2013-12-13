@@ -209,7 +209,7 @@ class DomTools {
 	/**
 	 * Will return the element of the given type along the event path.
 	 */
-	public static function delegate<T:VirtualNode<Dynamic>> (event:Event, type:Class<T>):Null<T> {
+	public static function delegate<T> (event:Event, type:Class<T>):Null<T> {
 		var currNode = cast(event.target, Node);
 		while (currNode != event.currentTarget) {
 			var vnode = vnode(currNode);
