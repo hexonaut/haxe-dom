@@ -211,7 +211,7 @@ class DomTools {
 	 */
 	public static function delegate<T> (event:Event, type:Class<T>):Null<T> {
 		var currNode = cast(event.target, Node);
-		while (currNode != event.currentTarget) {
+		while (currNode != null && currNode != event.currentTarget) {
 			var vnode = vnode(currNode);
 			if (Std.is(vnode, type)) {
 				return cast vnode;
