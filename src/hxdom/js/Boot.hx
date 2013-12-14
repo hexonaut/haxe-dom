@@ -150,12 +150,15 @@ class Boot extends Unserializer {
 	 * Check if this class has any clientInit functions -- if so add them to the init phase.
 	 */
 	inline function checkClientInit (inst:Dynamic):Void {
-		var meta = Meta.getFields(Type.getClass(inst));
-		if (meta != null) {
-			for (i in Reflect.fields(meta)) {
-				var f = Reflect.field(meta, i);
-				if (Reflect.hasField(f, "clientInit")) {
-					initFuncs.add(new EventHandler(inst, i, null));
+		var cls = Type.getClass(inst);
+		if (cls != null) {
+			var meta = Meta.getFields(cls);
+			if (meta != null) {
+				for (i in Reflect.fields(meta)) {
+					var f = Reflect.field(meta, i);
+					if (Reflect.hasField(f, "clientInit")) {
+						initFuncs.add(new EventHandler(inst, i, null));
+					}
 				}
 			}
 		}
