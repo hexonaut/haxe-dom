@@ -23,6 +23,7 @@ import hxdom.html.ScriptElement;
 import hxdom.Elements;
 #end
 import hxdom.EventDispatcher;
+using Lambda;
 
 /**
  * Utility functions for common DOM operations. Most functions are built for chaining.
@@ -81,6 +82,23 @@ class DomTools {
 	}
 	
 	/**
+	 * Returns true if the node has the given class.
+	 */
+	public static function hasClass<T:VirtualElement<Dynamic>> (e:T, cls:String):T {
+		if (e.node.className != null && e.node.className != "") {
+			var ecls:Array<String> = e.node.className.split(" ");
+			var newCls = new Array<String>();
+			for (i in ecls) {
+				if (cls == i) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * Remove classes for this element. Space delimited.
 	 */
 	public static function removeClasses<T:VirtualElement<Dynamic>> (e:T, cls:String):T {
@@ -89,10 +107,8 @@ class DomTools {
 			var ecls:Array<String> = e.node.className.split(" ");
 			var newCls = new Array<String>();
 			for (i in ecls) {
-				for (o in clsArr) {
-					if (i != o) {
-						newCls.push(i);
-					}
+				if (!clsArr.has(i)) {
+					newCls.push(i);
 				}
 			}
 			e.node.className = newCls.join(" ");
@@ -189,21 +205,6 @@ class DomTools {
 	 */
 	public static inline function vnode (node:Node):VirtualNode<Node> {
 		return Reflect.field(node, "__vdom");
-	}
-	
-	/**
-	 * Executes the function on every descendant element including the root.
-	 * 
-	 * Order is depth first.
-	 */
-	public static function traverse<T:VirtualElement<Dynamic>> (e:T, func:VirtualElement<Dynamic> -> Void):T {
-		func(e);
-		for (i in cast(e.node, Node).childNodes) {
-			if (i.nodeType == Node.ELEMENT_NODE) {
-				traverse(cast(vnode(i), VirtualElement<Dynamic>), func);
-			}
-		}
-		return e;
 	}
 	
 	/**

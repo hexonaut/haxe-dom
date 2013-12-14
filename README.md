@@ -114,6 +114,44 @@ Using the DOM directly can be kind of annoying, so I've included a DomTools clas
 	
 	var div = new EDiv().classes("myCssClass anotherClass").attr(Id, "someId").addText("Some text in the Div!");
 
+Custom Event Systems
+====================
+
+If you are interested in rolling your own event systems, but want to take advantage of the serializability of haxe-dom then you can use the hxdom.EventHandler class. What it does is split any fully referenceable function into its instance (or class for static functions) and function name components. For example:
+
+	class MyClass {
+		
+		var eventHandler:hxdom.EventHandler;
+		
+		public function new () {
+			//Could call this on either the server or the client
+			//MyClass instances are fully serializable
+			
+			//Internally eventHandler stores [inst => this, func => "myEventListener"]
+			eventHandler = hxdom.EventHandler.make(myEventListener);
+		}
+		
+		public function fireEvent ():Void {
+			//Can call this on either the server or the client as well
+			eventHandler.call();
+		}
+		
+		function myEventListener ():Void {
+			trace("Event!");
+		}
+		
+	}
+
+Don't want to pass around EventHandler references? Use the hxdom.EventHandler.doMake() macro to roll your own seamless event system. This allows you to make completely transparent code like this:
+
+	someObj.bind("someEventType", myEventHandler);
+	
+	...
+	
+	macro public function bind (ethis:Expr, type:ExprOf<String>, listener:ExprOf<Void -> Void>):ExprOf<Void> {
+		return macro $ethis.actualBind($type, ${hxdom.EventHandler.doMake(listener)});
+	}
+
 FAQ
 ===
 
@@ -126,221 +164,8 @@ A Full Example
 
 Use this command:
 
-	haxe -cp . -neko server.n -main Main --next -cp . -js client.js -main Main
+	haxe -cp test -neko server.n -main Main --next -cp test -js client.js -main Main
 
-To compile this example:
-
-	package ;
-	
-	import hxdom.EventDispatcher;
-	import hxdom.html.CharacterData;
-	import hxdom.html.Event;
-	import hxdom.HtmlSerializer;
-	import hxdom.js.Boot;
-	import hxdom.Elements;
-
-	using hxdom.DomTools;
-
-	class Main {
-		
-		static function main () {
-			#if js
-			var app:ForumApp = cast Boot.init();
-			
-			//Add a post on load from JS
-			app.threads.addPost(new Post(app.threads.posts[0].post.user, "Right back at yea John! This time from JS!"));
-			
-			//Check to see text references are maintained
-			app.threads.markTextEnds();
-			#else
-			sys.io.File.saveContent("index.html", HtmlSerializer.run(new ForumApp()));
-			#end
-		}
-		
-		public static function staticEventListener (e:Event):Void {
-			trace("Static listener");
-		}
-		
-	}
-
-	class ForumApp extends EHtml {
-		
-		public var head(default, null):EHead;
-		public var threads(default, null):ForumThreadView;
-		
-		public function new () {
-			super();
-			
-			var user1 = new User(0, "Fred");
-			var user2 = new User(1, "John");
-			
-			head = new EHead();
-			head.add(new EScript().addText("HTMLDetailsElement = HTMLElement;"));
-			head.add(new EScript().attr(Src, "haxedom.js").attr(Defer, true));
-			
-			threads = new ForumThreadView([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
-			untyped threads.node.dataset.testingCustomDataAttr = "data'.data.data'.data";
-			threads.node.style.backgroundColor = "red";
-			threads.addEventListener("click", Main.staticEventListener);
-			
-			add(head);
-			add(threads);
-		}
-		
-	}
-
-	class ForumThreadView extends EBody {
-		
-		public var posts(default, set):Array<PostView>;
-		
-		var t1:Text;
-		var t2:Text;
-		var t3:Text;
-		
-		public function new (posts:Array<Post>) {
-			super();
-			
-			this.posts = posts.map(function (e) { return new PostView(e); } );
-			
-			t1 = new Text("Testing ");
-			t2 = new Text("inline              text ");
-			t3 = new Text("references");
-			
-			add(t1).add(t2).add(t3);
-		}
-		
-		public function markTextEnds ():Void {
-			t1.node.data += "|";
-			t2.node.data += "|";
-			t3.node.data += "|";
-		}
-		
-		function set_posts (posts:Array<PostView>):Array<PostView> {
-			this.posts = posts;
-			
-			this.clear();
-			for (i in posts) {
-				this.add(i);
-			}
-			
-			return posts;
-		}
-		
-		public function addPost (post:Post):Void {
-			this.add(new PostView(post));
-		}
-		
-	}
-
-	class PostView extends EArticle {
-		
-		public var post(default, set):Post;
-		
-		var eprofile:ProfileView;
-		var emsg:EDiv;
-		var btn:EButton;
-
-		public function new (post:Post) {
-			super();
-			
-			this.classes("post");
-			
-			this.post = post;
-		}
-		
-		function set_post (post:Post):Post {
-			//Clear last post
-			if (this.post != null) {
-				this.clear();
-				this.post.removeEventListener("change", onPostChange);
-				btn.node.removeEventListener("click", onClick);
-			}
-			
-			this.post = post;
-			
-			//Add new post
-			if (post != null) {
-				eprofile = new ProfileView(post.user);
-				emsg = new EDiv();
-				
-				post.addEventListener("change", onPostChange);
-				
-				this.add(eprofile);
-				this.add(emsg.classes("post-message").addText(post.message));
-				btn = new EButton().addText("Click Me!");
-				btn.addEventListener("click", onClick);
-				this.add(btn);
-			}
-			
-			return post;
-		}
-		
-		function onClick (_):Void {
-			post.message += " EVENT!";
-			post.update();	//Notify views of data change
-		}
-		
-		function onPostChange (_):Void {
-			this.post = post;
-		}
-		
-	}
-
-	class ProfileView extends EAside {
-		
-		public var user(default, set):User;
-
-		public function new (user:User) {
-			super();
-			
-			this.classes("profile");
-			
-			this.user = user;
-		}
-		
-		function set_user (user:User):User {
-			this.user = user;
-			
-			this.clear();
-			if (user != null) {
-				this.add(new EDiv().classes("profile-name").addText(user.name));
-			}
-			
-			return user;
-		}
-		
-	}
-
-	class User extends EventDispatcher {
-		
-		public var id:Int;
-		public var name:String;
-
-		public function new (id:Int, name:String) {
-			this.id = id;
-			this.name = name;
-		}
-		
-		public function update ():Void {
-			this.dispatchEvent(new Event("change"));
-		}
-		
-	}
-
-	class Post extends EventDispatcher {
-		
-		public var user:User;
-		public var message:String;
-
-		public function new (user:User, message:String) {
-			this.user = user;
-			this.message = message;
-		}
-		
-		public function update ():Void {
-			this.dispatchEvent(new Event("change"));
-		}
-		
-	}
+To compile the example in the test directory.
 
 Run the neko binary which will produce an index.html file to which you can load into your browser. You may need to shiv missing elements depending on your browser.

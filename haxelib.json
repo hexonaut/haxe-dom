@@ -4,7 +4,7 @@
   "tags": ["cross", "web"],
   "description": "A cross-platform implementation of the DOM. Built to reduce duplicate code across server and client.",
   "contributors": ["Blank101"],
-  "releasenote": "Added support for custom event-based code.",
+  "releasenote": "Added event delegation, first class vnode iteration and client init functions.",
   "version": "0.1.5",
   "url": "https://github.com/Blank101/haxe-dom",
   "dependencies": {
