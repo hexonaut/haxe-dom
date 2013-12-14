@@ -152,6 +152,11 @@ Don't want to pass around EventHandler references? Use the hxdom.EventHandler.do
 		return macro $ethis.actualBind($type, ${hxdom.EventHandler.doMake(listener)});
 	}
 
+Client Initialization
+=====================
+
+Add a @clientInit meta data to any function you want to run when the client is initialized. This could be useful for deferring queries to save on startup time or if you have some 3rd party client library that needs initialization.
+
 FAQ
 ===
 

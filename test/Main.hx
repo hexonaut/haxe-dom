@@ -76,6 +76,11 @@ class ForumThreadView extends EBody {
 		add(t1).add(t2).add(t3);
 	}
 	
+	@clientInit
+	function init ():Void {
+		trace("FTV init");
+	}
+	
 	public function markTextEnds ():Void {
 		t1.node.data += "|";
 		t2.node.data += "|";
@@ -186,6 +191,11 @@ class User implements IEventDispatcher {
 	public function new (id:Int, name:String) {
 		this.id = id;
 		this.name = name;
+	}
+	
+	@clientInit
+	function init ():Void {
+		trace("Client load init! id = " + id);
 	}
 	
 	public function update ():Void {

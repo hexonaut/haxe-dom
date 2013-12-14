@@ -10,6 +10,7 @@
 
 package hxdom.js;
 
+import haxe.rtti.Meta;
 import haxe.Unserializer;
 import hxdom.html.CharacterData;
 import hxdom.html.Element;
@@ -17,6 +18,7 @@ import hxdom.html.HtmlElement;
 import hxdom.html.Node;
 import hxdom.Elements;
 import hxdom.EventDispatcher;
+import hxdom.EventHandler;
 
 using StringTools;
 
@@ -28,11 +30,13 @@ using StringTools;
 class Boot extends Unserializer {
 	
 	var elementLookup:Map<Int, Node>;		//Find elements from their id
+	var initFuncs:List<EventHandler>;		//Call these functions after init
 	
 	public function new () {
 		super("");
 		
 		elementLookup = new Map<Int, Node>();
+		initFuncs = new List<EventHandler>();
 	}
 	
 	function element (e:Element):Void {
@@ -58,6 +62,9 @@ class Boot extends Unserializer {
 					}
 			}
 		}
+		
+		//Check if there are any clientInit functions on the virtual node
+		checkClientInit(velem);
 	}
 	
 	function unserializeNode (node:Node):Void {
@@ -140,6 +147,21 @@ class Boot extends Unserializer {
 	}
 	
 	/**
+	 * Check if this class has any clientInit functions -- if so add them to the init phase.
+	 */
+	inline function checkClientInit (inst:Dynamic):Void {
+		var meta = Meta.getFields(Type.getClass(inst));
+		if (meta != null) {
+			for (i in Reflect.fields(meta)) {
+				var f = Reflect.field(meta, i);
+				if (Reflect.hasField(f, "clientInit")) {
+					initFuncs.add(new EventHandler(inst, i, null));
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Sets up a unserialize call by messing with the buffer and position.
 	 */
 	function doUnserialize (str:String):Dynamic {
@@ -159,9 +181,16 @@ class Boot extends Unserializer {
 				if (e == null) throw "Missing element reference!";
 				return Reflect.field(e, "__vdom");
 			case 'O'.code:
+				//Static class reference
 				pos++;
 				var name = super.unserialize();
 				return Type.resolveClass(name);
+			case 'c'.code:
+				var inst = super.unserialize();
+				
+				checkClientInit(inst);
+				
+				return inst;
 			default:
 				return super.unserialize();
 		}
@@ -173,6 +202,12 @@ class Boot extends Unserializer {
 		var boot = new Boot();
 		boot.buildElementLookup(html);
 		boot.unserializeNode(html);
+		
+		//Run init functions
+		for (i in boot.initFuncs) {
+			i.call();
+		}
+		
 		return Reflect.field(html, "__vdom");
 		#else
 		throw "Only available to JS.";

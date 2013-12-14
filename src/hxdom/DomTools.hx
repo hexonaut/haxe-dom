@@ -84,7 +84,7 @@ class DomTools {
 	/**
 	 * Returns true if the node has the given class.
 	 */
-	public static function hasClass<T:VirtualElement<Dynamic>> (e:T, cls:String):T {
+	public static function hasClass<T:VirtualElement<Dynamic>> (e:T, cls:String):Bool {
 		if (e.node.className != null && e.node.className != "") {
 			var ecls:Array<String> = e.node.className.split(" ");
 			var newCls = new Array<String>();
