@@ -137,6 +137,25 @@ class DomTools {
 	}
 	
 	/**
+	 * Shortcut for adding an html section.
+	 */
+	public static function addHtml<T:VirtualElement<Dynamic>> (parent:T, html:String):T {
+		parent.appendChild(new HtmlSnippet(html));
+		
+		return parent;
+	}
+	
+	/**
+	 * Sets the html of this node. This assumes that the html is the only child node.
+	 */
+	public static function setHtml<T:VirtualElement<Dynamic>> (parent:T, html:String):T {
+		clear(parent);
+		parent.appendChild(new HtmlSnippet(html));
+		
+		return parent;
+	}
+	
+	/**
 	 * Set any attribute for this element.
 	 */
 	public static function unsafeAttr<T:VirtualElement<Dynamic>> (e:T, key:String, val:Dynamic):T {
