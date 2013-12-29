@@ -35,6 +35,8 @@ class ForumApp extends EHtml {
 	public var head(default, null):EHead;
 	public var threads(default, null):ForumThreadView;
 	
+	var empty:Text;
+	
 	public function new () {
 		super();
 		
@@ -49,9 +51,11 @@ class ForumApp extends EHtml {
 		untyped threads.node.dataset.testingCustomDataAttr = "data'.data.data'.data";
 		threads.node.style.backgroundColor = "red";
 		threads.addEventListener("click", Main.staticEventListener);
+		empty = new Text("");
 		
 		add(head);
 		add(threads);
+		add(empty);
 	}
 	
 }
@@ -62,6 +66,7 @@ class ForumThreadView extends EBody {
 	
 	var t1:Text;
 	var t2:Text;
+	var empty:Text;
 	var t3:Text;
 	
 	public function new (posts:Array<Post>) {
@@ -71,9 +76,10 @@ class ForumThreadView extends EBody {
 		
 		t1 = new Text("Testing ");
 		t2 = new Text("inline              text ");
+		empty = new Text("");
 		t3 = new Text("references");
 		
-		add(t1).add(t2).add(t3);
+		add(t1).add(t2).add(empty).add(t3);
 	}
 	
 	@clientInit
@@ -84,6 +90,7 @@ class ForumThreadView extends EBody {
 	public function markTextEnds ():Void {
 		t1.node.data += "|";
 		t2.node.data += "|";
+		empty.node.data += "|";
 		t3.node.data += "|";
 	}
 	

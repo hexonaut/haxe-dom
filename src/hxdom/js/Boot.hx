@@ -104,32 +104,41 @@ class Boot extends Unserializer {
 						var id = Std.parseInt(i.substr(0, dash));
 						var len = Std.parseInt(i.substr(dash + 1));
 						
-						while (child.nodeType != Node.TEXT_NODE) child = child.nextSibling;
-						
-						var txt:hxdom.html.Text = cast child;
-						var nodeToAdd = child;
-						if (remainingStr == null && txt.length == len) {
-							//Node is an exact fit
-							child = child.nextSibling;
-						} else {
-							//Node has been normalized -- need to split into sub-nodes
-							if (remainingStr == null) {
-								//First node gets to stay
-								remainingStr = txt.data.substr(len);
-								txt.data = txt.data.substr(0, len);
-							} else {
-								//The rest need to create new text nodes
-								#if (js && !use_vdom)
-								nodeToAdd = js.Browser.document.createTextNode(remainingStr.substr(0, len));
-								#end
-								node.insertBefore(nodeToAdd, child.nextSibling);
-								if (remainingStr.length == len) {
-									remainingStr = null;
-								} else {
-									remainingStr = remainingStr.substr(len);
-								}
+						var nodeToAdd = null;
+						if (len > 0) {
+							while (child.nodeType != Node.TEXT_NODE) child = child.nextSibling;
+							
+							var txt:hxdom.html.Text = cast child;
+							nodeToAdd = child;
+							if (remainingStr == null && txt.length == len) {
+								//Node is an exact fit
 								child = child.nextSibling;
+							} else {
+								//Node has been normalized -- need to split into sub-nodes
+								if (remainingStr == null) {
+									//First node gets to stay
+									remainingStr = txt.data.substr(len);
+									txt.data = txt.data.substr(0, len);
+								} else {
+									//The rest need to create new text nodes
+									#if js
+									nodeToAdd = js.Browser.document.createTextNode(remainingStr.substr(0, len));
+									#end
+									node.insertBefore(nodeToAdd, child.nextSibling);
+									if (remainingStr.length == len) {
+										remainingStr = null;
+									} else {
+										remainingStr = remainingStr.substr(len);
+									}
+									child = child.nextSibling;
+								}
 							}
+						} else {
+							//Length 0 text node can be added anywhere
+							#if js
+							nodeToAdd = js.Browser.document.createTextNode("");
+							#end
+							node.insertBefore(nodeToAdd, child);
 						}
 						var vdomText = Type.createEmptyInstance(Text);
 						Reflect.setField(vdomText, "id", id);
