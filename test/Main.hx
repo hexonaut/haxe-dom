@@ -5,6 +5,7 @@ import hxdom.html.Event;
 import hxdom.HtmlSerializer;
 import hxdom.js.Boot;
 import hxdom.Elements;
+import hxdom.js.ClientOnly;
 
 using hxdom.DomTools;
 
@@ -60,7 +61,7 @@ class ForumApp extends EHtml {
 	
 }
 
-class ForumThreadView extends EBody {
+class ForumThreadView extends EBody implements ClientOnly {
 	
 	public var posts(default, set):Array<PostView>;
 	
@@ -82,7 +83,7 @@ class ForumThreadView extends EBody {
 		add(t1).add(t2).add(empty).add(t3);
 	}
 	
-	@clientInit
+	@:client
 	function init ():Void {
 		trace("FTV init");
 	}
@@ -190,7 +191,7 @@ class ProfileView extends EAside {
 	
 }
 
-class User implements IEventDispatcher {
+class User implements IEventDispatcher implements ClientOnly {
 	
 	public var id:Int;
 	public var name:String;
@@ -200,9 +201,10 @@ class User implements IEventDispatcher {
 		this.name = name;
 	}
 	
-	@clientInit
+	@:client
 	function init ():Void {
-		trace("Client load init! id = " + id);
+		//JS specific code
+		js.Browser.window.alert("Client load init! id = " + id);
 	}
 	
 	public function update ():Void {

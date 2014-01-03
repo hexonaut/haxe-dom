@@ -155,7 +155,15 @@ Don't want to pass around EventHandler references? Use the hxdom.EventHandler.do
 Client Initialization
 =====================
 
-Add a @clientInit meta data to any function you want to run when the client is initialized. This could be useful for deferring queries to save on startup time or if you have some 3rd party client library that needs initialization.
+Sometimes it is important to have code that only executes on the client. This can be useful for things such as deferring queries to save on startup time or if you have some 3rd party client library that needs initialization. hxdom.js.ClientOnly serves this need by allowing you to tag specific methods for client-only execution.
+
+To use it simply implement hxdom.js.ClientOnly to the target class then add @:client meta data to any function you want to run when the client is initialized. The function must take no arguments and should not return anything.
+
+Adding @:client to a method does a couple of things behind the scenes:
+
+1. It removes the method from the server code, so you can use client-specific code such as js.Browser.window.alert("Alert!").
+2. It will mark the method to be called when hxdom.js.Boot is called (after initializing everything).
+3. It will call the method everytime a new instance of the class is created. The methods will always be called last in the constructor, but the execution order cannot be gaurunteed between multiple @:client methods.
 
 FAQ
 ===
