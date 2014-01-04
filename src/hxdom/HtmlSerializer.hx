@@ -44,6 +44,8 @@ class HtmlSerializer extends Serializer {
 			lastChild:null,
 			dataset:null,
 			style:null,
+			offsetWidth:null,
+			offsetHeight:null,
 			__listeners:null,
 			__vdom:null,
 			__htmlSnippet:null
