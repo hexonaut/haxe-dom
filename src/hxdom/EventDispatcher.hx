@@ -70,16 +70,68 @@ interface IEventDispatcher {
 			}
 		}
 	}
+	
+	public function __callListeners (event:hxdom.html.Event, capture:Bool):Void {
+		untyped {
+			if (event.target == this) {
+				event.eventPhase = hxdom.html.Event.AT_TARGET;
+			} else {
+				event.eventPhase = capture ? hxdom.html.Event.CAPTURING_PHASE : hxdom.html.Event.BUBBLING_PHASE;
+			}
+			
+			var list = __listeners.get(event.type);
+			if (list != null) {
+				for (i in list) {
+					if (i.cap == capture) {
+						Reflect.callMethod(i.handler.inst, Reflect.field(i.handler.inst, i.handler.func), [event]);
+						if (Reflect.field(event, "cancelImmediate") == true) break;
+					}
+				}
+			}
+		}
+	}
+	
+	public function __capturePhase (event:hxdom.html.Event):Void {
+		untyped {
+			event.currentTarget = node;
+			
+			//Start from root
+			if (Std.is(this, hxdom.html.Node)) {
+				var node:hxdom.html.Node = cast this;
+				if (node.parentNode != null && event.bubbles) {
+					node.parentNode.__capturePhase(event);
+				}
+			}
+			
+			//Call listeners
+			if (!event.cancelable || !event.cancelBubble) __callListeners(event, true);
+		}
+	}
+	
+	public function __bubblePhase (event:hxdom.html.Event):Void {
+		untyped {
+			event.currentTarget = node;
+			
+			//Call listeners
+			if (!event.cancelable || !event.cancelBubble) __callListeners(event, false);
+			
+			//Bubble up from target element
+			if (Std.is(this, hxdom.html.Node)) {
+				var node:hxdom.html.Node = cast this;
+				if (node.parentNode != null && event.bubbles) {
+					node.parentNode.__bubblePhase(event);
+				}
+			}
+		}
+	}
 
 	public function dispatchEvent (event:hxdom.html.Event):Bool {
 		if (__listeners == null) __listeners = new Map<String, List<{handler:hxdom.EventHandler, cap:Bool}>>();
 		
-		var list = __listeners.get(event.type);
-		if (list != null) {
-			for (i in list) {
-				Reflect.callMethod(i.handler.inst, Reflect.field(i.handler.inst, i.handler.func), [event]);
-			}
-		}
+		untyped event.target = this;
+		
+		__capturePhase(event);
+		__bubblePhase(event);
 		
 		return !event.defaultPrevented;
 	}

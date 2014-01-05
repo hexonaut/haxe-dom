@@ -51,12 +51,14 @@ class ForumApp extends EHtml {
 		threads = new ForumThreadView([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
 		untyped threads.node.dataset.testingCustomDataAttr = "data'.data.data'.data";
 		threads.node.style.backgroundColor = "red";
-		threads.addEventListener("click", Main.staticEventListener);
+		addEventListener("click", Main.staticEventListener);
 		empty = new Text("");
 		
 		add(head);
 		add(threads);
 		add(empty);
+		
+		threads.fireEvent();
 	}
 	
 }
@@ -108,6 +110,10 @@ class ForumThreadView extends EBody implements ClientOnly {
 	
 	public function addPost (post:Post):Void {
 		this.add(new PostView(post));
+	}
+	
+	public function fireEvent ():Void {
+		dispatchEvent(new Event("click"));
 	}
 	
 }

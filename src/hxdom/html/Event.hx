@@ -87,7 +87,9 @@ class Event {
 	public var timeStamp(default,null):Int;
 
 	/** The name of the event (case-insensitive). */
-	public var type(default,null) : String;
+	public var type(default, null) : String;
+	
+	var cancelImmediate:Bool;
 
 	public function new (type:String, canBubble:Bool = true, cancelable:Bool = true):Void {
 		initEvent(type, canBubble, cancelable);
@@ -99,6 +101,7 @@ class Event {
 		this.cancelable = cancelableArg;
 		defaultPrevented = false;
 		cancelBubble = false;
+		cancelImmediate = false;
 	}
 
 	public function preventDefault ():Void {
@@ -106,7 +109,7 @@ class Event {
 	}
 
 	public function stopImmediatePropagation ():Void {
-		cancelBubble = true;
+		cancelImmediate = true;
 	}
 
 	public function stopPropagation ():Void {
