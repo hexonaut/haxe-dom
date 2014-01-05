@@ -42,7 +42,7 @@ class ForumApp extends EHtml {
 		super();
 		
 		var user1 = new User(0, "Fred");
-		var user2 = new User(1, "John");
+		var user2 = new John(1);
 		
 		head = new EHead();
 		head.add(new EScript().addText("HTMLDetailsElement = HTMLElement;"));
@@ -204,11 +204,19 @@ class User implements IEventDispatcher implements ClientOnly {
 	@:client
 	function init ():Void {
 		//JS specific code
-		js.Browser.window.alert("Client load init! id = " + id);
+		js.Browser.window.alert("Client load init! id = " + id + ", name = " + name);
 	}
 	
 	public function update ():Void {
 		this.dispatchEvent(new Event("change"));
+	}
+	
+}
+
+class John extends User {
+	
+	public function new (id:Int) {
+		super(id, "John");
 	}
 	
 }

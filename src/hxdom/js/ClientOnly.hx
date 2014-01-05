@@ -28,6 +28,22 @@ class ClientOnlyMacros {
 		
 		return block;
 	}
+	
+	static function shouldOverride (funcName:String):Bool {
+		var cls = Context.getLocalClass().get();
+		while (cls != null) {
+			for (i in cls.fields.get()) {
+				if (i.name == funcName) {
+					return true;
+				}
+			}
+			
+			if (cls.superClass == null) break;
+			cls = cls.superClass.t.get();
+		}
+		
+		return false;
+	}
 	#end
 	
 	macro public static function build ():Array<Field> {
@@ -46,8 +62,6 @@ class ClientOnlyMacros {
 						if (Context.defined("js") && !Context.defined("use_vdom")) {
 							//Store method name for later appending to the ctor
 							methodsToCall.push(i.name);
-							
-							i.meta.push( { name:"clientInit", params:[], pos:Context.currentPos() } );
 						} else {
 							//Drop field for server
 							keep = false;
@@ -60,6 +74,18 @@ class ClientOnlyMacros {
 			}
 		}
 		
+		//Add methods to a boot method for client
+		if (Context.defined("js") && !Context.defined("use_vdom")) {
+			var funcBody = buildMethodCallBlock(methodsToCall);
+			var funcAccess = [];
+			if (shouldOverride("__hxdomBoot")) {
+				funcBody.unshift(macro super.__hxdomBoot());
+				funcAccess = [AOverride];
+			}
+			fields.push( { pos:Context.currentPos(), name:"__hxdomBoot", meta:[], kind:FFun( { ret:null, params:[], args:[], expr:{ expr:EBlock(funcBody), pos:Context.currentPos() } } ), doc:null, access:funcAccess } );
+		}
+		
+		//Add in method calls to ctor
 		if (ctor != null) {
 			switch (ctor.kind) {
 				case FFun(f):
