@@ -387,4 +387,4 @@ class EVar extends VirtualElement<Element> { public function new () { super(Virt
 class EVideo extends VirtualElement<VideoElement> { public function new () { super(VirtualNode.buildElement(VideoElement, "VIDEO")); } }
 class EWordBreak extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "WBR")); } }
 class Text extends VirtualNode<hxdom.html.Text> { public function new (txt:String) { super(VirtualNode.buildText(txt)); } }
-class HtmlSnippet extends EDiv { public function new (html:String) { super(); #if (js && !use_vdom) node.innerHTML = html; #else untyped { node.__htmlSnippet = null; } var txt = new Text(""); txt.node.data = html; appendChild(txt); #end } }
+class HtmlSnippet extends ESpan { public function new (html:String) { super(); #if (js && !use_vdom) node.innerHTML = html; #else untyped { node.__htmlSnippet = null; } var txt = new Text(""); txt.node.data = html; appendChild(txt); #end } }
