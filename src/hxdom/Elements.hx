@@ -101,6 +101,12 @@ enum InputType {
 	Week;
 }
 
+enum ButtonType {
+	Button;
+	Submit;
+	Reset;
+}
+
 /**
  * Thin wrappers for common elements.
  * 
@@ -262,7 +268,17 @@ class EBiOverride extends VirtualElement<Element> { public function new () { sup
 class EBlockQuote extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "BLOCKQUOTE")); } }
 class EBody extends VirtualElement<BodyElement> { public function new () { super(VirtualNode.buildElement(BodyElement, "BODY")); } }
 class EBreak extends VirtualElement<BRElement> { public function new () { super(VirtualNode.buildElement(BRElement, "BR")); } }
-class EButton extends VirtualElement<ButtonElement> { public function new () { super(VirtualNode.buildElement(ButtonElement, "BUTTON")); } }
+class EButton extends VirtualElement<ButtonElement> {
+	public function new (?type:ButtonType) {
+		super(VirtualNode.buildElement(ButtonElement, "BUTTON"));
+		if (type == null) type = Button;
+		node.type = switch (type) {
+			case Button: "button";
+			case Submit: "submit";
+			case Reset: "reset";
+		}
+	}
+}
 class ECanvas extends VirtualElement<CanvasElement> { public function new () { super(VirtualNode.buildElement(CanvasElement, "CANVAS")); } }
 class ECaption extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "CAPTION")); } }
 class ECite extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "CITE")); } }
