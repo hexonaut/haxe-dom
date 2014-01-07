@@ -21,6 +21,7 @@ class Main {
 		//Check to see text references are maintained
 		app.threads.markTextEnds();
 		#else
+		HtmlSerializer.prettyPrint = true;
 		sys.io.File.saveContent("index.html", HtmlSerializer.run(new ForumApp()));
 		#end
 	}
@@ -46,7 +47,7 @@ class ForumApp extends EHtml {
 		
 		head = new EHead();
 		head.add(new EScript().addText("HTMLDetailsElement = HTMLElement;"));
-		head.add(new EScript().attr(Src, "haxedom.js").attr(Defer, true));
+		head.add(new EScript().attr(Src, "client.js").attr(Defer, true));
 		
 		threads = new ForumThreadView([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
 		untyped threads.node.dataset.testingCustomDataAttr = "data'.data.data'.data";
@@ -210,7 +211,7 @@ class User implements IEventDispatcher implements ClientOnly {
 	@:client
 	function init ():Void {
 		//JS specific code
-		js.Browser.window.alert("Client load init! id = " + id + ", name = " + name);
+		js.Browser.window.console.log("Client load init! id = " + id + ", name = " + name);
 	}
 	
 	public function update ():Void {

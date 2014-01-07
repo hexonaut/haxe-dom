@@ -188,6 +188,7 @@ class VirtualNode<T:Node> extends EventTarget {
 	 * Construct and initialize text node.
 	 */
 	static function buildText (txt:String):hxdom.html.Text {
+		
 		#if (js && !use_vdom)
 		var text = js.Browser.document.createTextNode(txt);
 		#else

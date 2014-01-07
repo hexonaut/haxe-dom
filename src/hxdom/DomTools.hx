@@ -120,7 +120,8 @@ class DomTools {
 	/**
 	 * Shortcut for adding text.
 	 */
-	public static function addText<T:VirtualElement<Dynamic>> (parent:T, text:String):T {
+	public static function addText < T:VirtualElement<Dynamic> > (parent:T, text:String):T {
+		
 		parent.appendChild(new Text(text));
 		
 		return parent;
