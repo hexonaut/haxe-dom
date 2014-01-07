@@ -128,10 +128,21 @@ interface IEventDispatcher {
 	public function dispatchEvent (event:hxdom.html.Event):Bool {
 		if (__listeners == null) __listeners = new Map<String, List<{handler:hxdom.EventHandler, cap:Bool}>>();
 		
-		untyped event.target = this;
+		#if (js && !use_vdom)
+		//Need to copy on client because target and currentTarget are read-only
+		var evt:Dynamic = { };
+		untyped __js__("for (var f in event) {");
+		untyped __js__("evt[f] = event[f]");
+		untyped __js__("}");
+		untyped evt.__proto__ = Event;
+		#else
+		var evt = event;
+		#end
 		
-		__capturePhase(event);
-		__bubblePhase(event);
+		untyped evt.target = this;
+		
+		__capturePhase(evt);
+		__bubblePhase(evt);
 		
 		return !event.defaultPrevented;
 	}

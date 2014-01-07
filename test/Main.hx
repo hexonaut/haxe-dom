@@ -13,13 +13,15 @@ class Main {
 	
 	static function main () {
 		#if js
-		var app:ForumApp = cast Boot.init();
-		
-		//Add a post on load from JS
-		app.threads.addPost(new Post(app.threads.posts[0].post.user, "Right back at yea John! This time from JS!"));
-		
-		//Check to see text references are maintained
-		app.threads.markTextEnds();
+		js.Browser.window.onload = function (_) {
+			var app:ForumApp = cast Boot.init();
+			
+			//Add a post on load from JS
+			app.threads.addPost(new Post(app.threads.posts[0].post.user, "Right back at yea John! This time from JS!"));
+			
+			//Check to see text references are maintained
+			app.threads.markTextEnds();
+		}
 		#else
 		sys.io.File.saveContent("index.html", HtmlSerializer.run(new ForumApp()));
 		#end
@@ -45,7 +47,7 @@ class ForumApp extends EHtml {
 		var user2 = new John(1);
 		
 		head = new EHead();
-		head.add(new EScript().addText("HTMLDetailsElement = HTMLElement;"));
+		head.add(new EScript().addText("window.EventTarget || (window.EventTarget = function () {});"));
 		head.add(new EScript().attr(Src, "haxedom.js").attr(Defer, true));
 		
 		threads = new ForumThreadView([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
