@@ -1,0 +1,12 @@
+-cp test 
+-cp src
+-neko bin/server.n
+-main Main
+--next 
+-cp test 
+-cp src
+-js bin/client.js 
+-main Main
+
+-cmd cd bin
+-cmd neko server.n
