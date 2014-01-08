@@ -139,8 +139,10 @@ class HtmlSerializer extends Serializer {
 		}
 		
 		//Add in vdom fields
+		var sortedFields = Reflect.fields(e);
+		sortedFields.sort(function (a, b) { return (a < b) ? -1 : 1; } );
 		buf.add(" data-hxclass='" + Type.getClassName(Type.getClass(e)) + "'");
-		for (i in Reflect.fields(e)) {
+		for (i in sortedFields) {
 			if (i != "node" && i != "id") {
 				buf.add(" data-hxd" + DomTools.camelCaseToDash(i) + "='");
 				serialize(Reflect.field(e, i));

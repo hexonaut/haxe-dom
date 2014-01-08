@@ -41,25 +41,25 @@ class Boot extends Unserializer {
 	
 	function element (e:Element):Void {
 		var velem = Reflect.field(e, "__vdom");
-		for (i in Reflect.fields(e.dataset)) {
-			switch (i) {
-				case "hxevents":
-					//Event listeners
-					var listeners:Map<String, List<{handler:EventHandler, cap:Bool}>> = doUnserialize(Reflect.field(e.dataset, i));
-					for (eventType in listeners.keys()) {
-						for (eh in listeners.get(eventType)) {
-							#if (js && !use_vdom)
-							e.addEventListener(eventType, function (e) { eh.handler.call([e]); }, eh.cap);
-							#end
-						}
-					}
-				case "hxclass", "hxid":
-					//Do nothing
-				default:
-					if (i.startsWith("hxd")) {
-						var key = i.substr(3);
-						Reflect.setField(velem, key, doUnserialize(Reflect.field(e.dataset, i)));
-					}
+		
+		//Event listeners
+		if (Reflect.hasField(e.dataset, "hxevents")) {
+			var listeners:Map<String, List<{handler:EventHandler, cap:Bool}>> = doUnserialize(Reflect.field(e.dataset, "hxevents"));
+			for (eventType in listeners.keys()) {
+				for (eh in listeners.get(eventType)) {
+					#if (js && !use_vdom)
+					e.addEventListener(eventType, function (e) { eh.handler.call([e]); }, eh.cap);
+					#end
+				}
+			}
+		}
+		
+		var sortedFields = Reflect.fields(e.dataset);
+		sortedFields.sort(function (a, b) { return (a < b) ? -1 : 1; } );
+		for (i in sortedFields) {
+			if (i.startsWith("hxd")) {
+				var key = i.substr(3);
+				Reflect.setField(velem, key, doUnserialize(Reflect.field(e.dataset, i)));
 			}
 		}
 		
