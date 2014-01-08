@@ -13,9 +13,9 @@ package hxdom;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
+import hxdom.html.Event;
 #if !macro
 import hxdom.html.Element;
-import hxdom.html.Event;
 import hxdom.html.EventListener;
 import hxdom.html.EventTarget;
 import hxdom.html.Node;
@@ -23,6 +23,7 @@ import hxdom.html.ScriptElement;
 import hxdom.Elements;
 #end
 import hxdom.EventDispatcher;
+
 using Lambda;
 
 /**
@@ -241,7 +242,37 @@ class DomTools {
 		}
 		return null;
 	}
+	
+	#if (js && !use_vdom)
+	public static function __createEvent (cls:String, type:String, ?bubbles:Bool = true, ?cancelable:Bool = true):Event {
+		var evt:Event = cast js.Browser.document.createEvent(cls);
+		evt.initEvent(type, bubbles, cancelable);
+		return evt;
+	}
+	#else
+	public static function __createEvent<T:Event> (cls:Class<T>, type:String, ?bubbles:Bool = true, ?cancelable:Bool = true):T {
+		return std.Type.createInstance(cls, [type, bubbles, cancelable]);
+	}
 	#end
+	
+	#end
+	
+	/**
+	 * Use this method to create custom events.
+	 */
+	macro public static function createEvent<T:Event> (cls:ExprOf<Class<T>>, type:ExprOf<String>, ?bubbles:ExprOf<Bool>, ?cancelable:ExprOf<Bool>):ExprOf<T> {
+		if (Context.defined("js") && !Context.defined("use_vdom")) {
+			var ident = switch (cls.expr) {
+				case EConst(c): switch (c) { case CIdent(str): str; default: throw "Invalid event type."; }
+				case EField(e, str): str;
+				default: throw "Invalid event type.";
+			}
+			var clsStr = { expr:EConst(CString(ident)), pos:Context.currentPos() };
+			return macro hxdom.DomTools.__createEvent($clsStr, $type, $bubbles, $cancelable);
+		} else {
+			return macro hxdom.DomTools.__createEvent($cls, $type, $bubbles, $cancelable);
+		}
+	}
 	
 	/**
 	 * Add event listeners to classes implementing IEventDispatcher.

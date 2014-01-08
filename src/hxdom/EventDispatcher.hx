@@ -132,7 +132,7 @@ interface IEventDispatcher {
 		//Need to copy on client because target and currentTarget are read-only
 		var evt:Dynamic = { };
 		untyped __js__("for (var f in event) {");
-		untyped __js__("evt[f] = event[f]");
+		untyped __js__("if (f != 'returnValue') evt[f] = event[f]");
 		untyped __js__("}");
 		untyped evt.__proto__ = Event;
 		#else

@@ -115,7 +115,7 @@ class ForumThreadView extends EBody implements ClientOnly {
 	}
 	
 	public function fireEvent ():Void {
-		dispatchEvent(new Event("click"));
+		dispatchEvent(Event.createEvent("click"));
 	}
 	
 }
@@ -216,7 +216,7 @@ class User implements IEventDispatcher implements ClientOnly {
 	}
 	
 	public function update ():Void {
-		this.dispatchEvent(new Event("change"));
+		this.dispatchEvent(Event.createEvent("change"));
 	}
 	
 }
@@ -240,7 +240,7 @@ class Post implements IEventDispatcher {
 	}
 	
 	public function update ():Void {
-		this.dispatchEvent(new Event("change"));
+		this.dispatchEvent(Event.createEvent("change"));
 	}
 	
 }
