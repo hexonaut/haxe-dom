@@ -134,7 +134,7 @@ interface IEventDispatcher {
 		untyped __js__("for (var f in event) {");
 		untyped __js__("if (f != 'returnValue') evt[f] = event[f]");
 		untyped __js__("}");
-		untyped evt.__proto__ = Event;
+		untyped evt.__proto__ = event.__proto__;
 		#else
 		var evt = event;
 		#end
