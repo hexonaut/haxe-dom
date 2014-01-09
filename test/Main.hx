@@ -13,16 +13,15 @@ class Main {
 	
 	static function main () {
 		#if js
-		js.Browser.window.onload = function (_) {
-			var app:ForumApp = cast Boot.init();
-			
-			//Add a post on load from JS
-			app.threads.addPost(new Post(app.threads.posts[0].post.user, "Right back at yea John! This time from JS!"));
-			
-			//Check to see text references are maintained
-			app.threads.markTextEnds();
-		}
+		var app:ForumApp = cast Boot.init();
+		
+		//Add a post on load from JS
+		app.threads.addPost(new Post(app.threads.posts[0].post.user, "Right back at yea John! This time from JS!"));
+		
+		//Check to see text references are maintained
+		app.threads.markTextEnds();
 		#else
+		HtmlSerializer.prettyPrint = true;
 		sys.io.File.saveContent("index.html", HtmlSerializer.run(new ForumApp()));
 		#end
 	}
@@ -47,8 +46,8 @@ class ForumApp extends EHtml {
 		var user2 = new John(1);
 		
 		head = new EHead();
-		head.add(new EScript().addText("window.EventTarget || (window.EventTarget = function () {});"));
-		head.add(new EScript().attr(Src, "haxedom.js").attr(Defer, true));
+		head.add(new EScript().addText("HTMLDetailsElement = HTMLElement;"));
+		head.add(new EScript().attr(Src, "client.js").attr(Defer, true));
 		
 		threads = new ForumThreadView([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
 		untyped threads.node.dataset.testingCustomDataAttr = "data'.data.data'.data";
@@ -115,7 +114,7 @@ class ForumThreadView extends EBody implements ClientOnly {
 	}
 	
 	public function fireEvent ():Void {
-		dispatchEvent(Event.createEvent("click"));
+		dispatchEvent(new Event("click"));
 	}
 	
 }
@@ -212,11 +211,11 @@ class User implements IEventDispatcher implements ClientOnly {
 	@:client
 	function init ():Void {
 		//JS specific code
-		js.Browser.window.alert("Client load init! id = " + id + ", name = " + name);
+		js.Browser.window.console.log("Client load init! id = " + id + ", name = " + name);
 	}
 	
 	public function update ():Void {
-		this.dispatchEvent(Event.createEvent("change"));
+		this.dispatchEvent(new Event("change"));
 	}
 	
 }
@@ -240,7 +239,7 @@ class Post implements IEventDispatcher {
 	}
 	
 	public function update ():Void {
-		this.dispatchEvent(Event.createEvent("change"));
+		this.dispatchEvent(new Event("change"));
 	}
 	
 }
