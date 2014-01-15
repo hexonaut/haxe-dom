@@ -177,7 +177,7 @@ A Full Example
 
 Use this command:
 
-	haxe -cp test -neko server.n -main Main --next -cp test -js client.js -main Main
+	haxe -cp test -neko server.n -main Main --next -cp test -js haxedom.js -main Main
 
 To compile the example in the test directory.
 
