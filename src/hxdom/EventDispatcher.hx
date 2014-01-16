@@ -72,6 +72,8 @@ interface IEventDispatcher {
 	}
 	
 	public function __callListeners (event:hxdom.html.Event, capture:Bool):Void {
+		if (__listeners == null) return;
+		
 		untyped {
 			if (event.target == this) {
 				event.eventPhase = hxdom.html.Event.AT_TARGET;
@@ -126,8 +128,6 @@ interface IEventDispatcher {
 	}
 
 	public function dispatchEvent (event:hxdom.html.Event):Bool {
-		if (__listeners == null) __listeners = new Map<String, List<{handler:hxdom.EventHandler, cap:Bool}>>();
-		
 		#if (js && !use_vdom)
 		//Need to copy on client because target and currentTarget are read-only
 		var evt:Dynamic = { };
