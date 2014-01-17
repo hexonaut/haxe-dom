@@ -207,11 +207,11 @@ class VirtualNode<T:Node> extends EventTarget {
 		node.removeEventListener(type, listener, useCapture);
 	}
 	#else
-	public override function __addEventListener (type:String, handler:EventHandler, ?useCapture:Bool = false):Void {
+	public override function __addEventListener (type:String, handler:EventHandler<hxdom.html.Event -> Void>, ?useCapture:Bool = false):Void {
 		node.__addEventListener(type, handler, useCapture);
 	}
 	
-	public override function __removeEventListener (type:String, handler:EventHandler, ?useCapture:Bool = false):Void {
+	public override function __removeEventListener (type:String, handler:EventHandler<hxdom.html.Event -> Void>, ?useCapture:Bool = false):Void {
 		node.__removeEventListener(type, handler, useCapture);
 	}
 	#end

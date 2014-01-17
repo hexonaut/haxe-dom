@@ -22,12 +22,12 @@ import hxdom.EventDispatcher;
  * 
  * @author Sam MacPherson
  */
-class EventHandler {
+class EventHandler<T> {
 	
 	public var inst(default, null):Dynamic;
 	public var func(default, null):String;
 	
-	public function new (inst:Dynamic, func:String, origFunc:Dynamic) {
+	public function new (inst:Dynamic, func:String, origFunc:T) {
 		this.inst = inst;
 		this.func = func;
 	}
@@ -38,7 +38,7 @@ class EventHandler {
 		return Reflect.callMethod(inst, Reflect.field(inst, func), args);
 	}
 
-	macro public static function make (listener:ExprOf<Dynamic>):ExprOf<EventHandler> {
+	macro public static function make<T> (listener:ExprOf<T>):ExprOf<EventHandler<T>> {
 		return doMake(listener);
 	}
 	
@@ -91,7 +91,8 @@ class EventHandler {
 		}
 	}
 	
-	public static function doMake (listener:ExprOf<Dynamic>):ExprOf<EventHandler> {
+	public static function doMake<T> (listener:ExprOf<T>):ExprOf<EventHandler<T>> {
+		//Split function and object
 		var split = null;
 		switch (listener.expr) {
 			case EField(e, f):
