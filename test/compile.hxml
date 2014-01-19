@@ -1,0 +1,12 @@
+-cp .
+-cp ../src
+-neko server.n
+-main Test
+--next
+-debug
+-cp .
+-cp ../src
+-js haxedom.js
+-main Test
+
+-cmd neko server.n

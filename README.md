@@ -175,10 +175,4 @@ Although I have not tested this yet you can use NodeJS by adding the -D use_vdom
 A Full Example
 ==============
 
-Use this command:
-
-	haxe -cp test -neko server.n -main Main --next -cp test -js haxedom.js -main Main
-
-To compile the example in the test directory.
-
-Run the neko binary which will produce an index.html file to which you can load into your browser. You may need to shiv missing elements depending on your browser.
+Run the compile.hxml file in the test directory to build index.html which you can then load in a browser.

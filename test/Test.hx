@@ -9,10 +9,10 @@ import hxdom.js.ClientOnly;
 
 using hxdom.DomTools;
 
-class Main {
+class Test {
 	
 	static function main () {
-		HtmlSerializer.prettyPrint = true;
+		//HtmlSerializer.prettyPrint = true;
 		#if js
 		js.Browser.window.onload = function (_) {
 			var app:ForumApp = cast Boot.init();
@@ -54,7 +54,7 @@ class ForumApp extends EHtml {
 		threads = new ForumThreadView([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
 		untyped threads.node.dataset.testingCustomDataAttr = "data'.data.data'.data";
 		threads.node.style.backgroundColor = "red";
-		addEventListener("click", Main.staticEventListener);
+		addEventListener("click", Test.staticEventListener);
 		empty = new Text("");
 		
 		add(head);
