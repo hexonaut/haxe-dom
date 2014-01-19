@@ -51,32 +51,50 @@ class HtmlSerializer extends Serializer {
 			__htmlSnippet:null
 		};
 	
+	public static var prettyPrint:Bool = false;
+	public static var iStr:String = '\t';
+	public static var eol:String = '\r\n';
+	var indent:Int;
+	var actIndent:String;
+	
 	public function new () {
 		super();
 		
+		indent = 0;
 		useCache = true;
 		useEnumIndex = USE_ENUM_INDEX;
 		attr = false;
 	}
 	
 	function text (t:VirtualNode<hxdom.html.Text>):Void {
-		buf.add(t.node.data);
+		if(prettyPrint)
+			buf.add("".lpad(iStr, indent) + iStr + t.node.data + eol );
+		else
+			buf.add(t.node.data);
 	}
 	
 	function element (e:VirtualNode<Element>):Void {
 		openTag(e);
+		indent++;
 		children(e);
+		indent--;
 		closeTag(e);
 	}
 	
 	function openTag (e:VirtualNode<Element>):Void {
-		buf.add("<" + e.node.tagName.toLowerCase());
+		if(prettyPrint)
+			buf.add("".lpad(iStr, indent) + "<" + e.node.tagName.toLowerCase());
+		else
+			buf.add("<" + e.node.tagName.toLowerCase());
 		attrs(e);
-		buf.add(">");
+		buf.add(prettyPrint && e.node.hasChildNodes() ? ">" + eol: ">");
 	}
 	
 	function closeTag (e:VirtualNode<Element>):Void {
-		buf.add("</" + e.node.tagName.toLowerCase() + ">");
+		if(prettyPrint)
+			buf.add((e.node.hasChildNodes()? "".lpad(iStr, indent):'') + "</" + e.node.tagName.toLowerCase() + ">" + eol);
+		else	
+			buf.add("</" + e.node.tagName.toLowerCase() + ">");
 	}
 	
 	/**
@@ -89,7 +107,10 @@ class HtmlSerializer extends Serializer {
 			for (i in e.node.childNodes) {
 				if (i.nodeType == Node.TEXT_NODE) {
 					var text:Text = Reflect.field(i, "__vdom");
-					buf.add(" " + Reflect.field(text, "id") + "-" + untyped i.data.length);
+					if(prettyPrint)
+						buf.add(" " + Reflect.field(text, "id") + "-" + ("".lpad(iStr, indent) + iStr + untyped i.data + eol).length);
+					else
+						buf.add(" " + Reflect.field(text, "id") + "-" + untyped i.data.length);
 				}
 			}
 		}

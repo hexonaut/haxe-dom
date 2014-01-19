@@ -1,0 +1,14 @@
+-cp test 
+-cp src
+-cp C:\devel\haxe\libs4hx\lib
+-neko server.n
+-main Main
+--next 
+-debug
+-cp C:\devel\haxe\libs4hx\lib
+-cp test 
+-cp src
+-js haxedom.js 
+-main Main
+
+-cmd neko server.n

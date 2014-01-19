@@ -12,6 +12,7 @@ using hxdom.DomTools;
 class Main {
 	
 	static function main () {
+		HtmlSerializer.prettyPrint = true;
 		#if js
 		js.Browser.window.onload = function (_) {
 			var app:ForumApp = cast Boot.init();
