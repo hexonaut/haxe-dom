@@ -265,8 +265,7 @@ class DomTools {
 			var ident = switch (cls.expr) {
 				case EConst(c): switch (c) { case CIdent(str): str; default: throw "Invalid event type."; }
 				case EField(e, str): str;
-				case EMeta(s, e): 'Event';
-				default: throw "Invalid event type.";
+				case _: throw "Invalid event type.";
 			}
 			var clsStr = { expr:EConst(CString(ident)), pos:Context.currentPos() };
 			return macro hxdom.DomTools.__createEvent($clsStr, $type, $bubbles, $cancelable);
