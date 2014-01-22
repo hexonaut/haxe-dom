@@ -79,7 +79,7 @@ enum InputType {
 	Button;
 	Checkbox;
 	Color;
-	Date;
+	IDate;
 	DateTime;
 	DateTimeLocal;
 	Email;
@@ -321,7 +321,7 @@ class EInput extends VirtualElement<InputElement> {
 			case Button: "button";
 			case Checkbox: "checkbox";
 			case Color: "color";
-			case Date: "date";
+			case IDate: "date";
 			case DateTime: "datetime";
 			case DateTimeLocal: "datetime-local";
 			case Email: "email";
