@@ -117,7 +117,6 @@ enum Attr {
 	Srclang;
 	Start;
 	Step;
-	Style;
 	Summary;
 	Tabindex;
 	Target;
