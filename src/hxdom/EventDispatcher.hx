@@ -71,7 +71,7 @@ interface IEventDispatcher {
 		}
 	}
 	
-	public function __callListeners (event:hxdom.html.Event, capture:Bool):Void {
+	function __callListeners (event:hxdom.html.Event, capture:Bool):Void {
 		if (__listeners == null) return;
 		
 		untyped {
@@ -93,35 +93,44 @@ interface IEventDispatcher {
 		}
 	}
 	
-	public function __capturePhase (event:hxdom.html.Event):Void {
+	function __capturePhase (event:hxdom.html.Event):Bool {
 		untyped {
-			event.currentTarget = node;
+			event.currentTarget = this;
 			
 			//Start from root
 			if (Std.is(this, hxdom.html.Node)) {
 				var node:hxdom.html.Node = cast this;
-				if (node.parentNode != null && event.bubbles) {
-					node.parentNode.__capturePhase(event);
+				if (node.parentNode != null) {
+					if (event.bubbles) {
+						if (!node.parentNode.__capturePhase(event) && this != event.target) return false;
+					}
+				} else {
+					//If we reach the top and it's not the document then don't fire events (DOM spec)
+					if (!Std.is(this, hxdom.html.HtmlElement)) return false;
 				}
 			}
 			
 			//Call listeners
 			if (!event.cancelable || !event.cancelBubble) __callListeners(event, true);
+			
+			return true;
 		}
 	}
 	
-	public function __bubblePhase (event:hxdom.html.Event):Void {
+	function __bubblePhase (event:hxdom.html.Event, ?inDom:Bool = true):Void {
 		untyped {
-			event.currentTarget = node;
+			event.currentTarget = this;
 			
 			//Call listeners
 			if (!event.cancelable || !event.cancelBubble) __callListeners(event, false);
 			
 			//Bubble up from target element
-			if (Std.is(this, hxdom.html.Node)) {
-				var node:hxdom.html.Node = cast this;
-				if (node.parentNode != null && event.bubbles) {
-					node.parentNode.__bubblePhase(event);
+			if (inDom) {
+				if (Std.is(this, hxdom.html.Node)) {
+					var node:hxdom.html.Node = cast this;
+					if (node.parentNode != null && event.bubbles) {
+						node.parentNode.__bubblePhase(event);
+					}
 				}
 			}
 		}
@@ -141,8 +150,8 @@ interface IEventDispatcher {
 		
 		untyped evt.target = this;
 		
-		__capturePhase(evt);
-		__bubblePhase(evt);
+		var inDom = __capturePhase(evt);
+		__bubblePhase(evt, inDom);
 		
 		return !event.defaultPrevented;
 	}
@@ -179,23 +188,25 @@ class EventDispatcherMacro {
 		var _fields = new Array<Field>();
 		
 		for (i in fields) {
-			//Remove __listeners, public keyword and body content
-			switch (i.kind) {
-				case FFun(f):
-					_fields.push( {
-						pos:i.pos,
-						name:i.name,
-						meta:i.meta,
-						kind:FFun( {
-								ret:f.ret,
-								params:f.params,
-								expr:null,
-								args:f.args
-							}),
-						doc:i.doc,
-						access:[]
-					});
-				default:
+			//Remove __listeners, private functions, public keyword and body content
+			if (i.access.has(APublic)) {
+				switch (i.kind) {
+					case FFun(f):
+						_fields.push( {
+							pos:i.pos,
+							name:i.name,
+							meta:i.meta,
+							kind:FFun( {
+									ret:f.ret,
+									params:f.params,
+									expr:null,
+									args:f.args
+								}),
+							doc:i.doc,
+							access:[]
+						});
+					default:
+				}
 			}
 			
 			edFields.push(i);
