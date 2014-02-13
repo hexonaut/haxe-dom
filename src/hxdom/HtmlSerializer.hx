@@ -147,7 +147,7 @@ class HtmlSerializer extends Serializer {
 				case TBool:
 					if (val) buf.add(" " + DomTools.camelCaseToDash(attrName));
 				default:
-					buf.add(" " + DomTools.camelCaseToDash(attrName) + "='" + val + "'");
+					buf.add(" " + DomTools.camelCaseToDash(attrName) + "='" + Std.string(val).htmlEscape(true) + "'");
 			}
 		}
 		
