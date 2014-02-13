@@ -42,6 +42,9 @@ class Boot extends Unserializer {
 	function element (e:Element):Void {
 		var velem = Reflect.field(e, "__vdom");
 		
+		//Check if there are any clientInit functions on the virtual node
+		checkClientInit(velem);
+		
 		//Event listeners
 		if (Reflect.hasField(e.dataset, "hxevents")) {
 			var listeners:Map<String, List<{handler:EventHandler<hxdom.html.Event -> Void>, cap:Bool}>> = doUnserialize(Reflect.field(e.dataset, "hxevents"));
@@ -62,9 +65,6 @@ class Boot extends Unserializer {
 				Reflect.setField(velem, key, doUnserialize(Reflect.field(e.dataset, i)));
 			}
 		}
-		
-		//Check if there are any clientInit functions on the virtual node
-		checkClientInit(velem);
 	}
 	
 	function unserializeNode (node:Node):Void {
