@@ -79,7 +79,8 @@ class Boot extends Unserializer {
 	
 	function buildElementLookup (node:Node):Void {
 		if (node.nodeType == Node.ELEMENT_NODE) {
-			var cls = Type.resolveClass(Reflect.field(cast(node, Element).dataset, "hxclass"));
+			var el:Element = cast node;
+			var cls = Type.resolveClass(Reflect.field(el.dataset, "hxclass"));
 			//If this is not a hxdom element then just continue
 			if (cls != null) {
 				//Setup virtual dom element

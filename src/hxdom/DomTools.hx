@@ -231,7 +231,7 @@ class DomTools {
 	 * Will return the element of the given type along the event path.
 	 */
 	public static function delegate<T> (event:Event, type:Class<T>):Null<T> {
-		var currNode = cast(event.target, Node);
+		var currNode:Node = cast event.target;
 		while (currNode != null && currNode != event.currentTarget) {
 			var vnode = vnode(currNode);
 			if (Std.is(vnode, type)) {
