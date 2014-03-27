@@ -113,14 +113,14 @@ class EventHandler<T> {
 							split = { inst:getFullClassName(cls), func:{expr:EConst(CString(name)), pos:Context.currentPos()} };
 						}
 						
-						if (split == null) throw "Missing function definition.";
+						if (split == null) Context.fatalError("Missing function definition.", Context.currentPos());
 					default:
-						throw "Unsupported function reference.";
+						Context.fatalError("Unsupported function reference.", Context.currentPos());
 				}
 			case EFunction(_, _):
-				throw "Anonymous functions are not supported.";
+				Context.fatalError("Anonymous functions are not supported.", Context.currentPos());
 			default:
-				throw "Unsupported event handler.";
+				Context.fatalError("Unsupported event handler.", Context.currentPos());
 		}
 		return macro new hxdom.EventHandler(${split.inst}, ${split.func}, $listener);
 	}

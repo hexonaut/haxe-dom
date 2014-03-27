@@ -262,11 +262,13 @@ class DomTools {
 	 */
 	macro public static function createEvent<T:Event> (cls:ExprOf<Class<T>>, type:ExprOf<String>, ?bubbles:ExprOf<Bool>, ?cancelable:ExprOf<Bool>):ExprOf<T> {
 		if (Context.defined("js") && !Context.defined("use_vdom")) {
-			var ident = switch (cls.expr) {
-				case EConst(c): switch (c) { case CIdent(str): str; default: throw "Invalid event type."; }
-				case EField(e, str): str;
-				case _: throw "Invalid event type.";
+			var ident = switch (Context.typeof(cls)) {
+				case TType(t, _):
+					var n = t.get().name;
+					n.substr("Class<".length, n.length - ">".length - "Class<".length);
+				default: null;
 			}
+			if (ident == null) Context.fatalError("Invalid event type.", Context.currentPos());
 			var clsStr = { expr:EConst(CString(ident)), pos:Context.currentPos() };
 			return macro hxdom.DomTools.__createEvent($clsStr, $type, $bubbles, $cancelable);
 		} else {
