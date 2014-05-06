@@ -18,7 +18,7 @@ import hxdom.html.HtmlElement;
 import hxdom.html.Node;
 import hxdom.Elements;
 import hxdom.EventDispatcher;
-import hxdom.EventHandler;
+import hxdom.SFunc;
 
 using StringTools;
 
@@ -30,13 +30,13 @@ using StringTools;
 class Boot extends Unserializer {
 	
 	var elementLookup:Map<Int, Node>;					//Find elements from their id
-	var initFuncs:List<EventHandler<Void -> Void>>;		//Call these functions after init
+	var initFuncs:List<SFunc<Void -> Void>>;		//Call these functions after init
 	
 	public function new () {
 		super("");
 		
 		elementLookup = new Map<Int, Node>();
-		initFuncs = new List<EventHandler<Void -> Void>>();
+		initFuncs = new List<SFunc<Void -> Void>>();
 	}
 	
 	function element (e:Element):Void {
@@ -47,7 +47,7 @@ class Boot extends Unserializer {
 		
 		//Event listeners
 		if (Reflect.hasField(e.dataset, "hxevents")) {
-			var listeners:Map<String, List<{handler:EventHandler<hxdom.html.Event -> Void>, cap:Bool}>> = doUnserialize(Reflect.field(e.dataset, "hxevents"));
+			var listeners:Map<String, List<{handler:SFunc<hxdom.html.Event -> Void>, cap:Bool}>> = doUnserialize(Reflect.field(e.dataset, "hxevents"));
 			for (eventType in listeners.keys()) {
 				for (eh in listeners.get(eventType)) {
 					#if (js && !use_vdom)
@@ -161,7 +161,7 @@ class Boot extends Unserializer {
 	 */
 	inline function checkClientInit (inst:Dynamic):Void {
 		if (Std.is(inst, ClientOnly)) {
-			initFuncs.add(new EventHandler(inst, "__hxdomBoot", null));
+			initFuncs.add(new SFunc(inst, "__hxdomBoot", null));
 		}
 	}
 	

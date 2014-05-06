@@ -117,18 +117,18 @@ Using the DOM directly can be kind of annoying, so I've included a DomTools clas
 Custom Event Systems
 ====================
 
-If you are interested in rolling your own event systems, but want to take advantage of the serializability of haxe-dom then you can use the hxdom.EventHandler class. What it does is split any fully referenceable function into its instance (or class for static functions) and function name components. For example:
+If you are interested in rolling your own event systems, but want to take advantage of the serializability of haxe-dom then you can use the hxdom.SFunc class. What it does is split any fully referenceable function into its instance (or class for static functions) and function name components. For example:
 
 	class MyClass {
 		
-		var eventHandler:hxdom.EventHandler;
+		var eventHandler:hxdom.SFunc;
 		
 		public function new () {
 			//Could call this on either the server or the client
 			//MyClass instances are fully serializable
 			
-			//Internally eventHandler stores [inst => this, func => "myEventListener"]
-			eventHandler = hxdom.EventHandler.make(myEventListener);
+			//Internally SFunc stores [inst => this, func => "myEventListener"]
+			eventHandler = hxdom.SFunc.make(myEventListener);
 		}
 		
 		public function fireEvent ():Void {
@@ -142,14 +142,14 @@ If you are interested in rolling your own event systems, but want to take advant
 		
 	}
 
-Don't want to pass around EventHandler references? Use the hxdom.EventHandler.doMake() macro to roll your own seamless event system. This allows you to make completely transparent code like this:
+Don't want to pass around SFunc references? Use the hxdom.SFunc.macroMake() macro to roll your own seamless event system. This allows you to make completely transparent code like this:
 
 	someObj.bind("someEventType", myEventHandler);
 	
 	...
 	
 	macro public function bind (ethis:Expr, type:ExprOf<String>, listener:ExprOf<Void -> Void>):ExprOf<Void> {
-		return macro $ethis.actualBind($type, ${hxdom.EventHandler.doMake(listener)});
+		return macro $ethis.actualBind($type, ${hxdom.SFunc.macroMake(listener)});
 	}
 
 Client Initialization

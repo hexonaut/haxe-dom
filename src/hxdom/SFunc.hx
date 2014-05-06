@@ -22,7 +22,7 @@ import hxdom.EventDispatcher;
  * 
  * @author Sam MacPherson
  */
-class EventHandler<T> {
+class SFunc<T> {
 	
 	public var inst(default, null):Dynamic;
 	public var func(default, null):String;
@@ -38,8 +38,8 @@ class EventHandler<T> {
 		return Reflect.callMethod(inst, Reflect.field(inst, func), args);
 	}
 
-	macro public static function make<T> (listener:ExprOf<T>):ExprOf<EventHandler<T>> {
-		return doMake(listener);
+	macro public static function make<T> (listener:ExprOf<T>):ExprOf<SFunc<T>> {
+		return macroMake(listener);
 	}
 	
 	#if macro
@@ -91,7 +91,7 @@ class EventHandler<T> {
 		}
 	}
 	
-	public static function doMake<T> (listener:ExprOf<T>):ExprOf<EventHandler<T>> {
+	public static function macroMake<T> (listener:ExprOf<T>):ExprOf<SFunc<T>> {
 		//Split function and object
 		var split = null;
 		switch (listener.expr) {
@@ -113,16 +113,16 @@ class EventHandler<T> {
 							split = { inst:getFullClassName(cls), func:{expr:EConst(CString(name)), pos:Context.currentPos()} };
 						}
 						
-						if (split == null) Context.fatalError("Missing function definition.", Context.currentPos());
+						if (split == null) Context.error("Missing function definition.", Context.currentPos());
 					default:
-						Context.fatalError("Unsupported function reference.", Context.currentPos());
+						Context.error("Unsupported function reference.", Context.currentPos());
 				}
 			case EFunction(_, _):
-				Context.fatalError("Anonymous functions are not supported.", Context.currentPos());
+				Context.error("Anonymous functions are not supported.", Context.currentPos());
 			default:
-				Context.fatalError("Unsupported event handler.", Context.currentPos());
+				Context.error("Unsupported event handler.", Context.currentPos());
 		}
-		return macro new hxdom.EventHandler(${split.inst}, ${split.func}, $listener);
+		return macro new hxdom.SFunc(${split.inst}, ${split.func}, $listener);
 	}
 	#end
 	

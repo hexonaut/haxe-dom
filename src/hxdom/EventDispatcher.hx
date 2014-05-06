@@ -13,7 +13,7 @@ package hxdom;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
-import hxdom.EventHandler;
+import hxdom.SFunc;
 
 using Lambda;
 
@@ -25,11 +25,11 @@ using Lambda;
 class EventDispatcher implements IEventDispatcher {
 	
 	macro public function addEventListener (ethis:Expr, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		return macro $ethis.__addEventListener($type, ${EventHandler.doMake(listener)}, $useCapture);
+		return macro $ethis.__addEventListener($type, ${SFunc.macroMake(listener)}, $useCapture);
 	}
 
 	macro public function removeEventListener (ethis:Expr, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		return macro $ethis.__removeEventListener($type, ${EventHandler.doMake(listener)}, $useCapture);
+		return macro $ethis.__removeEventListener($type, ${SFunc.macroMake(listener)}, $useCapture);
 	}
 	
 }
@@ -41,15 +41,15 @@ class EventDispatcher implements IEventDispatcher {
 interface IEventDispatcher {
 	
 	#if !macro
-	@:skip var __listeners:Map<String, List<{handler:hxdom.EventHandler<hxdom.html.Event -> Void>, cap:Bool}>>;
+	@:skip var __listeners:Map<String, List<{handler:hxdom.SFunc<hxdom.html.Event -> Void>, cap:Bool}>>;
 	
-	public function __addEventListener (type:String, handler:hxdom.EventHandler<hxdom.html.Event -> Void>, ?useCapture:Bool = false):Void {
-		if (__listeners == null) __listeners = new Map<String, List<{handler:hxdom.EventHandler<hxdom.html.Event -> Void>, cap:Bool}>>();
+	public function __addEventListener (type:String, handler:hxdom.SFunc<hxdom.html.Event -> Void>, ?useCapture:Bool = false):Void {
+		if (__listeners == null) __listeners = new Map<String, List<{handler:hxdom.SFunc<hxdom.html.Event -> Void>, cap:Bool}>>();
 		
 		var list = __listeners.get(type);
 		var obj = { handler:handler, cap:useCapture };
 		if (list == null) {
-			list = new List<{handler:hxdom.EventHandler<hxdom.html.Event -> Void>, cap:Bool}>();
+			list = new List<{handler:hxdom.SFunc<hxdom.html.Event -> Void>, cap:Bool}>();
 			list.add(obj);
 			__listeners.set(type, list);
 		} else {
@@ -60,7 +60,7 @@ interface IEventDispatcher {
 		}
 	}
 	
-	public function __removeEventListener (type:String, handler:hxdom.EventHandler<hxdom.html.Event -> Void>, ?useCapture:Bool = false):Void {
+	public function __removeEventListener (type:String, handler:hxdom.SFunc<hxdom.html.Event -> Void>, ?useCapture:Bool = false):Void {
 		if (__listeners == null || !__listeners.exists(type)) return;
 		
 		var list = __listeners.get(type);

@@ -116,7 +116,7 @@ class ClientOnlyMacros {
 				default:
 			}
 		} else {
-			Context.fatalError("Client only classes must have a constructor.", Context.currentPos());
+			Context.error("Client only classes must have a constructor.", Context.currentPos());
 		}
 		
 		return fields;
