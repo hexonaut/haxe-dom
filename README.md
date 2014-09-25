@@ -21,7 +21,7 @@ The following is sent across the wire:
 
 Init on client (JavaScript):
 
-	var page = hxdom.js.Boot();
+	var page = hxdom.js.Boot.init();
 
 Custom Classes
 ==============
