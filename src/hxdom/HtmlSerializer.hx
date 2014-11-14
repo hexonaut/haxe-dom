@@ -19,6 +19,7 @@ import hxdom.html.HtmlElement;
 import hxdom.html.Node;
 import hxdom.html.Text;
 import hxdom.Elements;
+import hxdom.util.Util;
 
 using StringTools;
 
@@ -103,14 +104,14 @@ class HtmlSerializer extends Serializer {
 		
 		//Add in actual 'data-' attrs
 		for (i in Reflect.fields(e.node.dataset)) {
-			buf.add(" data-" + DomTools.camelCaseToDash(i) + "='" + Std.string(Reflect.field(e.node.dataset, i)).htmlEscape(true) + "'");
+			buf.add(" data-" + Util.camelCaseToDash(i) + "='" + Std.string(Reflect.field(e.node.dataset, i)).htmlEscape(true) + "'");
 		}
 		
 		//Add in style attribute
 		var style = null;
 		for (i in Reflect.fields(e.node.style)) {
 			if (style == null) style = " style='";
-			style += (DomTools.camelCaseToDash(i) + ":" + Reflect.field(e.node.style, i)).htmlEscape(true) + ";";
+			style += (Util.camelCaseToDash(i) + ":" + Reflect.field(e.node.style, i)).htmlEscape(true) + ";";
 		}
 		if (style != null) buf.add(style + "'");
 		
@@ -124,9 +125,9 @@ class HtmlSerializer extends Serializer {
 			var val = Reflect.field(e.node, i);
 			switch (Type.typeof(val)) {
 				case TBool:
-					if (val) buf.add(" " + DomTools.camelCaseToDash(attrName));
+					if (val) buf.add(" " + Util.camelCaseToDash(attrName));
 				default:
-					buf.add(" " + DomTools.camelCaseToDash(attrName) + "='" + Std.string(val).htmlEscape(true) + "'");
+					buf.add(" " + Util.camelCaseToDash(attrName) + "='" + Std.string(val).htmlEscape(true) + "'");
 			}
 		}
 		
@@ -144,7 +145,7 @@ class HtmlSerializer extends Serializer {
 		buf.add(" data-hxclass='" + Type.getClassName(Type.getClass(e)) + "'");
 		for (i in sortedFields) {
 			if (i != "node" && i != "id") {
-				buf.add(" data-hxd" + DomTools.camelCaseToDash(i) + "='");
+				buf.add(" data-hxd" + Util.camelCaseToDash(i) + "='");
 				serialize(Reflect.field(e, i));
 				buf.add("'");
 			}

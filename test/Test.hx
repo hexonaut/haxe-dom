@@ -47,7 +47,7 @@ class ForumApp extends EHtml {
 		var user2 = new John(1);
 		
 		head = new EHead();
-		head.add(new EScript().attr(Src, "haxedom.js").attr(Defer, true));
+		head.append(new EScript().setAttr("src", "haxedom.js").setAttr("defer", true));
 		
 		threads = new ForumThreadView([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
 		untyped threads.node.dataset.testingCustomDataAttr = "data'.data.data'.data";
@@ -55,11 +55,9 @@ class ForumApp extends EHtml {
 		addEventListener("click", Test.staticEventListener);
 		empty = new Text("");
 		
-		add(head);
-		add(threads);
-		add(empty);
-		
-		threads.fireEvent();
+		append(head);
+		append(threads);
+		append(empty);
 	}
 	
 }
@@ -70,7 +68,7 @@ class ForumThreadView extends EBody implements ClientOnly {
 	
 	var t1:Text;
 	var t2:Text;
-	var empty:Text;
+	var _empty:Text;
 	var t3:Text;
 	
 	public function new (posts:Array<Post>) {
@@ -80,10 +78,10 @@ class ForumThreadView extends EBody implements ClientOnly {
 		
 		t1 = new Text("Testing ");
 		t2 = new Text("inline              text ");
-		empty = new Text("");
+		_empty = new Text("");
 		t3 = new Text("references");
 		
-		add(t1).add(t2).add(empty).add(t3);
+		append(t1).append(t2).append(_empty).append(t3);
 	}
 	
 	@:client
@@ -94,27 +92,23 @@ class ForumThreadView extends EBody implements ClientOnly {
 	public function markTextEnds ():Void {
 		t1.node.data += "|";
 		t2.node.data += "|";
-		empty.node.data += "|";
+		_empty.node.data += "|";
 		t3.node.data += "|";
 	}
 	
 	function set_posts (posts:Array<PostView>):Array<PostView> {
 		this.posts = posts;
 		
-		this.clear();
+		this.empty();
 		for (i in posts) {
-			this.add(i);
+			this.append(i);
 		}
 		
 		return posts;
 	}
 	
 	public function addPost (post:Post):Void {
-		this.add(new PostView(post));
-	}
-	
-	public function fireEvent ():Void {
-		dispatchEvent(Event.createEvent("click"));
+		this.append(new PostView(post));
 	}
 	
 }
@@ -130,7 +124,7 @@ class PostView extends EArticle {
 	public function new (post:Post) {
 		super();
 		
-		this.classes("post");
+		this.addClass("post");
 		
 		this.post = post;
 	}
@@ -138,7 +132,7 @@ class PostView extends EArticle {
 	function set_post (post:Post):Post {
 		//Clear last post
 		if (this.post != null) {
-			this.clear();
+			this.empty();
 			this.post.removeEventListener("change", onPostChange);
 			btn.node.removeEventListener("click", onClick);
 		}
@@ -152,11 +146,11 @@ class PostView extends EArticle {
 			
 			post.addEventListener("change", onPostChange);
 			
-			this.add(eprofile);
-			this.add(emsg.classes("post-message").addText(post.message));
-			btn = new EButton().addText("Click Me!");
+			this.append(eprofile);
+			this.append(emsg.addClass("post-message").setText(post.message));
+			btn = new EButton().setText("Click Me!");
 			btn.addEventListener("click", onClick);
-			this.add(btn);
+			this.append(btn);
 		}
 		
 		return post;
@@ -180,7 +174,7 @@ class ProfileView extends EAside {
 	public function new (user:User) {
 		super();
 		
-		this.classes("profile");
+		this.addClass("profile");
 		
 		this.user = user;
 	}
@@ -188,9 +182,9 @@ class ProfileView extends EAside {
 	function set_user (user:User):User {
 		this.user = user;
 		
-		this.clear();
+		this.empty();
 		if (user != null) {
-			this.add(new EDiv().classes("profile-name").addText(user.name));
+			this.append(new EDiv().addClass("profile-name").setText(user.name));
 		}
 		
 		return user;
@@ -215,7 +209,7 @@ class User implements IEventDispatcher implements ClientOnly {
 	}
 	
 	public function update ():Void {
-		this.dispatchEvent(Event.createEvent("change"));
+		
 	}
 	
 }
@@ -239,7 +233,7 @@ class Post implements IEventDispatcher {
 	}
 	
 	public function update ():Void {
-		this.dispatchEvent(Event.createEvent("change"));
+		
 	}
 	
 }

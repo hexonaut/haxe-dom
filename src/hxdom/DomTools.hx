@@ -27,7 +27,7 @@ import hxdom.EventDispatcher;
 using Lambda;
 
 /**
- * Utility functions for common DOM operations. Most functions are built for chaining.
+ * Utility functions for common DOM operations. Built to mimic the JQuery API. Most functions are built for chaining.
  * 
  * @author Sam MacPherson
  */
@@ -35,36 +35,27 @@ class DomTools {
 	
 	#if !macro
 	/**
-	 * Does an appendChild, but returns the current node for chaining.
+	 * Appends an element to the end.
 	 */
-	public static function add<T:VirtualNode<Dynamic>> (parent:T, child:VirtualNode<Dynamic>):T {
-		parent.appendChild(child);
+	public static function append<T:VirtualNode<Dynamic>> (parent:T, child:VirtualNode<Dynamic>):T {
+		parent.node.appendChild(child);
 		
 		return parent;
 	}
 	
 	/**
-	 * Does an removeChild, but returns the current node for chaining.
+	 * Removes the element from its parent.
 	 */
-	public static function remove<T:VirtualNode<Dynamic>> (parent:T, child:VirtualNode<Dynamic>):T {
-		parent.removeChild(child);
+	public static function remove<T:VirtualNode<Dynamic>> (e:T):T {
+		e.node.parentNode.removeChild(e.node);
 		
-		return parent;
-	}
-	
-	/**
-	 * Does an insertBefore, but returns the current node for chaining.
-	 */
-	public static function insert<T:VirtualNode<Dynamic>> (parent:T, child:VirtualNode<Dynamic>, ?ref:VirtualNode<Dynamic>):T {
-		parent.insertBefore(child, ref);
-		
-		return parent;
+		return e;
 	}
 	
 	/**
 	 * Clear all children.
 	 */
-	public static function clear<T:VirtualNode<Dynamic>> (node:T):T {
+	public static function empty<T:VirtualNode<Dynamic>> (node:T):T {
 		while (node.node.childNodes.length > 0) {
 			node.node.removeChild(node.node.firstChild);
 		}
@@ -75,7 +66,7 @@ class DomTools {
 	/**
 	 * Add in classes for this element. Space delimited.
 	 */
-	public static function classes<T:VirtualElement<Dynamic>> (e:T, cls:String):T {
+	public static function addClass<T:VirtualElement<Dynamic>> (e:T, cls:String):T {
 		if (e.node.className == null || e.node.className == "") e.node.className = cls;
 		else e.node.className += " " + cls;
 		
@@ -102,7 +93,7 @@ class DomTools {
 	/**
 	 * Remove classes for this element. Space delimited.
 	 */
-	public static function removeClasses<T:VirtualElement<Dynamic>> (e:T, cls:String):T {
+	public static function removeClass<T:VirtualElement<Dynamic>> (e:T, cls:String):T {
 		if (e.node.className != null && e.node.className != "") {
 			var clsArr = cls.split(" ");
 			var ecls:Array<String> = e.node.className.split(" ");
@@ -119,105 +110,111 @@ class DomTools {
 	}
 	
 	/**
-	 * Shortcut for adding text.
+	 * Toggle a class on and off.
 	 */
-	public static function addText<T:VirtualElement<Dynamic>> (parent:T, text:String):T {
-		parent.appendChild(new Text(text));
+	public static function toggleClass<T:VirtualElement<Dynamic>> (e:T, cls:String):T {
+		if (hasClass(e, cls)) removeClass(e, cls);
+		else addClass(e, cls);
 		
-		return parent;
+		return e;
 	}
 	
 	/**
-	 * Sets the text of this node. This assumes that the text is the only child node.
+	 * Sets the element's value property.
 	 */
-	public static function setText<T:VirtualElement<Dynamic>> (parent:T, text:String):T {
-		clear(parent);
-		parent.appendChild(new Text(text));
+	public static function setVal<T:VirtualElement<Dynamic>> (e:T, val:String):T {
+		e.node.value = val;
 		
-		return parent;
+		return e;
 	}
 	
 	/**
-	 * Shortcut for adding an html section.
+	 * Gets the element's value property.
 	 */
-	public static function addHtml<T:VirtualElement<Dynamic>> (parent:T, html:String):T {
-		parent.appendChild(new HtmlSnippet(html));
-		
-		return parent;
+	public static function getVal<T:VirtualElement<Dynamic>> (e:T):String {
+		return e.node.value;
 	}
 	
 	/**
-	 * Sets the html of this node. This assumes that the html is the only child node.
+	 * Sets the text of this node.
 	 */
-	public static function setHtml<T:VirtualElement<Dynamic>> (parent:T, html:String):T {
-		clear(parent);
-		parent.appendChild(new HtmlSnippet(html));
+	public static function setText<T:VirtualElement<Dynamic>> (e:T, text:String):T {
+		e.node.innerText = text;
 		
-		return parent;
+		return e;
 	}
 	
 	/**
-	 * Set any attribute for this element.
+	 * Gets the text of this node.
 	 */
-	public static function unsafeAttr<T:VirtualElement<Dynamic>> (e:T, key:String, val:Dynamic):T {
+	public static function getText<T:VirtualElement<Dynamic>> (e:T):String {
+		return e.node.innerText;
+	}
+	
+	/**
+	 * Sets the html of this node.
+	 */
+	public static function setHtml<T:VirtualElement<Dynamic>> (e:T, html:String):T {
+		e.node.innerHTML = html;
+		
+		return e;
+	}
+	
+	/**
+	 * Get the html of this node.
+	 */
+	public static function getHtml<T:VirtualElement<Dynamic>> (e:T):String {
+		return e.node.innerHTML;
+	}
+	
+	/**
+	 * Set an attribute on the element.
+	 */
+	public static function setAttr<T:VirtualElement<Dynamic>> (e:T, key:String, val:Dynamic):T {
+		e.node.setAttribute(key, val);
+		
+		return e;
+	}
+	
+	/**
+	 * Gets an attribute on the element.
+	 */
+	public static function getAttr<T:VirtualElement<Dynamic>> (e:T, key:String):String {
+		return e.node.getAttribute(key);
+	}
+	
+	/**
+	 * Removes an attribute on the element.
+	 */
+	public static function removeAttr<T:VirtualElement<Dynamic>> (e:T, key:String):T {
+		e.node.removeAttribute(key);
+		
+		return e;
+	}
+	
+	/**
+	 * Set a property on the element.
+	 */
+	public static function setProp<T:VirtualElement<Dynamic>> (e:T, key:String, val:Dynamic):T {
 		Reflect.setField(e.node, key, val);
 		
 		return e;
 	}
 	
 	/**
-	 * Set an attribute from a preset list of valid attributes.
+	 * Gets a property on the element.
 	 */
-	public static function attr<T:VirtualElement<Dynamic>> (e:T, key:Attr, val:Dynamic):T {
-		var keyStr = Std.string(key);
-		unsafeAttr(e, keyStr.charAt(0).toLowerCase() + keyStr.substr(1), val);
+	public static function getProp<T:VirtualElement<Dynamic>> (e:T, key:String):Dynamic {
+		return Reflect.field(e.node, key);
+	}
+	
+	/**
+	 * Removes a property from the element.
+	 */
+	public static function removeProp<T:VirtualElement<Dynamic>> (e:T, key:String):T {
+		Reflect.deleteField(e.node, key);
 		
 		return e;
-	}
-	
-	/**
-	 * Converts dash seperated to camel case.
-	 * 
-	 * Example:
-	 * 		my-custom-attr => myCustomAttr
-	 */
-	public static inline function dashToCamelCase (str:String):String {
-		var outStr = "";
-		var caps = false;
-		for (i in 0 ... str.length) {
-			var chr = str.charCodeAt(i);
-			if (chr == '-'.code) {
-				caps = true;
-			} else {
-				if (caps) {
-					if (chr >= 'a'.code && chr <= 'z'.code) {
-						chr += 'A'.code - 'a'.code;
-					}
-					caps = false;
-				}
-				outStr += String.fromCharCode(chr);
-			}
-		}
-		return outStr;
-	}
-	
-	/**
-	 * Converts camel case to dash seperated.
-	 * 
-	 * Example:
-	 * 		myCustomAttr => my-custom-attr
-	 */
-	public static inline function camelCaseToDash (str:String):String {
-		var outStr = "";
-		for (i in 0 ... str.length) {
-			var chr = str.charCodeAt(i);
-			if (chr >= 'A'.code && chr <= 'Z'.code) {
-				outStr += '-' + String.fromCharCode(chr - 'A'.code + 'a'.code);
-			} else {
-				outStr += String.fromCharCode(chr);
-			}
-		}
-		return outStr;
 	}
 	
 	/**
@@ -242,39 +239,7 @@ class DomTools {
 		}
 		return null;
 	}
-	
-	#if (js && !use_vdom)
-	public static function __createEvent (cls:String, type:String, ?bubbles:Bool = true, ?cancelable:Bool = true):Event {
-		var evt:Event = cast js.Browser.document.createEvent(cls);
-		evt.initEvent(type, bubbles, cancelable);
-		return evt;
-	}
-	#else
-	public static function __createEvent<T:Event> (cls:Class<T>, type:String, ?bubbles:Bool = true, ?cancelable:Bool = true):T {
-		return std.Type.createInstance(cls, [type, bubbles, cancelable]);
-	}
 	#end
-	
-	#end
-	
-	/**
-	 * Use this method to create custom events.
-	 */
-	macro public static function createEvent<T:Event> (cls:ExprOf<Class<T>>, type:ExprOf<String>, ?bubbles:ExprOf<Bool>, ?cancelable:ExprOf<Bool>):ExprOf<T> {
-		if (Context.defined("js") && !Context.defined("use_vdom")) {
-			var ident = switch (Context.typeof(cls)) {
-				case TType(t, _):
-					var n = t.get().name;
-					n.substr("Class<".length, n.length - ">".length - "Class<".length);
-				default: null;
-			}
-			if (ident == null) Context.error("Invalid event type.", Context.currentPos());
-			var clsStr = { expr:EConst(CString(ident)), pos:Context.currentPos() };
-			return macro hxdom.DomTools.__createEvent($clsStr, $type, $bubbles, $cancelable);
-		} else {
-			return macro hxdom.DomTools.__createEvent($cls, $type, $bubbles, $cancelable);
-		}
-	}
 	
 	/**
 	 * Add event listeners to classes implementing IEventDispatcher.
@@ -287,7 +252,7 @@ class DomTools {
 	 * Remove event listeners to classes implementing IEventDispatcher.
 	 */
 	macro public static function removeEventListener (ethis:ExprOf<IEventDispatcher>, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		return macro $ethis.__addEventListener($type, ${SFunc.macroMake(listener)}, $useCapture);
+		return macro $ethis.__removeEventListener($type, ${SFunc.macroMake(listener)}, $useCapture);
 	}
 	
 }

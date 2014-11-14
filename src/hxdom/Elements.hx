@@ -129,38 +129,6 @@ class VirtualNode<T:Node> extends EventTarget {
 		this.id = ID++;
 	}
 	
-	public function appendChild (newChild:VirtualNode<Dynamic>):VirtualNode<Dynamic> {
-		node.appendChild(newChild.node);
-		
-		return newChild;
-	}
-	
-	public function contains (other:VirtualNode<Dynamic>):Bool {
-		return node.contains(other.node);
-	}
-	
-	public function hasChildNodes ():Bool {
-		return node.childNodes.length > 0;
-	}
-
-	public function insertBefore (newChild:VirtualNode<Dynamic>, ?refChild:VirtualNode<Dynamic>):VirtualNode<Dynamic> {
-		node.insertBefore(newChild.node, refChild != null ? refChild.node : null);
-		
-		return newChild;
-	}
-
-	public function removeChild (oldChild:VirtualNode<Dynamic>):VirtualNode<Dynamic> {
-		node.removeChild(oldChild.node);
-		
-		return oldChild;
-	}
-
-	public function replaceChild (newChild:VirtualNode<Dynamic>, oldChild:VirtualNode<Dynamic>):VirtualNode<Dynamic> {
-		node.replaceChild(newChild.node, oldChild.node);
-		
-		return oldChild;
-	}
-	
 	public function iterator ():Iterator<VirtualNode<Dynamic>> {
 		return new VirtualNodeIterator(this);
 	}
@@ -215,10 +183,6 @@ class VirtualNode<T:Node> extends EventTarget {
 		node.__removeEventListener(type, handler, useCapture);
 	}
 	#end
-	
-	public override function dispatchEvent (event:Event):Bool {
-		return node.dispatchEvent(event);
-	}
 	
 }
 
@@ -403,4 +367,3 @@ class EVar extends VirtualElement<Element> { public function new () { super(Virt
 class EVideo extends VirtualElement<VideoElement> { public function new () { super(VirtualNode.buildElement(VideoElement, "VIDEO")); } }
 class EWordBreak extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "WBR")); } }
 class Text extends VirtualNode<hxdom.html.Text> { public function new (txt:String) { super(VirtualNode.buildText(txt)); } }
-class HtmlSnippet extends ESpan { public function new (html:String) { super(); #if (js && !use_vdom) node.innerHTML = html; #else untyped { node.__htmlSnippet = null; } var txt = new Text(""); txt.node.data = html; appendChild(txt); #end } }
