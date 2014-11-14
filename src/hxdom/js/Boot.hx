@@ -92,7 +92,7 @@ class Boot extends Unserializer {
 				var first = true;
 				var remainingStr:String = null;
 				var child = node.firstChild;
-				for (i in node.attributes.getNamedItem("data-hxid").nodeValue.split(" ")) {
+				for (i in el.getAttribute("data-hxid").split(" ")) {
 					if (first) {
 						//First is always the element ID
 						var id = Std.parseInt(i);
