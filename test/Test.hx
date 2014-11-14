@@ -12,7 +12,6 @@ using hxdom.DomTools;
 class Test {
 	
 	static function main () {
-		//HtmlSerializer.prettyPrint = true;
 		#if js
 		js.Browser.window.onload = function (_) {
 			var app:ForumApp = cast Boot.init();
@@ -48,7 +47,6 @@ class ForumApp extends EHtml {
 		var user2 = new John(1);
 		
 		head = new EHead();
-		head.add(new EScript().addText("window.EventTarget || (window.EventTarget = function () {});"));
 		head.add(new EScript().attr(Src, "haxedom.js").attr(Defer, true));
 		
 		threads = new ForumThreadView([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
