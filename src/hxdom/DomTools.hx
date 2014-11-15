@@ -38,7 +38,7 @@ class DomTools {
 	 * Appends an element to the end.
 	 */
 	public static function append<T:VirtualNode<Dynamic>> (parent:T, child:VirtualNode<Dynamic>):T {
-		parent.node.appendChild(child);
+		parent.node.appendChild(child.node);
 		
 		return parent;
 	}
@@ -136,6 +136,15 @@ class DomTools {
 	}
 	
 	/**
+	 * Adds some text to this element.
+	 */
+	public static function addText<T:VirtualElement<Dynamic>> (e:T, text:String):T {
+		append(e, new Text(text));
+		
+		return e;
+	}
+	
+	/**
 	 * Sets the text of this node.
 	 */
 	public static function setText<T:VirtualElement<Dynamic>> (e:T, text:String):T {
@@ -171,7 +180,14 @@ class DomTools {
 	 * Set an attribute on the element.
 	 */
 	public static function setAttr<T:VirtualElement<Dynamic>> (e:T, key:String, val:Dynamic):T {
-		e.node.setAttribute(key, val);
+		switch (std.Type.typeof(val)) {
+			case TBool:
+				if (val) e.node.setAttribute(key, key);
+				else e.node.removeAttribute(key);
+			default:
+				e.node.setAttribute(key, Std.string(val));
+		}
+		
 		
 		return e;
 	}
@@ -225,14 +241,38 @@ class DomTools {
 	}
 	
 	/**
-	 * Will return the element of the given type along the event path.
+	 * Associate some data with this element.
 	 */
-	public static function delegate<T> (event:Event, type:Class<T>):Null<T> {
+	public static function setData<T:VirtualElement<Dynamic>> (e:T, key:String, value:String):T {
+		Reflect.setField(e.node.dataset, key, value);
+		
+		return e;
+	}
+	
+	/**
+	 * Retrieve some data from this element.
+	 */
+	public static function getData<T:VirtualElement<Dynamic>> (e:T, key:String, value:String):T {
+		Reflect.setField(e.node.dataset, key, value);
+		
+		return e;
+	}
+	
+	/**
+	 * Removes some data from the element.
+	 */
+	public static function removeData<T:VirtualElement<Dynamic>> (e:T, key:String):T {
+		Reflect.deleteField(e.node.dataset, key);
+		
+		return e;
+	}
+	
+	static function filterEvent (event:Event, type:Class<Dynamic>, listener:SFunc<hxdom.html.EventListener>):Void {
 		var currNode:Node = cast event.target;
 		while (currNode != null && currNode != event.currentTarget) {
 			var vnode = vnode(currNode);
 			if (Std.is(vnode, type)) {
-				return cast vnode;
+				listener.call([]);
 			}
 			
 			currNode = currNode.parentNode;
@@ -241,18 +281,57 @@ class DomTools {
 	}
 	#end
 	
+	macro public static function delegate (ethis:ExprOf<VirtualNode<Dynamic>>, type:ExprOf<Class<Dynamic>>, events:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>):ExprOf<VirtualNode<Dynamic>> {
+		return macro {
+			for (i in $events.split(" ")) {
+				$ethis.__addEventListener(i, ${SFunc.macroMake(listener)});
+			}
+			$ethis;
+		};
+	}
+	
+	/**
+	 * Listen to one or more events.
+	 */
+	macro public static function on (ethis:ExprOf<IEventDispatcher>, events:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>):ExprOf<IEventDispatcher> {
+		return macro {
+			for (i in $events.split(" ")) {
+				$ethis.__addEventListener(i, ${SFunc.macroMake(listener)});
+			}
+			$ethis;
+		};
+	}
+	
+	/**
+	 * Stop listening to one or more events.
+	 */
+	macro public static function off (ethis:ExprOf<IEventDispatcher>, events:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>):ExprOf<IEventDispatcher> {
+		return macro {
+			for (i in $events.split(" ")) {
+				$ethis.__removeEventListener(i, ${SFunc.macroMake(listener)});
+			}
+			$ethis;
+		};
+	}
+	
 	/**
 	 * Add event listeners to classes implementing IEventDispatcher.
 	 */
-	macro public static function addEventListener (ethis:ExprOf<IEventDispatcher>, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		return macro $ethis.__addEventListener($type, ${SFunc.macroMake(listener)}, $useCapture);
+	macro public static function addEventListener (ethis:ExprOf<IEventDispatcher>, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<IEventDispatcher> {
+		return macro {
+			$ethis.__addEventListener($type, ${SFunc.macroMake(listener)}, $useCapture);
+			$ethis;
+		};
 	}
 	
 	/**
 	 * Remove event listeners to classes implementing IEventDispatcher.
 	 */
-	macro public static function removeEventListener (ethis:ExprOf<IEventDispatcher>, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		return macro $ethis.__removeEventListener($type, ${SFunc.macroMake(listener)}, $useCapture);
+	macro public static function removeEventListener (ethis:ExprOf<IEventDispatcher>, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<IEventDispatcher> {
+		return macro {
+			$ethis.__removeEventListener($type, ${SFunc.macroMake(listener)}, $useCapture);
+			$ethis;
+		};
 	}
 	
 }

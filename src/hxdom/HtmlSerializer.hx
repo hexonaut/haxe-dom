@@ -49,7 +49,7 @@ class HtmlSerializer extends Serializer {
 			offsetHeight:null,
 			__listeners:null,
 			__vdom:null,
-			__htmlSnippet:null
+			__attributes:null
 		};
 	
 	public function new () {
@@ -86,12 +86,10 @@ class HtmlSerializer extends Serializer {
 	 */
 	inline function elemIds (e:VirtualNode<Element>):Void {
 		buf.add(" data-hxid='" + Reflect.field(e, "id"));
-		if (!Reflect.hasField(e.node, "__htmlSnippet")) {
-			for (i in e.node.childNodes) {
-				if (i.nodeType == Node.TEXT_NODE) {
-					var text:Text = Reflect.field(i, "__vdom");
-					buf.add(" " + Reflect.field(text, "id") + "-" + untyped i.data.length);
-				}
+		for (i in e.node.childNodes) {
+			if (i.nodeType == Node.TEXT_NODE) {
+				var text:Text = Reflect.field(i, "__vdom");
+				buf.add(" " + Reflect.field(text, "id") + "-" + untyped i.data.length);
 			}
 		}
 		buf.add("'");
@@ -101,6 +99,11 @@ class HtmlSerializer extends Serializer {
 		//Add in class data and id data
 		attr = true;
 		elemIds(e);
+		
+		//If this element has innerHTML set then mark it as such
+		if (e.node.innerHTML != null) {
+			buf.add(" data-hxhtml='1'");
+		}
 		
 		//Add in actual 'data-' attrs
 		for (i in Reflect.fields(e.node.dataset)) {
@@ -115,20 +118,15 @@ class HtmlSerializer extends Serializer {
 		}
 		if (style != null) buf.add(style + "'");
 		
-		for (i in Reflect.fields(e.node)) {
+		//Add in class attribute
+		var classes = e.node.className;
+		if (classes != null) buf.add(" class='" + classes + "'");
+		
+		var attrs:Map<String, String> = untyped e.node.__attributes;
+		for (i in attrs.keys()) {
 			//Skip over some redundant fields
-			if (Reflect.hasField(fieldsToIgnore, i)) continue;
-			
-			//This is a core html attribute
-			var attrName = i;
-			if (attrName == "className") attrName = "class";	//className maps to class
-			var val = Reflect.field(e.node, i);
-			switch (Type.typeof(val)) {
-				case TBool:
-					if (val) buf.add(" " + Util.camelCaseToDash(attrName));
-				default:
-					buf.add(" " + Util.camelCaseToDash(attrName) + "='" + Std.string(val).htmlEscape(true) + "'");
-			}
+			//if (Reflect.hasField(fieldsToIgnore, i)) continue;
+			buf.add(" " + i + "='" + attrs.get(i).htmlEscape(true) + "'");
 		}
 		
 		//Add in event handlers
@@ -155,8 +153,12 @@ class HtmlSerializer extends Serializer {
 	}
 	
 	function children (e:VirtualNode<Element>):Void {
-		for (i in e.node.childNodes) {
-			serialize(Reflect.field(i, "__vdom"));
+		if (e.node.innerHTML != null) {
+			buf.add(e.node.innerHTML);
+		} else {
+			for (i in e.node.childNodes) {
+				serialize(Reflect.field(i, "__vdom"));
+			}
 		}
 	}
 	

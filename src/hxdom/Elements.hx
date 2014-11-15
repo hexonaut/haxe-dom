@@ -148,6 +148,7 @@ class VirtualNode<T:Node> extends EventTarget {
 		Reflect.setField(elem, "tagName", tagName);
 		Reflect.setField(elem, "offsetWidth", 0);
 		Reflect.setField(elem, "offsetHeight", 0);
+		Reflect.setField(elem, "__attributes", new Map<String, String>());
 		#end
 		return cast elem;
 	}

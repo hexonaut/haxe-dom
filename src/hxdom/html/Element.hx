@@ -66,10 +66,10 @@ class Element extends Node {
 	public var id:String;
 
 	/** Gets/sets the markup of the element's content. Setter throws DOMException. */
-	public var innerHTML:String;
+	public var innerHTML(default, set):String;
 
 	/** Setter throws DOMException. */
-	public var innerText:String;
+	public var innerText(get, set):String;
 
 	/** Indicates whether or not the content of the element can be edited. Read only. */
 	public var isContentEditable(default, null):Bool;
@@ -245,6 +245,8 @@ class Element extends Node {
 	public var title:String;
 
 	public var translate:Bool;
+	
+	public var __attributes:Map<String, String>;
 
 	public function blur ():Void {
 		
@@ -259,7 +261,7 @@ class Element extends Node {
 	}
 
 	public function getAttribute (name:String):String {
-		return null;
+		return __attributes.get(name);
 	}
 
 	public function getAttributeNS (?namespaceURI:String, localName:String):String {
@@ -295,7 +297,7 @@ class Element extends Node {
 	}
 
 	public function hasAttribute (name:String):Bool {
-		return null;
+		return __attributes.exists(name);
 	}
 
 	public function hasAttributeNS (?namespaceURI:String, localName:String):Bool {
@@ -331,7 +333,7 @@ class Element extends Node {
 	}
 
 	public function removeAttribute (name:String):Void {
-		
+		__attributes.remove(name);
 	}
 
 	public function removeAttributeNS (namespaceURI:String, localName:String):Void {
@@ -371,7 +373,7 @@ class Element extends Node {
 	}
 
 	public function setAttribute (name:String, value:String):Void {
-		
+		__attributes.set(name, value);
 	}
 
 	public function setAttributeNS (?namespaceURI:String, qualifiedName:String, value:String):Void {
@@ -384,6 +386,30 @@ class Element extends Node {
 
 	public function setAttributeNodeNS (newAttr:Attr):Attr {
 		return null;
+	}
+	
+	inline function emptyElement ():Void {
+		while (childNodes.length > 0) {
+			removeChild(firstChild);
+		}
+	}
+	
+	function get_innerText ():String {
+		return untyped StringTools.htmlUnescape(childNodes[0].data);
+	}
+	
+	function set_innerText (text:String):String {
+		emptyElement();
+		#if !macro
+		appendChild(new hxdom.Elements.Text(text).node);
+		#end
+		return text;
+	}
+	
+	function set_innerHTML (html:String):String {
+		emptyElement();
+		this.innerHTML = html;
+		return html;
 	}
 	
 }

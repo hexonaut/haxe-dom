@@ -70,6 +70,7 @@ class ForumThreadView extends EBody implements ClientOnly {
 	var t2:Text;
 	var _empty:Text;
 	var t3:Text;
+	var rawHtml:EDiv;
 	
 	public function new (posts:Array<Post>) {
 		super();
@@ -77,11 +78,13 @@ class ForumThreadView extends EBody implements ClientOnly {
 		this.posts = posts.map(function (e) { return new PostView(e); } );
 		
 		t1 = new Text("Testing ");
-		t2 = new Text("inline              text ");
+		t2 = new Text("<span>escaped</span>inline              text ");
 		_empty = new Text("");
 		t3 = new Text("references");
+		rawHtml = new EDiv();
+		rawHtml.setHtml("MMMMMMMMMMMMMMMM <span color='blue'>This is raw html</span>");
 		
-		append(t1).append(t2).append(_empty).append(t3);
+		append(t1).append(t2).append(_empty).append(t3).append(rawHtml);
 	}
 	
 	@:client
@@ -133,7 +136,6 @@ class PostView extends EArticle {
 		//Clear last post
 		if (this.post != null) {
 			this.empty();
-			this.post.removeEventListener("change", onPostChange);
 			btn.node.removeEventListener("click", onClick);
 		}
 		
@@ -144,11 +146,9 @@ class PostView extends EArticle {
 			eprofile = new ProfileView(post.user);
 			emsg = new EDiv();
 			
-			post.addEventListener("change", onPostChange);
-			
 			this.append(eprofile);
-			this.append(emsg.addClass("post-message").setText(post.message));
-			btn = new EButton().setText("Click Me!");
+			this.append(emsg.addClass("post-message").addText(post.message));
+			btn = new EButton().addText("Click Me!");
 			btn.addEventListener("click", onClick);
 			this.append(btn);
 		}
@@ -158,11 +158,7 @@ class PostView extends EArticle {
 	
 	function onClick (_):Void {
 		post.message += " EVENT!";
-		post.update();	//Notify views of data change
-	}
-	
-	function onPostChange (_):Void {
-		this.post = post;
+		this.post = post;		//Update the view
 	}
 	
 }
@@ -184,7 +180,7 @@ class ProfileView extends EAside {
 		
 		this.empty();
 		if (user != null) {
-			this.append(new EDiv().addClass("profile-name").setText(user.name));
+			this.append(new EDiv().addClass("profile-name").addText(user.name));
 		}
 		
 		return user;
@@ -208,10 +204,6 @@ class User implements IEventDispatcher implements ClientOnly {
 		js.Browser.window.alert("Client load init! id = " + id + ", name = " + name);
 	}
 	
-	public function update ():Void {
-		
-	}
-	
 }
 
 class John extends User {
@@ -230,10 +222,6 @@ class Post implements IEventDispatcher {
 	public function new (user:User, message:String) {
 		this.user = user;
 		this.message = message;
-	}
-	
-	public function update ():Void {
-		
 	}
 	
 }
