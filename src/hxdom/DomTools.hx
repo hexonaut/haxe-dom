@@ -287,7 +287,7 @@ class DomTools {
 	 * Remove event listeners to classes implementing IEventDispatcher.
 	 */
 	macro public static function removeEventListener (ethis:ExprOf<IEventDispatcher>, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<Void> {
-		return macro $ethis.__addEventListener($type, ${SFunc.macroMake(listener)}, $useCapture);
+		return macro $ethis.__removeEventListener($type, ${SFunc.macroMake(listener)}, $useCapture);
 	}
 	
 }
