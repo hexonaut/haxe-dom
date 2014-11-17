@@ -52,7 +52,7 @@ class ForumApp extends EHtml {
 		threads = new ForumThreadView([new Post(user1, "Hi John!"), new Post(user2, "Well hello there Fred.")]);
 		untyped threads.node.dataset.testingCustomDataAttr = "data'.data.data'.data";
 		threads.node.style.backgroundColor = "red";
-		addEventListener("click", Test.staticEventListener);
+		this.on("click", Test.staticEventListener);
 		empty = new Text("");
 		
 		append(head);
@@ -149,7 +149,7 @@ class PostView extends EArticle {
 			this.append(eprofile);
 			this.append(emsg.addClass("post-message").addText(post.message));
 			btn = new EButton().addText("Click Me!");
-			btn.addEventListener("click", onClick);
+			btn.on("click", onClick);
 			this.append(btn);
 		}
 		

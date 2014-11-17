@@ -13,16 +13,16 @@ package hxdom;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
-import hxdom.html.Event;
 #if !macro
+import hxdom.html.Event;
 import hxdom.html.Element;
 import hxdom.html.EventListener;
 import hxdom.html.EventTarget;
 import hxdom.html.Node;
 import hxdom.html.ScriptElement;
 import hxdom.Elements;
-#end
 import hxdom.EventDispatcher;
+#end
 
 using Lambda;
 
@@ -35,12 +35,39 @@ class DomTools {
 	
 	#if !macro
 	/**
+	 * Prepands an element to the beginning.
+	 */
+	public static function prepend<T:VirtualNode<Dynamic>> (parent:T, child:VirtualNode<Dynamic>):T {
+		parent.node.insertBefore(child.node, parent.node.firstChild);
+		
+		return parent;
+	}
+	
+	/**
 	 * Appends an element to the end.
 	 */
 	public static function append<T:VirtualNode<Dynamic>> (parent:T, child:VirtualNode<Dynamic>):T {
 		parent.node.appendChild(child.node);
 		
 		return parent;
+	}
+	
+	/**
+	 * Adds an element after the reference element.
+	 */
+	public static function after<T:VirtualNode<Dynamic>> (ref:T, e:VirtualNode<Dynamic>):T {
+		ref.node.parentNode.insertBefore(e.node, ref.node.nextSibling);
+		
+		return ref;
+	}
+	
+	/**
+	 * Adds an element before the reference element.
+	 */
+	public static function before<T:VirtualNode<Dynamic>> (ref:T, e:VirtualNode<Dynamic>):T {
+		ref.node.parentNode.insertBefore(e.node, ref.node);
+		
+		return ref;
 	}
 	
 	/**
@@ -55,12 +82,21 @@ class DomTools {
 	/**
 	 * Clear all children.
 	 */
-	public static function empty<T:VirtualNode<Dynamic>> (node:T):T {
-		while (node.node.childNodes.length > 0) {
-			node.node.removeChild(node.node.firstChild);
+	public static function empty<T:VirtualNode<Dynamic>> (e:T):T {
+		while (e.node.childNodes.length > 0) {
+			e.node.removeChild(e.node.firstChild);
 		}
 		
-		return node;
+		return e;
+	}
+	
+	/**
+	 * Replaces the element with a new element.
+	 */
+	public static function replaceWith<T:VirtualNode<Dynamic>> (e:T, newEl:VirtualNode<Dynamic>):T {
+		e.node.parentNode.replaceChild(e.node, newEl.node);
+		
+		return e;
 	}
 	
 	/**
@@ -267,36 +303,59 @@ class DomTools {
 		return e;
 	}
 	
-	static function filterEvent (event:Event, type:Class<Dynamic>, listener:SFunc<hxdom.html.EventListener>):Void {
-		var currNode:Node = cast event.target;
-		while (currNode != null && currNode != event.currentTarget) {
+	/**
+	 * Traverses the element's ancestors until it finds a match on the virtual element type.
+	 */
+	public static function closest<T:VirtualNode<Dynamic>, V> (e:T, type:Class<V>):Null<V> {
+		var currNode:Node = e.node;
+		while (currNode != null) {
 			var vnode = vnode(currNode);
 			if (Std.is(vnode, type)) {
-				listener.call([]);
+				return cast vnode;
 			}
 			
 			currNode = currNode.parentNode;
 		}
 		return null;
 	}
-	#end
 	
-	macro public static function delegate (ethis:ExprOf<VirtualNode<Dynamic>>, type:ExprOf<Class<Dynamic>>, events:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>):ExprOf<VirtualNode<Dynamic>> {
-		return macro {
-			for (i in $events.split(" ")) {
-				$ethis.__addEventListener(i, ${SFunc.macroMake(listener)});
-			}
-			$ethis;
-		};
+	/**
+	 * Get the next sibling.
+	 */
+	public static function next<T:VirtualNode<Dynamic>> (e:T):Null<VirtualNode<Dynamic>> {
+		var next = e.node.nextSibling;
+		return next != null ? vnode(next) : null;
 	}
+	
+	/**
+	 * Get the previous sibling.
+	 */
+	public static function prev<T:VirtualNode<Dynamic>> (e:T):Null<VirtualNode<Dynamic>> {
+		var next = e.node.previousSibling;
+		return next != null ? vnode(next) : null;
+	}
+	
+	/**
+	 * Get the parent node.
+	 */
+	public static function parent<T:VirtualNode<Dynamic>> (e:T):Null<VirtualElement<Dynamic>> {
+		var p = e.node.parentNode;
+		return p != null ? cast vnode(p) : null;
+	}
+	#end
 	
 	/**
 	 * Listen to one or more events.
 	 */
-	macro public static function on (ethis:ExprOf<IEventDispatcher>, events:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>):ExprOf<IEventDispatcher> {
+	macro public static function on (ethis:ExprOf<VirtualNode<Dynamic>>, events:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>):ExprOf<VirtualNode<Dynamic>> {
+		var callExpr = if (Context.defined("js") && !Context.defined("use_vdom"))
+			macro $ethis.addEventListener(i, $listener);
+		else
+			macro $ethis.__addEventListener(i, ${SFunc.macroMake(listener)} );
+		
 		return macro {
 			for (i in $events.split(" ")) {
-				$ethis.__addEventListener(i, ${SFunc.macroMake(listener)});
+				$callExpr;
 			}
 			$ethis;
 		};
@@ -305,31 +364,16 @@ class DomTools {
 	/**
 	 * Stop listening to one or more events.
 	 */
-	macro public static function off (ethis:ExprOf<IEventDispatcher>, events:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>):ExprOf<IEventDispatcher> {
+	macro public static function off (ethis:ExprOf<VirtualNode<Dynamic>>, events:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>):ExprOf<VirtualNode<Dynamic>> {
+		var callExpr = if (Context.defined("js") && !Context.defined("use_vdom"))
+			macro $ethis.removeEventListener(i, $listener);
+		else
+			macro $ethis.__removeEventListener(i, ${SFunc.macroMake(listener)} );
+		
 		return macro {
 			for (i in $events.split(" ")) {
-				$ethis.__removeEventListener(i, ${SFunc.macroMake(listener)});
+				$callExpr;
 			}
-			$ethis;
-		};
-	}
-	
-	/**
-	 * Add event listeners to classes implementing IEventDispatcher.
-	 */
-	macro public static function addEventListener (ethis:ExprOf<IEventDispatcher>, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<IEventDispatcher> {
-		return macro {
-			$ethis.__addEventListener($type, ${SFunc.macroMake(listener)}, $useCapture);
-			$ethis;
-		};
-	}
-	
-	/**
-	 * Remove event listeners to classes implementing IEventDispatcher.
-	 */
-	macro public static function removeEventListener (ethis:ExprOf<IEventDispatcher>, type:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>, ?useCapture:ExprOf<Bool>):ExprOf<IEventDispatcher> {
-		return macro {
-			$ethis.__removeEventListener($type, ${SFunc.macroMake(listener)}, $useCapture);
 			$ethis;
 		};
 	}
