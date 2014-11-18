@@ -1,4 +1,4 @@
-haxe-dom provides target independant DOM manipulation. The goal of this project is to reduce duplicate code between the server and client without having to resort to single page apps. View state can be manipulated on the server, serialized into idiomatic HTML5 and reconstructed on the client. Usage is straightforward.
+haxe-dom provides target independant DOM manipulation. The goal of this project is to reduce duplicate code between the server and client without having to resort to single page apps. View state can be manipulated on the server, serialized into idiomatic HTML5 and reconstructed on the client.
 
 Contruct the page (Neko/PHP/Java/etc):
 
@@ -39,8 +39,8 @@ The above example is cool and all, but it's not really practical for a full scal
 			head = new EHead();
 			body = new EBody();
 			
-			appendChild(head);
-			appendChild(body);
+			node.appendChild(head.node);
+			node.appendChild(body.node);
 			
 			for (i in 0 ... numTexts) {
 				addSomeTextToBody();
@@ -48,7 +48,7 @@ The above example is cool and all, but it's not really practical for a full scal
 		}
 		
 		public function addSomeTextToBody ():Void {
-			body.appendChild(new Text("Some Text"));
+			body.node.appendChild(new Text("Some Text").node);
 		}
 		
 	}
@@ -79,8 +79,8 @@ You can also attach event listeners on the server:
 			
 			var body = new EBody();
 			
-			appendChild(new EHead());
-			appendChild(body);
+			node.appendChild(new EHead().node);
+			node.appendChild(body.node);
 			
 			body.addEventListener("click", onClick);
 		}
@@ -108,11 +108,11 @@ One unavoidable restriction on events is that you cannot listen to anonymous fun
 Tools
 =====
 
-Using the DOM directly can be kind of annoying, so I've included a DomTools class that you should usually include as a "using". DomTools is built for chaining. Here is a quick example:
+Using the DOM directly can be kind of annoying, so I've included a DomTools class that you should usually include as a "using". DomTools mimics the JQuery API and is built for chaining. Here is a quick example:
 
 	using hxdom.DomTools;
 	
-	var div = new EDiv().classes("myCssClass anotherClass").attr(Id, "someId").addText("Some text in the Div!");
+	var div = new EDiv().addClass("myCssClass anotherClass").setAttr("id", "someid").addText("Some text in the Div!");
 
 Custom Event Systems
 ====================

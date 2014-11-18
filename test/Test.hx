@@ -1,5 +1,6 @@
 package ;
 
+import hxdom.Browser;
 import hxdom.EventDispatcher;
 import hxdom.html.Event;
 import hxdom.HtmlSerializer;
