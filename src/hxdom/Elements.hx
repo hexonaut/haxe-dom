@@ -115,7 +115,7 @@ enum ButtonType {
  * @author Sam MacPherson
  */
 
-class VirtualNode< #if js T:Node #else T:dom4.Node #end > extends EventTarget {
+class VirtualNode<T:Node> extends EventTarget {
 	
 	static var ID:Int = 0;
 	

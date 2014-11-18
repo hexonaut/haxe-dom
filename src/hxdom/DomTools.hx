@@ -184,7 +184,8 @@ class DomTools {
 	 * Sets the text of this node.
 	 */
 	public static function setText<T:VirtualElement<Dynamic>> (e:T, text:String):T {
-		e.node.innerText = text;
+		empty(e);
+		addText(e, text);
 		
 		return e;
 	}
@@ -193,14 +194,37 @@ class DomTools {
 	 * Gets the text of this node.
 	 */
 	public static function getText<T:VirtualElement<Dynamic>> (e:T):String {
-		return e.node.innerText;
+		#if (js && !use_vdom)
+		return e.node.textContent;
+		#else
+		return e.node.get_textContent();
+		#end
 	}
 	
 	/**
 	 * Sets the html of this node.
 	 */
 	public static function setHtml<T:VirtualElement<Dynamic>> (e:T, html:String):T {
+		#if (js && !use_vdom)
 		e.node.innerHTML = html;
+		#else
+		var contentSink = new dom4.utils.BasicContentSink();
+        var parser = new dom4.DOMParser(contentSink);
+		var document = parser.parseFromString('<!DOCTYPE html><html>$html</html>', "text/xml");
+		var nodes = document.documentElement.childNodes;
+		var toVirtualize = new List<Node>();
+		for (i in 0 ... nodes.length) {
+			e.node.appendChild(nodes[i]);
+			toVirtualize.add(nodes[i]);
+		}
+		while (toVirtualize.length > 0) {
+			var node = toVirtualize.pop();
+			new VirtualNode<Node>(node);
+			for (i in 0 ... node.childNodes.length) {
+				toVirtualize.add(node.childNodes[i]);
+			}
+		}
+		#end
 		
 		return e;
 	}
@@ -209,7 +233,12 @@ class DomTools {
 	 * Get the html of this node.
 	 */
 	public static function getHtml<T:VirtualElement<Dynamic>> (e:T):String {
+		#if (js && !use_vdom)
 		return e.node.innerHTML;
+		#else
+		var s = new dom4.utils.Serializer();
+		return s.serializeToString(e.node);
+		#end
 	}
 	
 	/**
