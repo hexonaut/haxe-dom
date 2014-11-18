@@ -13,19 +13,5 @@ package hxdom.html;
 #if (js && !use_vdom)
 typedef HTMLCollection = js.html.HTMLCollection;
 #else
-class HTMLCollection implements ArrayAccess<Node> {
-	
-	/** The number of items in the collection. <strong>Read only</strong>. */
-	public var length(default, null):Int;
-
-	public function item (index:Int):Node {
-		return null;
-	}
-
-	public function namedItem (name:String):Node {
-		return null;
-	}
-
-	
-}
+typedef HTMLCollection = dom4.HTMLCollection;
 #end

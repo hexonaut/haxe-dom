@@ -136,7 +136,7 @@ class PostView extends EArticle {
 		//Clear last post
 		if (this.post != null) {
 			this.empty();
-			btn.node.removeEventListener("click", onClick);
+			btn.off("click", onClick);
 		}
 		
 		this.post = post;

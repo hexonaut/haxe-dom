@@ -13,9 +13,5 @@ package hxdom.html;
 #if (js && !use_vdom)
 typedef DOMSettableTokenList = js.html.DOMSettableTokenList;
 #else
-class DOMSettableTokenList {
-	
-	public var value : String;
-	
-}
+typedef DOMSettableTokenList = dom4.DOMSettableTokenList;
 #end

@@ -13,40 +13,5 @@ package hxdom.html;
 #if (js && !use_vdom)
 typedef CharacterData = js.html.CharacterData;
 #else
-class CharacterData extends Node {
-	
-	/** Setter throws DOMException. */
-	public var data : String;
-
-	public var length(get, null) : Int;
-	
-	function get_length ():Int {
-		return data.length;
-	}
-
-	public function appendData( data : String ) : Void {
-		
-	}
-
-	public function deleteData( offset : Int, length : Int ) : Void {
-		
-	}
-
-	public function insertData( offset : Int, data : String ) : Void {
-		
-	}
-
-	public function remove() : Void {
-		
-	}
-
-	public function replaceData( offset : Int, length : Int, data : String ) : Void {
-		
-	}
-
-	public function substringData( offset : Int, length : Int ) : String {
-		return null;
-	}
-	
-}
+typedef CharacterData = dom4.CharacterData;
 #end

@@ -13,6 +13,5 @@ package hxdom.html;
 #if (js && !use_vdom)
 typedef Comment = js.html.Comment;
 #else
-class Comment extends CharacterData {
-}
+typedef Comment = dom4.Comment;
 #end

@@ -83,7 +83,7 @@ class DomTools {
 	 * Clear all children.
 	 */
 	public static function empty<T:VirtualNode<Dynamic>> (e:T):T {
-		while (e.node.childNodes.length > 0) {
+		while (e.node.firstChild != null) {
 			e.node.removeChild(e.node.firstChild);
 		}
 		

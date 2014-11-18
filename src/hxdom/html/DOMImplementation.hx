@@ -13,27 +13,5 @@ package hxdom.html;
 #if (js && !use_vdom)
 typedef DOMImplementation = js.html.DOMImplementation;
 #else
-class DOMImplementation {
-	
-	public function createCSSStyleSheet (title:String, media:String):CSSStyleSheet {
-		return null;
-	}
-
-	public function createDocument (?namespaceURI:String, ?qualifiedName:String, ?doctype:DocumentType):Document {
-		return null;
-	}
-
-	public function createDocumentType (?qualifiedName:String, ?publicId:String, ?systemId:String):DocumentType {
-		return null;
-	}
-
-	public function createHTMLDocument (title:String):Document {
-		return null;
-	}
-
-	public function hasFeature (feature:String, ?version:String):Bool {
-		return null;
-	}
-	
-}
+typedef DOMImplementation = dom4.DOMImplementation;
 #end

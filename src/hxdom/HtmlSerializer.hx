@@ -16,6 +16,7 @@ import hxdom.html.CharacterData;
 import hxdom.html.DivElement;
 import hxdom.html.Element;
 import hxdom.html.HtmlElement;
+import hxdom.html.NamedNodeMap;
 import hxdom.html.Node;
 import hxdom.html.Text;
 import hxdom.Elements;
@@ -33,24 +34,6 @@ class HtmlSerializer extends Serializer {
 	public static var USE_ENUM_INDEX:Bool = false;
 	
 	var attr:Bool;
-	
-	static var fieldsToIgnore = {
-			nodeType:null,
-			tagName:null,
-			childNodes:null,
-			parentNode:null,
-			nextSibling:null,
-			previousSibling:null,
-			firstChild:null,
-			lastChild:null,
-			dataset:null,
-			style:null,
-			offsetWidth:null,
-			offsetHeight:null,
-			__listeners:null,
-			__vdom:null,
-			__attributes:null
-		};
 	
 	public function new () {
 		super();
@@ -86,10 +69,9 @@ class HtmlSerializer extends Serializer {
 	 */
 	inline function elemIds (e:VirtualNode<Element>):Void {
 		buf.add(" data-hxid='" + Reflect.field(e, "id"));
-		for (i in e.node.childNodes) {
-			if (i.nodeType == Node.TEXT_NODE) {
-				var text:Text = Reflect.field(i, "__vdom");
-				buf.add(" " + Reflect.field(text, "id") + "-" + untyped i.data.length);
+		for (i in e) {
+			if (i.node.nodeType == Node.TEXT_NODE) {
+				buf.add(" " + Reflect.field(i, "id") + "-" + untyped i.node.data.length);
 			}
 		}
 		buf.add("'");
@@ -99,11 +81,6 @@ class HtmlSerializer extends Serializer {
 		//Add in class data and id data
 		attr = true;
 		elemIds(e);
-		
-		//If this element has innerHTML set then mark it as such
-		if (e.node.innerHTML != null) {
-			buf.add(" data-hxhtml='1'");
-		}
 		
 		//Add in actual 'data-' attrs
 		for (i in Reflect.fields(e.node.dataset)) {
@@ -122,15 +99,19 @@ class HtmlSerializer extends Serializer {
 		var classes = e.node.className;
 		if (classes != null) buf.add(" class='" + classes + "'");
 		
-		var attrs:Map<String, String> = untyped e.node.__attributes;
-		for (i in attrs.keys()) {
-			//Skip over some redundant fields
-			//if (Reflect.hasField(fieldsToIgnore, i)) continue;
-			buf.add(" " + i + "='" + attrs.get(i).htmlEscape(true) + "'");
+		//Add in attributes
+		var attributes:NamedNodeMap = e.node.attributes;
+		for (i in 0 ... attributes.length) {
+			#if (js && !use_vdom)
+			var a:Dynamic = attributes[i];
+			#else
+			var a:dom4.Attr = cast attributes[i];
+			#end
+			buf.add(" " + a.name + "='" + a.value.htmlEscape(true) + "'");
 		}
 		
 		//Add in event handlers
-		var events:Map<String, List<{inst:Dynamic, func:String, cap:Bool}>> = Reflect.field(e.node, "__listeners");
+		var events:Map<String, List<{inst:Dynamic, func:String, cap:Bool}>> = Reflect.field(e, "__listeners");
 		if (events != null) {
 			buf.add(" data-hxevents='");
 			serialize(events);
@@ -153,12 +134,8 @@ class HtmlSerializer extends Serializer {
 	}
 	
 	function children (e:VirtualNode<Element>):Void {
-		if (e.node.innerHTML != null) {
-			buf.add(e.node.innerHTML);
-		} else {
-			for (i in e.node.childNodes) {
-				serialize(Reflect.field(i, "__vdom"));
-			}
+		for (i in e) {
+			serialize(i);
 		}
 	}
 	

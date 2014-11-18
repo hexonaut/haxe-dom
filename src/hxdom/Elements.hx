@@ -115,7 +115,7 @@ enum ButtonType {
  * @author Sam MacPherson
  */
 
-class VirtualNode<T:Node> extends EventTarget {
+class VirtualNode< #if js T:Node #else T:dom4.Node #end > extends EventTarget {
 	
 	static var ID:Int = 0;
 	
@@ -137,34 +137,19 @@ class VirtualNode<T:Node> extends EventTarget {
 	 * Construct and initialize element.
 	 */
 	static function buildElement<T:Element> (cls:Class<T>, tagName:String):T {
-		#if (js && !use_vdom)
-		var elem = js.Browser.document.createElement(tagName);
-		#else
-		var elem = Type.createEmptyInstance(cls);
-		Reflect.setField(elem, "childNodes", new hxdom.html.NodeList());
-		Reflect.setField(elem, "dataset", {});
-		Reflect.setField(elem, "style", {});
-		Reflect.setField(elem, "nodeType", Node.ELEMENT_NODE);
-		Reflect.setField(elem, "tagName", tagName);
-		Reflect.setField(elem, "offsetWidth", 0);
-		Reflect.setField(elem, "offsetHeight", 0);
-		Reflect.setField(elem, "__attributes", new Map<String, String>());
+		var el = hxdom.Browser.document.createElement(tagName);
+		#if (!js || use_vdom)
+		Reflect.setField(el, "dataset", {});
+		Reflect.setField(el, "style", {});
 		#end
-		return cast elem;
+		return cast el;
 	}
 	
 	/**
 	 * Construct and initialize text node.
 	 */
 	static function buildText (txt:String):hxdom.html.Text {
-		#if (js && !use_vdom)
-		var text = js.Browser.document.createTextNode(txt);
-		#else
-		var text = Type.createEmptyInstance(hxdom.html.Text);
-		Reflect.setField(text, "nodeType", Node.TEXT_NODE);
-		text.data = StringTools.htmlEscape(txt);
-		#end
-		return cast text;
+		return cast hxdom.Browser.document.createTextNode(txt);
 	}
 	
 	#if (js && !use_vdom)
@@ -174,14 +159,6 @@ class VirtualNode<T:Node> extends EventTarget {
 	
 	public override function removeEventListener (type:String, listener:EventListener, ?useCapture:Bool = false):Void {
 		node.removeEventListener(type, listener, useCapture);
-	}
-	#else
-	public override function __addEventListener (type:String, handler:SFunc<hxdom.html.Event -> Void>, ?useCapture:Bool = false):Void {
-		node.__addEventListener(type, handler, useCapture);
-	}
-	
-	public override function __removeEventListener (type:String, handler:SFunc<hxdom.html.Event -> Void>, ?useCapture:Bool = false):Void {
-		node.__removeEventListener(type, handler, useCapture);
 	}
 	#end
 	

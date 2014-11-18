@@ -13,15 +13,5 @@ package hxdom.html;
 #if (js && !use_vdom)
 typedef DocumentFragment = js.html.DocumentFragment;
 #else
-class DocumentFragment extends Node {
-	
-	public function querySelector (selectors:String):Element {
-		return null;
-	}
-
-	public function querySelectorAll (selectors:String):NodeList {
-		return null;
-	}
-	
-}
+typedef DocumentFragment = dom4.DocumentFragment;
 #end

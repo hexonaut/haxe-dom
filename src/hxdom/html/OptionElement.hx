@@ -53,10 +53,6 @@ class OptionElement extends Element {
  HTML attribute, if it exists; otherwise reflects value of the <code><a rel="internal" href="https://developer.mozilla.org/Article_not_found?uri=en/DOM/textContent" class="new">textContent</a></code>
 &nbsp;IDL&nbsp;attribute. */
 	public var value:String;
-
-	public function new ():Void {
-		
-	}
 	
 }
 #end

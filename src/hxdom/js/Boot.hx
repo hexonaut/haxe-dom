@@ -57,6 +57,9 @@ class Boot extends Unserializer {
 			}
 		}
 		
+		//Element properties
+		
+		
 		var sortedFields = Reflect.fields(e.dataset);
 		sortedFields.sort(function (a, b) { return (a < b) ? -1 : 1; } );
 		for (i in sortedFields) {
@@ -71,8 +74,8 @@ class Boot extends Unserializer {
 		switch (node.nodeType) {
 			case Node.ELEMENT_NODE: 
 				element(cast node);
-				for (i in node.childNodes) {
-					unserializeNode(i);
+				for (i in 0 ... node.childNodes.length) {
+					unserializeNode(node.childNodes[i]);
 				}
 		}
 	}
@@ -149,8 +152,8 @@ class Boot extends Unserializer {
 					}
 				}
 				
-				for (i in node.childNodes) {
-					buildElementLookup(i);
+				for (i in 0 ... node.childNodes.length) {
+					buildElementLookup(node.childNodes[i]);
 				}
 			}
 		}

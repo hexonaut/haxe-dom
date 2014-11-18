@@ -13,5 +13,5 @@ package hxdom.html;
 #if (js && !use_vdom)
 typedef NodeList = js.html.NodeList;
 #else
-typedef NodeList = Array<Node>;
+typedef NodeList = dom4.NodeList;
 #end
