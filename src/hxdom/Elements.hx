@@ -122,11 +122,34 @@ class VirtualNode<T:Node> extends EventTarget {
 	public var node:T;
 	
 	var id:Int;
+	var inDom:Bool;
+	var inDomCached:Bool;
 	
 	public function new (node:T) {
 		this.node = node;
 		Reflect.setField(node, "__vdom", this);
 		this.id = ID++;
+		this.inDom = this.inDomCached = if (node.nodeType == Node.ELEMENT_NODE) {
+			var el:Element = cast node;
+			el.tagName == "HTML";
+		} else {
+			false;
+		}
+	}
+	
+	function isInDom ():Bool {
+		if (inDomCached) {
+			return inDom;
+		} else {
+			var p = DomTools.parent(this);
+			if (p != null) {
+				inDom = p.isInDom();
+				inDomCached = true;
+				return inDom;
+			} else {
+				return false;
+			}
+		}
 	}
 	
 	public function iterator ():Iterator<VirtualNode<Dynamic>> {

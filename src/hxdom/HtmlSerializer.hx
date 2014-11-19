@@ -31,25 +31,47 @@ using StringTools;
  */
 class HtmlSerializer extends Serializer {
 	
+	/**
+	 * Store enums as indexes instead of constructor names.
+	 */
 	public static var USE_ENUM_INDEX:Bool = false;
 	
+	/**
+	 * Store html data in the body element. Useful to get script, style downloads started faster.
+	 * 
+	 * TODO implement this.
+	 */
+	public static var HTML_PROXY:Bool = false;
+	
 	var attr:Bool;
+	var htmlProxy:Bool;
+	var detachedDom:Array<VirtualNode<Dynamic>>;
 	
 	public function new () {
 		super();
 		
 		useCache = true;
 		useEnumIndex = USE_ENUM_INDEX;
+		htmlProxy = HTML_PROXY;
+		detachedDom = new Array<VirtualNode<Dynamic>>();
 		attr = false;
 	}
 	
 	function text (t:VirtualNode<hxdom.html.Text>):Void {
-		buf.add(t.node.data);
+		buf.add(t.node.data.htmlEscape());
 	}
 	
 	function element (e:VirtualNode<Element>):Void {
 		openTag(e);
 		children(e);
+		if (e.node.tagName == "BODY" && detachedDom.length > 0) {
+			//Add detached dom elements at the end of the body
+			buf.add('<div data-hxunused="1" style="display:none !important;">');
+			for (i in detachedDom) {
+				serialize(i);
+			}
+			buf.add('</div>');
+		}
 		closeTag(e);
 	}
 	
@@ -123,7 +145,7 @@ class HtmlSerializer extends Serializer {
 		sortedFields.sort(function (a, b) { return (a < b) ? -1 : 1; } );
 		buf.add(" data-hxclass='" + Type.getClassName(Type.getClass(e)) + "'");
 		for (i in sortedFields) {
-			if (i != "node" && i != "id") {
+			if (i != "node" && i != "id" && i != "inDom" && i != "inDomCached") {
 				buf.add(" data-hxd" + Util.camelCaseToDash(i) + "='");
 				serialize(Reflect.field(e, i));
 				buf.add("'");
@@ -139,6 +161,11 @@ class HtmlSerializer extends Serializer {
 		}
 	}
 	
+	inline function addUnusedDom (e:VirtualNode<Dynamic>):Void {
+		detachedDom.remove(e);
+		detachedDom.push(e);
+	}
+	
 	public override function serialize (v:Dynamic):Void {
 		if (Std.is(v, VirtualNode)) {
 			var vn:VirtualNode<Node> = cast v;
@@ -146,6 +173,10 @@ class HtmlSerializer extends Serializer {
 				//For attribute serialization we always use the element's id
 				//Use 'D' to mark DOM id -- it's unused by serializer
 				buf.add("D" + Std.string(v.id));
+				if (untyped !v.isInDom()) {
+					//If element is not in the DOM then add it to unused dom list
+					addUnusedDom(v);
+				}
 			} else {
 				//Otherwise we have special serialization for elements
 				switch (vn.node.nodeType) {

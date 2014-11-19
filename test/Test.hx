@@ -22,6 +22,9 @@ class Test {
 			
 			//Check to see text references are maintained
 			app.threads.markTextEnds();
+			
+			//Add an element that wasn't added to the DOM upon server generation
+			app.threads.append(app.nodeNotInDom);
 		}
 		#else
 		sys.io.File.saveContent("index.html", HtmlSerializer.run(new ForumApp()));
@@ -38,6 +41,7 @@ class ForumApp extends EHtml {
 	
 	public var head(default, null):EHead;
 	public var threads(default, null):ForumThreadView;
+	public var nodeNotInDom(default, null):EDiv;
 	
 	var empty:Text;
 	
@@ -55,6 +59,7 @@ class ForumApp extends EHtml {
 		threads.node.style.backgroundColor = "red";
 		this.on("click", Test.staticEventListener);
 		empty = new Text("");
+		nodeNotInDom = new EDiv().addText("NOT IN DOM");
 		
 		append(head);
 		append(threads);

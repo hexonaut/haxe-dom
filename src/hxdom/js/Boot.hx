@@ -139,9 +139,7 @@ class Boot extends Unserializer {
 							}
 						} else {
 							//Length 0 text node can be added anywhere
-							#if js
-							nodeToAdd = js.Browser.document.createTextNode("");
-							#end
+							nodeToAdd = hxdom.Browser.document.createTextNode("");
 							node.insertBefore(nodeToAdd, child);
 						}
 						var vdomText = Type.createEmptyInstance(Text);
@@ -155,6 +153,15 @@ class Boot extends Unserializer {
 				for (i in 0 ... node.childNodes.length) {
 					buildElementLookup(node.childNodes[i]);
 				}
+			} else {
+				//Could be unused div
+				var unused = Reflect.field(el.dataset, "hxunused");
+				if (unused != null) {
+					for (i in 0 ... node.childNodes.length) {
+						buildElementLookup(node.childNodes[i]);
+					}
+				}
+				node.parentElement.removeChild(node);
 			}
 		}
 	}
