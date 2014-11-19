@@ -36,15 +36,7 @@ class HtmlSerializer extends Serializer {
 	 */
 	public static var USE_ENUM_INDEX:Bool = false;
 	
-	/**
-	 * Store html data in the body element. Useful to get script, style downloads started faster.
-	 * 
-	 * TODO implement this.
-	 */
-	public static var HTML_PROXY:Bool = false;
-	
 	var attr:Bool;
-	var htmlProxy:Bool;
 	var detachedDom:Array<VirtualNode<Dynamic>>;
 	
 	public function new () {
@@ -52,7 +44,6 @@ class HtmlSerializer extends Serializer {
 		
 		useCache = true;
 		useEnumIndex = USE_ENUM_INDEX;
-		htmlProxy = HTML_PROXY;
 		detachedDom = new Array<VirtualNode<Dynamic>>();
 		attr = false;
 	}
