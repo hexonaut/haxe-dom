@@ -185,6 +185,18 @@ class VirtualNode<T:Node> extends EventTarget {
 	}
 	#end
 	
+	/**
+	 * Gets called when element is added to the document. Requires DomTools.observe to be called on the body.
+	 */
+	public function onAdded ():Void {
+	}
+	
+	/**
+	 * Gets called when element is removed from the document. Requires DomTools.observe to be called on the body.
+	 */
+	public function onRemoved ():Void {
+	}
+	
 }
 
 private class VirtualNodeIterator {

@@ -222,6 +222,13 @@ class Boot extends Unserializer {
 			i.call();
 		}
 		
+		//Activate mutation observers if turned on
+		var body = Reflect.field(js.Browser.document.body, "__vdom");
+		var observe = Reflect.field(body, "__observe");
+		if (observe) {
+			DomTools.observe(body);
+		}
+		
 		return Reflect.field(html, "__vdom");
 		#else
 		throw "Only available to JS.";

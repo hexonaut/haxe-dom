@@ -18,6 +18,8 @@ import hxdom.html.Event;
 import hxdom.html.Element;
 import hxdom.html.EventListener;
 import hxdom.html.EventTarget;
+import hxdom.html.MutationObserver;
+import hxdom.html.MutationRecord;
 import hxdom.html.Node;
 import hxdom.html.ScriptElement;
 import hxdom.Elements;
@@ -370,6 +372,36 @@ class DomTools {
 	public static function parent<T:VirtualNode<Dynamic>> (e:T):Null<VirtualElement<Dynamic>> {
 		var p = e.node.parentNode;
 		return p != null ? cast vnode(p) : null;
+	}
+	
+	/**
+	 * Turns on mutation observers for the body.
+	 */
+	public static function observe<T:EBody> (e:T):T {
+		#if (js && !use_vdom)
+		new MutationObserver(function (changes:Array<MutationRecord>, obs:MutationObserver):Bool {
+			for (i in changes) {
+				for (o in i.removedNodes) {
+					var vnode = vnode(o);
+					if (vnode != null) vnode.onRemoved();
+				}
+				for (o in i.addedNodes) {
+					var vnode = vnode(o);
+					if (vnode != null) vnode.onAdded();
+				}
+			}
+			
+			return false;
+		}).observe(e.node, {
+			childList: true,
+			subtree: true
+		});
+		#else
+		//TODO add mutation observer support when available from dom4
+		Reflect.setField(e, "__observe", true);
+		#end
+		
+		return e;
 	}
 	#end
 	

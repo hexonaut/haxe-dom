@@ -61,6 +61,9 @@ class ForumApp extends EHtml {
 		empty = new Text("");
 		nodeNotInDom = new EDiv().addText("NOT IN DOM");
 		
+		//Listen to mutations
+		threads.observe();
+		
 		append(head);
 		append(threads);
 		append(empty);
@@ -190,6 +193,14 @@ class ProfileView extends EAside {
 		}
 		
 		return user;
+	}
+	
+	public override function onAdded ():Void {
+		trace("Added: " + user.id);
+	}
+	
+	public override function onRemoved ():Void {
+		trace("Removed: " + user.id);
 	}
 	
 }
