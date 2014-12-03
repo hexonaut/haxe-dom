@@ -160,8 +160,8 @@ class Boot extends Unserializer {
 					for (i in 0 ... node.childNodes.length) {
 						buildElementLookup(node.childNodes[i]);
 					}
+					node.parentElement.removeChild(node);
 				}
-				node.parentElement.removeChild(node);
 			}
 		}
 	}
