@@ -4,10 +4,9 @@
   "tags": ["cross", "web"],
   "description": "A cross-platform implementation of the DOM. Built to reduce duplicate code across server and client.",
   "contributors": ["Blank101"],
-  "releasenote": "Some clean up. Switched to dom4 as underlying DOM implementation.",
-  "version": "0.4.0",
+  "releasenote": "Some major refactors. Switched to dom4 as underlying DOM implementation. Version 1.",
+  "version": "1.0.0",
   "url": "https://github.com/Blank101/haxe-dom",
   "dependencies": {
-    "dom4": ""
   }
 }
