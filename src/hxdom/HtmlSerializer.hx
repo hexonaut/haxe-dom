@@ -136,7 +136,7 @@ class HtmlSerializer extends Serializer {
 		sortedFields.sort(function (a, b) { return (a < b) ? -1 : 1; } );
 		buf.add(" data-hxclass='" + Type.getClassName(Type.getClass(e)) + "'");
 		for (i in sortedFields) {
-			if (i != "node" && i != "id" && i != "inDom" && i != "inDomCached") {
+			if (i != "node" && i != "id" && i != "__inDom" && i != "__inDomCached") {
 				buf.add(" data-hxd" + Util.camelCaseToDash(i) + "='");
 				serialize(Reflect.field(e, i));
 				buf.add("'");
@@ -164,7 +164,7 @@ class HtmlSerializer extends Serializer {
 				//For attribute serialization we always use the element's id
 				//Use 'D' to mark DOM id -- it's unused by serializer
 				buf.add("D" + Std.string(v.id));
-				if (untyped !v.isInDom()) {
+				if (untyped !v.__isInDom()) {
 					//If element is not in the DOM then add it to unused dom list
 					addUnusedDom(v);
 				}

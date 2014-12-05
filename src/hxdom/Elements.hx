@@ -122,14 +122,15 @@ class VirtualNode<T:Node> extends EventTarget {
 	public var node:T;
 	
 	var id:Int;
-	var inDom:Bool;
-	var inDomCached:Bool;
+	var __inDom:Bool;
+	var __inDomCached:Bool;
+	var __delegates:List<{ event:String, handler:hxdom.SFunc<Event->Dynamic->Void>, filter:Class<Dynamic> }>;
 	
 	public function new (node:T) {
 		this.node = node;
 		Reflect.setField(node, "__vdom", this);
 		this.id = ID++;
-		this.inDom = this.inDomCached = if (node.nodeType == Node.ELEMENT_NODE) {
+		this.__inDom = this.__inDomCached = if (node.nodeType == Node.ELEMENT_NODE) {
 			var el:Element = cast node;
 			el.tagName == "HTML";
 		} else {
@@ -137,15 +138,15 @@ class VirtualNode<T:Node> extends EventTarget {
 		}
 	}
 	
-	function isInDom ():Bool {
-		if (inDomCached) {
-			return inDom;
+	function __isInDom ():Bool {
+		if (__inDomCached) {
+			return __inDom;
 		} else {
 			var p = DomTools.parent(this);
 			if (p != null) {
-				inDom = p.isInDom();
-				inDomCached = true;
-				return inDom;
+				__inDom = p.__isInDom();
+				__inDomCached = true;
+				return __inDom;
 			} else {
 				return false;
 			}

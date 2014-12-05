@@ -41,7 +41,7 @@ class EventDispatcher implements IEventDispatcher {
 interface IEventDispatcher {
 	
 	#if !macro
-	@:skip var __listeners:Map<String, List<{handler:hxdom.SFunc<hxdom.html.Event -> Void>, cap:Bool}>>;
+	@:skip var __listeners:Map<String, List<{ handler:hxdom.SFunc<hxdom.html.Event -> Void>, cap:Bool}>>;
 	
 	public function __addEventListener (type:String, handler:hxdom.SFunc<hxdom.html.Event -> Void>, ?useCapture:Bool = false):Void {
 		if (__listeners == null) __listeners = new Map<String, List<{handler:hxdom.SFunc<hxdom.html.Event -> Void>, cap:Bool}>>();
@@ -54,7 +54,7 @@ interface IEventDispatcher {
 			__listeners.set(type, list);
 		} else {
 			for (i in list) {
-				if (i.handler.inst == handler.inst && i.handler.func == handler.func && i.cap == useCapture) return;
+				if (i.handler.isSame(handler) && i.cap == useCapture) return;
 			}
 			list.add(obj);
 		}
@@ -65,9 +65,13 @@ interface IEventDispatcher {
 		
 		var list = __listeners.get(type);
 		for (i in list) {
-			if (i.handler.inst == handler.inst && i.handler.func == handler.func && i.cap == useCapture) {
+			if (i.handler.isSame(handler) && i.cap == useCapture) {
 				list.remove(i);
+				break;
 			}
+		}
+		if (list.length == 0) {
+			__listeners.remove(type);
 		}
 	}
 	

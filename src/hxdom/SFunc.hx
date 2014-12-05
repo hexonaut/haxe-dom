@@ -37,6 +37,10 @@ class SFunc<T> {
 		
 		return Reflect.callMethod(inst, Reflect.field(inst, func), args);
 	}
+	
+	public inline function isSame (other:SFunc<Dynamic>):Bool {
+		return inst == other.inst && func == other.func;
+	}
 
 	macro public static function make<T> (listener:ExprOf<T>):ExprOf<SFunc<T>> {
 		return macroMake(listener);

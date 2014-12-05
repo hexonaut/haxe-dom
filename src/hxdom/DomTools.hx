@@ -351,20 +351,26 @@ class DomTools {
 		return e;
 	}
 	
-	/**
-	 * Traverses the element's ancestors until it finds a match on the virtual element type.
-	 */
-	public static function closest<T:VirtualNode<Dynamic>, V> (e:T, type:Class<V>):Null<V> {
-		var currNode:Node = e.node;
+	static function __closest<V> (e:Node, type:Class<V>, ?stop:Node):Null<V> {
+		var currNode:Node = e;
 		while (currNode != null) {
 			var vnode = vnode(currNode);
-			if (Std.is(vnode, type)) {
+			if (vnode != null && Std.is(vnode, type)) {
 				return cast vnode;
 			}
+			
+			if (currNode == stop) return null;
 			
 			currNode = currNode.parentNode;
 		}
 		return null;
+	}
+	
+	/**
+	 * Traverses the element's ancestors until it finds a match on the virtual element type.
+	 */
+	public static function closest<T:VirtualNode<Dynamic>, V> (e:T, type:Class<V>):Null<V> {
+		return __closest(e.node, type);
 	}
 	
 	/**
@@ -420,7 +426,87 @@ class DomTools {
 		
 		return e;
 	}
+	
+	static function __delegateEvent (e:Event):Void {
+		var delegates:List<{ event:String, handler:hxdom.SFunc<hxdom.html.Event -> Void>, filter:Class<Dynamic> }> = Reflect.field(vnode(cast e.currentTarget), "__delegates");
+		for (i in delegates) {
+			if (i.event == e.type) {
+				var child = __closest(cast e.target, i.filter, cast e.currentTarget);
+				if (child != null) {
+					i.handler.call([e, child]);
+				}
+			}
+		}
+	}
+	
+	static function __delegate<T:VirtualNode<Dynamic>, V> (e:T, filter:Class<V>, events:String, listener:SFunc<Event->V->Void>):T {
+		var delegates:List<{ event:String, handler:hxdom.SFunc<Event->V->Void>, filter:Class<Dynamic> }> = Reflect.field(e, "__delegates");
+		if (delegates == null) {
+			delegates = new List<{ event:String, handler:hxdom.SFunc<Event->V->Void>, filter:Class<Dynamic> }>();
+			Reflect.setField(e, "__delegates", delegates);
+		}
+		
+		for (i in events.split(" ")) {
+			delegates.add( { event:i, handler:listener, filter:filter } );
+			#if (js && !use_vdom)
+			e.addEventListener(i, __delegateEvent);
+			#else
+			e.__addEventListener(i, SFunc.make(__delegateEvent));
+			#end
+		}
+		
+		return e;
+	}
+	
+	static function __undelegate<T:VirtualNode<Dynamic>, V> (e:T, filter:Class<V>, events:String, listener:SFunc<Event->V->Void>):T {
+		var delegates:List<{ event:String, handler:hxdom.SFunc<Event->V->Void>, filter:Class<Dynamic> }> = Reflect.field(e, "__delegates");
+		if (delegates == null) {
+			//No delegates so just do a no-op
+			return e;
+		}
+		
+		for (i in events.split(" ")) {
+			var found = false;
+			for (d in delegates) {
+				if (d.event == i && d.handler.isSame(listener) && d.filter == filter) {
+					delegates.remove(d);
+					found = true;
+					break;
+				}
+			}
+			if (found) {
+				//We found a match -- be sure to clean up event listeners if it was the last event
+				if (!delegates.exists(function (e) { return e.event == i; } )) {
+					#if (js && !use_vdom)
+					e.removeEventListener(i, __delegateEvent);
+					#else
+					e.__removeEventListener(i, SFunc.make(__delegateEvent));
+					#end
+				}
+			}
+		}
+		
+		if (delegates.length == 0) {
+			Reflect.deleteField(e, "__delegates");
+		}
+		
+		return e;
+	}
 	#end
+	
+	/**
+	 * Watch for one or more events on any descendant filtered by the given class now or in the future.
+	 */
+	macro public static function delegate (ethis:ExprOf<VirtualNode<Dynamic>>, filter:ExprOf<Class<Dynamic>>, events:ExprOf<String>, listener:ExprOf<Event->Dynamic->Void>):ExprOf<VirtualNode<Dynamic>> {
+		return macro untyped hxdom.DomTools.__delegate($ethis, $filter, $events, ${SFunc.macroMake(listener)} );
+	}
+	
+	/**
+	 * Stop watching for one or more events on any descendant filtered by the given class.
+	 */
+	macro public static function undelegate (ethis:ExprOf<VirtualNode<Dynamic>>, filter:ExprOf<Class<Dynamic>>, events:ExprOf<String>, listener:ExprOf<Event->Dynamic->Void>):ExprOf<VirtualNode<Dynamic>> {
+		return macro untyped hxdom.DomTools.__undelegate($ethis, $filter, $events, ${SFunc.macroMake(listener)} );
+	}
 	
 	/**
 	 * Listen to one or more events.

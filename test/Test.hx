@@ -94,6 +94,9 @@ class ForumThreadView extends EBody implements ClientOnly {
 		rawHtml.setHtml("MMMMMMMMMMMMMMMM <span color='blue'>This is raw html</span>");
 		
 		append(t1).append(t2).append(_empty).append(t3).append(rawHtml);
+		
+		//Attach a delegated listener
+		delegate(PostView, "click mousedown mouseup", onPostViewEvent);
 	}
 	
 	@:client
@@ -121,6 +124,10 @@ class ForumThreadView extends EBody implements ClientOnly {
 	
 	public function addPost (post:Post):Void {
 		this.append(new PostView(post));
+	}
+	
+	function onPostViewEvent (e:Event, post:PostView):Void {
+		trace("Got event: " + e.type + ", for post by user: " + post.post.user.name);
 	}
 	
 }
