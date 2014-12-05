@@ -227,6 +227,10 @@ class Boot extends Unserializer {
 		var observe = Reflect.field(body, "__observe");
 		if (observe) {
 			DomTools.observe(body);
+			
+			//FIXME remove this once dom4 mutation observers are available
+			//For now just assume that everything is added once and never removed on server (very likely)
+			Reflect.field(html, "__vdom").__onAdded();
 		}
 		
 		return Reflect.field(html, "__vdom");
