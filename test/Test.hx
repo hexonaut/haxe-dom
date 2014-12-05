@@ -97,6 +97,8 @@ class ForumThreadView extends EBody implements ClientOnly {
 		
 		//Attach a delegated listener
 		delegate(PostView, "click mousedown mouseup", onPostViewEvent);
+		
+		append(new EButton().addText("Clear all posts!").on("click", onClearAllClick));
 	}
 	
 	@:client
@@ -128,6 +130,10 @@ class ForumThreadView extends EBody implements ClientOnly {
 	
 	function onPostViewEvent (e:Event, post:PostView):Void {
 		trace("Got event: " + e.type + ", for post by user: " + post.post.user.name);
+	}
+	
+	function onClearAllClick (_):Void {
+		posts = [];
 	}
 	
 }

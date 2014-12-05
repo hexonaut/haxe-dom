@@ -125,7 +125,7 @@ class Boot extends Unserializer {
 									txt.data = txt.data.substr(0, len);
 								} else {
 									//The rest need to create new text nodes
-									#if js
+									#if (js && !use_vdom)
 									nodeToAdd = js.Browser.document.createTextNode(remainingStr.substr(0, len));
 									#end
 									node.insertBefore(nodeToAdd, child.nextSibling);

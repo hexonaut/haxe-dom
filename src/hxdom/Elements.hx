@@ -198,6 +198,26 @@ class VirtualNode<T:Node> extends EventTarget {
 	public function onRemoved ():Void {
 	}
 	
+	function __onAdded ():Void {
+		onAdded();
+		
+		//Notify all children
+		for (i in 0 ... node.childNodes.length) {
+			var vn = DomTools.vnode(node.childNodes[i]);
+			if (vn != null) vn.__onAdded();
+		}
+	}
+	
+	function __onRemoved ():Void {
+		onRemoved();
+		
+		//Notify all children
+		for (i in 0 ... node.childNodes.length) {
+			var vn = DomTools.vnode(node.childNodes[i]);
+			if (vn != null) vn.__onRemoved();
+		}
+	}
+	
 }
 
 private class VirtualNodeIterator {

@@ -406,11 +406,11 @@ class DomTools {
 			for (i in changes) {
 				for (o in i.removedNodes) {
 					var vnode = vnode(o);
-					if (vnode != null) vnode.onRemoved();
+					if (vnode != null) untyped vnode.__onRemoved();
 				}
 				for (o in i.addedNodes) {
 					var vnode = vnode(o);
-					if (vnode != null) vnode.onAdded();
+					if (vnode != null) untyped vnode.__onAdded();
 				}
 			}
 			
@@ -513,15 +513,16 @@ class DomTools {
 	 */
 	macro public static function on (ethis:ExprOf<VirtualNode<Dynamic>>, events:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>):ExprOf<VirtualNode<Dynamic>> {
 		var callExpr = if (Context.defined("js") && !Context.defined("use_vdom"))
-			macro $ethis.addEventListener(i, $listener);
+			macro result.addEventListener(i, $listener);
 		else
-			macro $ethis.__addEventListener(i, ${SFunc.macroMake(listener)} );
+			macro result.__addEventListener(i, ${SFunc.macroMake(listener)} );
 		
 		return macro {
+			var result = $ethis;
 			for (i in $events.split(" ")) {
 				$callExpr;
 			}
-			$ethis;
+			result;
 		};
 	}
 	
@@ -530,15 +531,16 @@ class DomTools {
 	 */
 	macro public static function off (ethis:ExprOf<VirtualNode<Dynamic>>, events:ExprOf<String>, listener:ExprOf<hxdom.html.EventListener>):ExprOf<VirtualNode<Dynamic>> {
 		var callExpr = if (Context.defined("js") && !Context.defined("use_vdom"))
-			macro $ethis.removeEventListener(i, $listener);
+			macro result.removeEventListener(i, $listener);
 		else
-			macro $ethis.__removeEventListener(i, ${SFunc.macroMake(listener)} );
+			macro result.__removeEventListener(i, ${SFunc.macroMake(listener)} );
 		
 		return macro {
+			var result = $ethis;
 			for (i in $events.split(" ")) {
 				$callExpr;
 			}
-			$ethis;
+			result;
 		};
 	}
 	
