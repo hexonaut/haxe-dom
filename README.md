@@ -112,7 +112,27 @@ Using the DOM directly can be kind of annoying, so I've included a DomTools clas
 
 	using hxdom.DomTools;
 	
+	//DOM manipulation
 	var div = new EDiv().addClass("myCssClass anotherClass").setAttr("id", "someid").addText("Some text in the Div!");
+	
+	//Events
+	var anotherDiv = new EDiv().on("click keypress", someEventHandler);
+	function someEventHandler (e:hxdom.html.Event):Void {
+		//Remeber this method needs to be a member of a class or static to be able to be serialized properly
+		trace(e.currentTarget.vnode() == anotherDiv);		//Returns true
+	}
+	
+	//Event delegation similar to JQuery, but filters by Haxe class type not selector
+	class MyCustomElement extends ESpan {
+		public function new () { super(); }
+		public function hello () { trace("HI!"); }
+	}
+	var yetAnotherDiv = new EDiv().delegate(MyCustomElement, "click keypress", delegateHandler);
+	yetAnotherDiv.append(new MyCustomElement());
+	function delegateHandler (e:hxdom.html.Event, myCustomElement:MyCustomElement):Void {
+		//Remeber this method needs to be a member of a class or static to be able to be serialized properly
+		myCustomElement.hello();
+	}
 
 Custom Event Systems
 ====================
