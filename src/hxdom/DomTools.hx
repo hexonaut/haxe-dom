@@ -25,6 +25,7 @@ import hxdom.html.ScriptElement;
 import hxdom.Elements;
 import hxdom.EventDispatcher;
 #end
+import hxdom.util.Util;
 
 using Lambda;
 
@@ -298,6 +299,22 @@ class DomTools {
 		Reflect.deleteField(e.node, key);
 		
 		return e;
+	}
+	
+	/**
+	 * Set a css style property on the element.
+	 */
+	public static function setCss<T:VirtualElement<Dynamic>> (e:T, key:String, val:String):T {
+		Reflect.setField(e.node.style, key, Util.dashToCamelCase(val));
+		
+		return e;
+	}
+	
+	/**
+	 * Gets a css style property on the element.
+	 */
+	public static function getCss<T:VirtualElement<Dynamic>> (e:T, key:String):String {
+		return Reflect.field(e.node.style, key);
 	}
 	
 	/**
