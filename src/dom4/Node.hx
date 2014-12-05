@@ -495,6 +495,7 @@ class Node implements EventTarget {
     else {
       this.firstChild = n;
     }
+    n.nextSibling = referenceChild;
     n.parentNode = this;
   }
 

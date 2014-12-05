@@ -315,7 +315,7 @@ class EImage extends VirtualElement<ImageElement> { public function new () { sup
 class EInput extends VirtualElement<InputElement> {
 	public function new (type:InputType) {
 		super(VirtualNode.buildElement(InputElement, "INPUT"));
-		node.type = switch (type) {
+		DomTools.setAttr(this, "type", switch (type) {
 			case Button: "button";
 			case Checkbox: "checkbox";
 			case Color: "color";
@@ -339,7 +339,7 @@ class EInput extends VirtualElement<InputElement> {
 			case Time: "time";
 			case Url: "url";
 			case Week: "week";
-		};
+		});
 	}
 }
 class EInserted extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "INS")); } }
