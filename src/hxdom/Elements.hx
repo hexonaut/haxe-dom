@@ -22,7 +22,6 @@ import hxdom.html.ButtonElement;
 import hxdom.html.CanvasElement;
 import hxdom.html.CharacterData;
 import hxdom.html.DataListElement;
-import hxdom.html.DetailsElement;
 import hxdom.html.DirectoryElement;
 import hxdom.html.DivElement;
 import hxdom.html.DListElement;
@@ -39,7 +38,6 @@ import hxdom.html.HtmlElement;
 import hxdom.html.IFrameElement;
 import hxdom.html.ImageElement;
 import hxdom.html.InputElement;
-import hxdom.html.KeygenElement;
 import hxdom.html.LabelElement;
 import hxdom.html.LegendElement;
 import hxdom.html.LIElement;
@@ -177,11 +175,11 @@ class VirtualNode<T:Node> extends EventTarget {
 	}
 	
 	#if (js && !use_vdom)
-	public override function addEventListener (type:String, listener:EventListener, ?useCapture:Bool = false):Void {
+	public override function addEventListener (type:String, listener:Dynamic, ?useCapture:Bool = false):Void {
 		node.addEventListener(type, listener, useCapture);
 	}
 	
-	public override function removeEventListener (type:String, listener:EventListener, ?useCapture:Bool = false):Void {
+	public override function removeEventListener (type:String, listener:Dynamic, ?useCapture:Bool = false):Void {
 		node.removeEventListener(type, listener, useCapture);
 	}
 	#end
@@ -287,7 +285,7 @@ class EData extends VirtualElement<Element> { public function new () { super(Vir
 class EDataList extends VirtualElement<DataListElement> { public function new () { super(VirtualNode.buildElement(DataListElement, "DATALIST")); } }
 class EDescription extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "DD")); } }
 class EDeleted extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "DEL")); } }
-class EDetails extends VirtualElement<DetailsElement> { public function new () { super(VirtualNode.buildElement(DetailsElement, "DETAILS")); } }
+class EDetails extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "DETAILS")); } }
 class EDefinition extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "DEFINITION")); } }
 class EDiv extends VirtualElement<DivElement> { public function new () { super(VirtualNode.buildElement(DivElement, "DIV")); } }
 class EDescriptionList extends VirtualElement<DListElement> { public function new () { super(VirtualNode.buildElement(DListElement, "DL")); } }
@@ -344,7 +342,7 @@ class EInput extends VirtualElement<InputElement> {
 }
 class EInserted extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "INS")); } }
 class EKeyboard extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "KBD")); } }
-class EKeygen extends VirtualElement<KeygenElement> { public function new () { super(VirtualNode.buildElement(KeygenElement, "KEYGEN")); } }
+class EKeygen extends VirtualElement<Element> { public function new () { super(VirtualNode.buildElement(Element, "KEYGEN")); } }
 class ELabel extends VirtualElement<LabelElement> { public function new () { super(VirtualNode.buildElement(LabelElement, "LABEL")); } }
 class ELegend extends VirtualElement<LegendElement> { public function new () { super(VirtualNode.buildElement(LegendElement, "LEGEND")); } }
 class EListItem extends VirtualElement<LIElement> { public function new () { super(VirtualNode.buildElement(LIElement, "LI")); } }
