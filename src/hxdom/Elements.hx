@@ -182,6 +182,10 @@ class VirtualNode<T:Node> extends EventTarget {
 	public override function removeEventListener (type:String, listener:Dynamic, ?useCapture:Bool = false):Void {
 		node.removeEventListener(type, listener, useCapture);
 	}
+	
+	public override function dispatchEvent (event:Event):Bool {
+		return node.dispatchEvent(event);
+	}
 	#end
 	
 	/**

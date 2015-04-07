@@ -492,6 +492,19 @@ class DomTools {
 		
 		return e;
 	}
+	
+	/**
+	 * Create an event. Use this to smooth over cross-browser/server inconsistencies.
+	 */
+	public static function createEvent (type:String, ?bubbles:Bool = false, ?cancelable:Bool = false):Event {
+		#if (js && !use_vdom)
+		var e = Browser.document.createEvent("Event");
+		#else
+		var e = new Event(type, bubbles, cancelable);
+		#end
+		e.initEvent(type, bubbles, cancelable);
+		return e;
+	}
 	#end
 	
 	/**
