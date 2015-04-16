@@ -219,6 +219,7 @@ class DomTools {
 		#if (js && !use_vdom)
 		e.node.innerHTML = html;
 		#else
+		empty(e);
 		untyped e.__rawHtml = html;
 		/*var contentSink = new dom4.utils.BasicContentSink();
         var parser = new dom4.DOMParser(contentSink);
