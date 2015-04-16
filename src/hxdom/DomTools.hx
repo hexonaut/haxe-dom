@@ -161,8 +161,12 @@ class DomTools {
 	/**
 	 * Sets the element's value property.
 	 */
-	public static function setVal<T:VirtualElement<Dynamic>> (e:T, val:String):T {
-		e.node.value = val;
+	public static function setVal<T:VirtualElement<Dynamic>> (e:T, val:Dynamic):T {
+		#if (js && !use_vdom)
+		setProp(e, "value", val);
+		#else
+		setAttr(e, "value", val);
+		#end
 		
 		return e;
 	}
@@ -171,7 +175,11 @@ class DomTools {
 	 * Gets the element's value property.
 	 */
 	public static function getVal<T:VirtualElement<Dynamic>> (e:T):String {
-		return e.node.value;
+		#if (js && !use_vdom)
+		return getProp(e, "value");
+		#else
+		return getAttr(e, "value");
+		#end
 	}
 	
 	/**
@@ -211,7 +219,8 @@ class DomTools {
 		#if (js && !use_vdom)
 		e.node.innerHTML = html;
 		#else
-		var contentSink = new dom4.utils.BasicContentSink();
+		untyped e.__rawHtml = html;
+		/*var contentSink = new dom4.utils.BasicContentSink();
         var parser = new dom4.DOMParser(contentSink);
 		var document = parser.parseFromString('<!DOCTYPE html><html>$html</html>', "text/xml");
 		var nodes = document.documentElement.childNodes;
@@ -226,7 +235,7 @@ class DomTools {
 			for (i in 0 ... node.childNodes.length) {
 				toVirtualize.add(node.childNodes[i]);
 			}
-		}
+		}*/
 		#end
 		
 		return e;

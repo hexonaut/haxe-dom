@@ -122,7 +122,8 @@ class VirtualNode<T:Node> extends EventTarget {
 	var id:Int;
 	var __inDom:Bool;
 	var __inDomCached:Bool;
-	var __delegates:List<{ event:String, handler:hxdom.SFunc<Event->Dynamic->Void>, filter:Class<Dynamic> }>;
+	var __delegates:List<{ event:String, handler:hxdom.SFunc<Event->Dynamic->Void > , filter:Class<Dynamic> } > ;
+	var __rawHtml:String;
 	
 	public function new (node:T) {
 		this.node = node;

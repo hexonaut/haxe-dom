@@ -54,6 +54,9 @@ class HtmlSerializer extends Serializer {
 	
 	function element (e:VirtualNode<Element>):Void {
 		openTag(e);
+		if (untyped e.__rawHtml != null) {
+			buf.add(untyped e.__rawHtml);
+		}
 		children(e);
 		if (e.node.tagName == "BODY" && detachedDom.length > 0) {
 			//Add detached dom elements at the end of the body
@@ -136,7 +139,7 @@ class HtmlSerializer extends Serializer {
 		sortedFields.sort(function (a, b) { return (a < b) ? -1 : 1; } );
 		buf.add(" data-hxclass='" + Type.getClassName(Type.getClass(e)) + "'");
 		for (i in sortedFields) {
-			if (i != "node" && i != "id" && i != "__inDom" && i != "__inDomCached") {
+			if (i != "node" && i != "id" && i != "__inDom" && i != "__inDomCached" && i != "__rawHtml") {
 				buf.add(" data-hxd" + Util.camelCaseToDash(i) + "='");
 				serialize(Reflect.field(e, i));
 				buf.add("'");

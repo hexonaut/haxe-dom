@@ -91,7 +91,7 @@ class ForumThreadView extends EBody implements ClientOnly {
 		_empty = new Text("");
 		t3 = new Text("references");
 		rawHtml = new EDiv();
-		rawHtml.setHtml("MMMMMMMMMMMMMMMM <span color='blue'>This is raw html</span>");
+		rawHtml.setHtml("MMMMMMMMMMMMMMMM <span color='blue'>This is raw html</span> >");
 		
 		append(t1).append(t2).append(_empty).append(t3).append(rawHtml);
 		
