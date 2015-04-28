@@ -438,12 +438,14 @@ class DomTools {
 	}
 	
 	static function __delegateEvent (e:Event):Void {
-		var delegates:List<{ event:String, handler:hxdom.SFunc<hxdom.html.Event -> Void>, filter:Class<Dynamic> }> = Reflect.field(vnode(cast e.currentTarget), "__delegates");
-		for (i in delegates) {
-			if (i.event == e.type) {
-				var child = __closest(cast e.target, i.filter, cast e.currentTarget);
-				if (child != null) {
-					i.handler.call([e, child]);
+		var delegates:List<{ event:String, handler:hxdom.SFunc<hxdom.html.Event -> Void>, filter:Class<Dynamic> } > = Reflect.field(vnode(cast e.currentTarget), "__delegates");
+		if (delegates != null) {
+			for (i in delegates) {
+				if (i.event == e.type) {
+					var child = __closest(cast e.target, i.filter, cast e.currentTarget);
+					if (child != null) {
+						i.handler.call([e, child]);
+					}
 				}
 			}
 		}
