@@ -52,6 +52,64 @@ class MutationUtils {
                                             addedNodes: Array<Node>, removedNodes: Array<Node>,
                                             previousSibling: Node, nextSibling: Node) : Void
   {
-   // TBD
+	if (addedNodes == null) addedNodes = [];
+	if (removedNodes == null) removedNodes = [];
+	
+	/**
+	 * https://dom.spec.whatwg.org/#mutation-observers
+	 * 
+	 * 4.3.2
+	 */
+	var interestedObservers = new Array<{observer:MutationObserver, ?oldValue:DOMString}>();
+	var node = target;
+	while (node != null) {
+		for (i in node.mutationObservers) {
+			//3.1
+			if (node != target && !i.options.subtree)
+				continue;
+			
+			//3.2
+			if (type == "attributes" && !i.options.attributes)
+				continue;
+			
+			//3.3
+			if (type == "attributes" && (namespace != null || !Lambda.has(i.options.attributeFilter, name)))
+				continue;
+			
+			//3.4
+			if (type == "characterData" && !i.options.characterData)
+				continue;
+			
+			//3.5
+			if (type == "childList" && !i.options.childList)
+				continue;
+			
+			//3.6/3.7
+			var inclOldValue =
+				(type == "attributes" && i.options.attributeOldValue) ||
+				(type == "characterData" && i.options.characterDataOldValue);
+			if (!Lambda.exists(interestedObservers, function (e) { return e.observer == i.observer; } ))
+				interestedObservers.push({ observer:i.observer, oldValue:inclOldValue ? oldValue : null });
+		}
+		
+		node = node.parentNode;
+	}
+	
+	for (i in interestedObservers) {
+		//Create MutationRecord
+		var record:dom4.MutationRecord = {
+			type: type,
+			target: target,
+			addedNodes: addedNodes,
+			removedNodes: removedNodes,
+			previousSibling: previousSibling,
+			nextSibling: nextSibling,
+			attributeName: name,
+			attributeNamespace: namespace,
+			oldValue: i.oldValue
+		};
+		
+		i.observer.enqueueRecord(record);
+	}
   }
 }

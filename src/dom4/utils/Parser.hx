@@ -112,10 +112,12 @@ class Parser
       }
     }
 
-    var xml = this.contentSink.createElement(document, namespace,
+    var xml = this.contentSink.createElement(document, parent,
+                  namespace,
                   ((namespace == Namespaces.HTML_NAMESPACE)
                    ? this.elementName.toLowerCase()
-                   : this.elementName));
+                   : this.elementName),
+                  this.attributesArray);
     parent.appendChild(xml);
     // we can't rely on prefix/namespace validation here because
     // the xmlns attributes are possibly not here yet...

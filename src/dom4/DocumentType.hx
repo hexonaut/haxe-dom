@@ -114,4 +114,13 @@ class DocumentType extends Node
     this.systemId = systemId;
     this.nodeType = Node.DOCUMENT_TYPE_NODE;
   }
+
+  /**********************************************
+   * IMPLEMENTATION HELPERS
+   **********************************************/
+  static public function _clone(docTypeNode: Node): DocumentType
+  {
+    var d: DocumentType = cast(docTypeNode, DocumentType);
+    return (new DocumentType(d.name, d.publicId, d.systemId));
+  }
 }

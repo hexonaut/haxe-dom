@@ -303,8 +303,10 @@ class CSSParser  {
               selector.LangPseudoClassList.push(langArray);
             }
             else if (!parsingNegation && token.ivalue == "not(") {
-              if (selector.negation == null)
+              if (selector.negation == null) {
                 selector.negation = new CSSSelector();
+                selector.negation.negated = true;
+              }
               this.parseSelector("", true, selector.negation);
             }
             else { // must be an+b/even/odd
@@ -346,15 +348,15 @@ class CSSParser  {
                   a = Std.parseInt(this.ANB_EREG.matched(2));
                   b = Std.parseInt(this.ANB_EREG.matched(3) + this.ANB_EREG.matched(4));
                 }
-                var p = {
-                  type: type.substr(0, type.length - 1),
-                  a: a,
-                  b: b
-                };
-                selector.NthPseudoclassList.push(p);
               }
               else
                 throw (new DOMException("Syntax error in :nth-*() argument"));
+              var p = {
+                type: type.substr(0, type.length - 1),
+                a: a,
+                b: b
+              };
+              selector.NthPseudoclassList.push(p);
             }
           }
           else // not a known pseudo-class

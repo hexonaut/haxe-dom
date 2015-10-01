@@ -37,11 +37,126 @@
 
 package dom4;
 
-/*
- * STUB
- */
+typedef MutationObserverInit = {
+	
+	/**
+	 * Set to true if additions and removals of the target node's child elements (including text nodes) are to be observed.
+	 */
+	?childList:Bool,
+	
+	/**
+	 * Set to true if mutations to target's attributes are to be observed.
+	 */
+	?attributes:Bool,
+	
+	/**
+	 * Set to true if mutations to target's data are to be observed.
+	 */
+	?characterData:Bool,
+	
+	/**
+	 * Set to true if mutations to not just target, but also target's descendants are to be observed.
+	 */
+	?subtree:Bool,
+	
+	/**
+	 * Set to true if attributes is set to true and target's attribute value before the mutation needs to be recorded.
+	 */
+	?attributeOldValue:Bool,
+	
+	/**
+	 * Set to true if characterData is set to true and target's data before the mutation needs to be recorded.
+	 */
+	?characterDataOldValue:Bool,
+	
+	/**
+	 * Set to an array of attribute local names (without namespace) if not all attribute mutations need to be observed.
+	 */
+	?attributeFilter:Array<String>
+	
+};
 
 class MutationObserver {
-  
-  public function new() {}
+	
+	/**
+	 * https://dom.spec.whatwg.org/#mutation-observers
+	 */
+	
+	var callback:Array<MutationRecord> -> MutationObserver -> Void;
+	var nodes:Array<Node>;
+	var records:Array<MutationRecord>;
+	
+	public function new (callback:Array<MutationRecord> -> MutationObserver -> Void) {
+		this.callback = callback;
+		this.nodes = [];
+		this.records = [];
+	}
+	
+	public function observe (target:Node, options:MutationObserverInit):Void {
+		if (options.childList == null) options.childList = false;
+		if (options.subtree == null) options.subtree = false;
+		
+		//1.
+		if (options.attributes == null && (options.attributeFilter != null || options.attributeOldValue != null))
+			options.attributes = true;
+		
+		//2.
+		if (options.characterData == null && options.characterDataOldValue != null)
+			options.characterData = true;
+		
+		//3.
+		if (options.attributes != true && options.childList != true && options.characterData != true)
+			throw (new DOMException("TypeError"));
+		
+		//4.
+		if (options.attributeOldValue == true && options.attributes == false)
+			throw (new DOMException("TypeError"));
+		
+		//5.
+		if (options.attributeFilter != null && options.attributes == false)
+			throw (new DOMException("TypeError"));
+		
+		//6.
+		if (options.characterDataOldValue == true && options.characterData == false)
+			throw (new DOMException("TypeError"));
+		
+		for (i in target.mutationObservers) {
+			if (i.observer == this) {
+				//Already exists on node
+				i.options = options;
+				return;
+			}
+		}
+		
+		//Add to node observers
+		target.mutationObservers.push( { observer:this, options:options } );
+		nodes.push(target);
+	}
+	
+	public function disconnect ():Void {
+		for (i in nodes) {
+			for (o in 0 ... i.mutationObservers.length) {
+				if (i.mutationObservers[o].observer == this) {
+					i.mutationObservers.splice(o, 1);
+					
+					break;
+				}
+			}
+		}
+		this.nodes = [];
+		this.records = [];
+	}
+	
+	public function takeRecords ():Array<MutationRecord> {
+		var _records = this.records;
+		this.records = [];
+		return _records;
+	}
+	
+	@:allow(dom4.utils.MutationUtils)
+	function enqueueRecord (record:MutationRecord):Void {
+		//Just fire off the event right away because there is no event loop
+		callback([record], this);
+	}
+	
 }

@@ -134,15 +134,25 @@ class NamedNodeMap implements ArrayAccess<Attr> {
     return oldAttr;
   }
 
-  /*
-   * EXTRA
-   */
+  /**********************************************
+   * IMPLEMENTATION HELPERS
+   **********************************************/
   public function removeAttributeNode(attr:Attr): Attr
   {
     var oldAttr = this.getNamedItem(attr.name);
     if (oldAttr != null)
       this.attributes.remove(oldAttr);
     return oldAttr;
+  }
+
+  static public function _clone(o: NamedNodeMap): NamedNodeMap
+  {
+    var n = new NamedNodeMap();
+    for (attribute in o.attributes) {
+      var newAttr = Attr._clone(attribute);
+      n.attributes.push(newAttr);
+    }
+    return n;
   }
 
   @:arrayAccess public inline function __get(key:UInt) return this.item(key);

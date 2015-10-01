@@ -44,6 +44,16 @@ class Text extends CharacterData {
    * https://dom.spec.whatwg.org/#interface-text
    */
 
+  /**********************************************
+   * IMPLEMENTATION HELPERS
+   **********************************************/
+  static public function _clone(textNode: Node): Text
+  {
+    var d: Text = cast(textNode, Text);
+    var n = new Text(d.data);
+    return n;
+  }
+
   public function new(v: DOMString) {
     super(v);
     this.nodeType = Node.TEXT_NODE;

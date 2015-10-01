@@ -10,4 +10,4 @@
 
 package hxdom.html;
 
-typedef MutationCallback = Array<MutationRecord> -> MutationObserver -> Bool;
+typedef MutationCallback = Array<MutationRecord> -> MutationObserver -> Void;

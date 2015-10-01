@@ -83,9 +83,19 @@ class Element extends Node
 
   /*
    * https://dom.spec.whatwg.org/#dom-element-id
-   * XXX
    */
-  public var id: DOMString;
+  public var id(get, set): DOMString;
+      private function get_id(): DOMString
+      {
+        if (this.hasAttribute("id"))
+          return this.getAttribute("id");
+        return "";
+      }
+      private function set_id(v: DOMString): DOMString
+      {
+        this.setAttribute("id", v);
+        return v;
+      }
 
   /*
    * https://dom.spec.whatwg.org/#dom-element-classname
@@ -440,6 +450,17 @@ class Element extends Node
   public function _setNamespaceURI(n: DOMString): Void
   {
     this.namespaceURI = n;
+  }
+
+  /**********************************************
+   * IMPLEMENTATION HELPERS
+   **********************************************/
+  static public function _clone(eltNode: Node): Element
+  {
+    var d: Element = cast(eltNode, Element);
+    var n = new Element(d.namespaceURI, d.localName, d.prefix);
+    n.attributes = NamedNodeMap._clone(d.attributes);
+    return n;
   }
 
   public function new(namespace: DOMString, localName: DOMString, ?prefix: DOMString = "") {

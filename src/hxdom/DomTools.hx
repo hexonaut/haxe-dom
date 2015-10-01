@@ -411,8 +411,7 @@ class DomTools {
 	 * Turns on mutation observers for the body.
 	 */
 	public static function observe<T:EBody> (e:T):T {
-		#if (js && !use_vdom)
-		new MutationObserver(function (changes:Array<MutationRecord>, obs:MutationObserver):Bool {
+		new MutationObserver(function (changes:Array<MutationRecord>, obs:MutationObserver):Void {
 			for (i in changes) {
 				for (o in i.removedNodes) {
 					var vnode = vnode(o);
@@ -423,14 +422,13 @@ class DomTools {
 					if (vnode != null) untyped vnode.__onAdded();
 				}
 			}
-			
-			return false;
 		}).observe(e.node, {
 			childList: true,
 			subtree: true
 		});
-		#else
-		//TODO add mutation observer support when available from dom4
+		
+		#if !(js && !use_vdom)
+		//Mark element as under observation for the client
 		Reflect.setField(e, "__observe", true);
 		#end
 		

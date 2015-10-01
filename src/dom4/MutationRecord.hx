@@ -37,11 +37,55 @@
 
 package dom4;
 
-/*
- * STUB
- */
+typedef MutationRecord = {
 
-class MutationRecord {
-  
-  public function new() {}
-}
+	/**
+	 * https://dom.spec.whatwg.org/#mutation-observers
+	 */
+	
+	/**
+	 * Returns attributes if the mutation was an attribute mutation, characterData if it was a mutation to a CharacterData node, and childList if it was a mutation to the tree of nodes.
+	 */
+	type:DOMString,
+	
+	/**
+	 * Returns the node the mutation affected, depending on the type. For attributes, it is the element whose attribute changed. For characterData, it is the CharacterData node. For childList, it is the node whose children changed.
+	 */
+	target:Node,
+	
+	/**
+	 * Return the nodes added. Will be an empty NodeList if no nodes were added.
+	 */
+	addedNodes:Array<Node>,
+	
+	/**
+	 * Return the nodes removed. Will be an empty NodeList if no nodes were removed.
+	 */
+	removedNodes:Array<Node>,
+	
+	/**
+	 * Return the previous sibling of the added or removed nodes, or null.
+	 */
+	previousSibling:Node,
+	
+	/**
+	 * Return the next sibling of the added or removed nodes, or null.
+	 */
+	nextSibling:Node,
+	
+	/**
+	 * Returns the local name of the changed attribute, or null.
+	 */
+	attributeName:DOMString,
+	
+	/**
+	 * Returns the namespace of the changed attribute, or null.
+	 */
+	attributeNamespace:DOMString,
+	
+	/**
+	 * The return value depends on the type. For attributes, it is the value of the changed attribute before the change. For characterData, it is the data of the changed node before the change. For childList, it is null.
+	 */
+	oldValue:DOMString
+	
+};

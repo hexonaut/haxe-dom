@@ -39,7 +39,11 @@ package dom4.utils;
 
 class BasicContentSink implements ContentSink 
 {
-  public function createElement(document: Document, namespace: DOMString, name: DOMString): Element
+  public function createElement(document: Document,
+                                parent: Node,
+                                namespace: DOMString,
+                                name: DOMString,
+                                attributesArray: Array<Array<DOMString>>): Element
   {
     // almost a stub, to be replaced according to your needs and wishes
     return document.createElementNS(namespace, name);

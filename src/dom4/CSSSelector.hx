@@ -58,35 +58,16 @@ typedef NthFunctionalPseudo = {
   var b: Int;
 }
 
-class CSSSelector {
+class CSSSelectorHelper {
 
-    public var elementTypeList : Array<DOMString>; // could become an Atom
-    public var IDList : Array<DOMString>;
-    public var ClassList : Array<DOMString>;
-
-    public var AttrList : Array<CSSAttrSelector>;
-
-    public var LangPseudoClassList : Array<Array<DOMString>>;
-    public var NthPseudoclassList  : Array<NthFunctionalPseudo>;
-    public var PseudoClassList : Array<DOMString>;
-
-    public var pseudoElement: DOMString;
-    public var negation : CSSSelector;
-    public var parent : CSSSelector;
-
-    public var next : CSSSelector;
-
-    public var combinator : CSSCombinator;
-
-
-    static private var mPeudoElementList = [
+  static public var mPeudoElementList = [
         "after",
         "before",
         "first-line",
         "first-letter"
     ];
 
-    static private var mPeudoClassList = [
+    static public var mPeudoClassList = [
     /*
         "hover",
         "active",
@@ -106,7 +87,7 @@ class CSSSelector {
         "empty"
     ];
 
-    static private var mFunctionalPseudoClassList = [
+    static public var mFunctionalPseudoClassList = [
         "lang(",
         "nth-child(",
         "nth-last-child(",
@@ -114,19 +95,141 @@ class CSSSelector {
         "nth-last-of-type(",
         "not("
     ];
+}
 
+class CSSSelector {
+
+    public var elementTypeList : Array<DOMString>; // could become an Atom
+    public var IDList : Array<DOMString>;
+    public var ClassList : Array<DOMString>;
+
+    public var AttrList : Array<CSSAttrSelector>;
+
+    public var LangPseudoClassList : Array<Array<DOMString>>;
+    public var NthPseudoclassList  : Array<NthFunctionalPseudo>;
+    public var PseudoClassList : Array<DOMString>;
+
+    public var pseudoElement: DOMString;
+    public var negation : CSSSelector;
+    public var negated: Bool;
+    public var parent : CSSSelector;
+
+    public var next : CSSSelector;
+
+    public var combinator : CSSCombinator;
 
     static public function isPseudoElement(s: String) : Bool {
-        return (-1 != mPeudoElementList.indexOf(s));
+        return (-1 != CSSSelectorHelper.mPeudoElementList.indexOf(s));
     }
 
     static public function isPseudoClass(s: String) : Bool {
-        return (-1 != mPeudoClassList.indexOf(s));
+        return (-1 != CSSSelectorHelper.mPeudoClassList.indexOf(s));
     }
 
     static public function isFunctionalPseudoClass(s: String) : Bool {
-        return (-1 != mFunctionalPseudoClassList.indexOf(s));
+        return (-1 != CSSSelectorHelper.mFunctionalPseudoClassList.indexOf(s));
     }
+
+    public function negateIfNeeded(s: DOMString): DOMString
+    {
+      if (this.negated)
+        return ":not(" + s + ")";
+      return s;
+    }
+
+    public var cssText(get, set): DOMString;
+      private function get_cssText(): DOMString {
+        var s  = "";
+        for (type in this.elementTypeList)
+          s += negateIfNeeded(type);
+  
+        for (id in this.IDList)
+          s += negateIfNeeded("#" + id);
+  
+        for (c in this.ClassList)
+          s += negateIfNeeded("." + c);
+  
+        for (a in this.AttrList) {
+          var attrSel = a.name;
+          var requireValue = true;
+          switch (a.operator) {
+            case ATTR_EXISTS:
+              requireValue = false;
+            case ATTR_EQUALS:
+              attrSel += "=";
+            case ATTR_INCLUDES:
+              attrSel += "~=";
+            case ATTR_DASHMATCH:
+              attrSel += "|=";
+            case ATTR_BEGINSMATCH:
+              attrSel += "^=";
+            case ATTR_ENDSMATCH:
+              attrSel += "$=";
+            case ATTR_CONTAINSMATCH:
+              attrSel += "*=";
+          }
+          if (requireValue) {
+            attrSel += '"' + a.value + '"';
+            if (a.caseInsensitive)
+              attrSel += " i";
+          }
+
+          s += negateIfNeeded("[" + attrSel + "]");
+        }
+
+        for (p in this.PseudoClassList)
+          s += negateIfNeeded(":" + p);
+
+        for (p in this.NthPseudoclassList) {
+          var pStr = ":" + p.type + "(";
+          if (p.a == 2 && p.b == 1) {
+            pStr += "odd";
+          }
+          else if (p.a == 2 && p.b == 0) {
+            pStr += "even";
+          }
+          else {
+            pStr += p.a + "n";
+            if (p.b < 0)
+              pStr += p.b;
+            else if (p.b > 0)
+              pStr += "+" + p.b;
+          }
+          pStr += ")";
+          s += negateIfNeeded(pStr);
+        }
+
+        if (this.negation != null) {
+          s += this.negation.cssText;
+        }
+
+        if (this.pseudoElement != "")
+          s += "::" + pseudoElement;
+
+        if (this.parent != null) {
+          switch (this.combinator) {
+            case COMBINATOR_DESCENDANT:
+              s = " " + s;
+            case COMBINATOR_CHILD:
+              s = " > " + s;
+            case COMBINATOR_ADJACENT_SIBLING:
+              s = " + " + s;
+            case COMBINATOR_SIBLING:
+              s = " ~ " + s;
+            case COMBINATOR_NONE:
+          }
+          s = this.parent.cssText + s;
+        }
+
+        if (this.next != null)
+          s = this.next.cssText + ", " + s;
+
+        return s;
+      }
+      private function set_cssText(v: DOMString): DOMString
+      {
+        return v;
+      }
 
     public function new() {
         this.elementTypeList = [];
@@ -137,6 +240,7 @@ class CSSSelector {
         this.PseudoClassList = [];
         this.NthPseudoclassList = [];
         this.negation = null;
+        this.negated = false;
         this.parent = null;
         this.next = null;
         this.combinator = COMBINATOR_NONE;

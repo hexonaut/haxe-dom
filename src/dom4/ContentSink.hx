@@ -20,6 +20,7 @@
  *
  * Contributor(s):
  *   Daniel Glazman <daniel.glazman@disruptive-innovations.com>
+ *   Franco Ponticelli <franco.ponticelli@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -34,12 +35,12 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package dom4;
 
 interface ContentSink
 {
-  public function createElement(document: Document, namespace: DOMString, name: DOMString): Element;
+  public function createElement(document: Document, parent: Node, namespace: DOMString, name: DOMString, attributesArray: Array<Array<DOMString>>): Element;
   public function postCreateElement(element: Element): Void;
   public function finalizeElement(element: Element): Void;
 }

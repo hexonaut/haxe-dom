@@ -392,6 +392,16 @@ class Document extends Node
     doc.URL = URL;
   }
 
+  static public function _clone(docNode: Node): Document
+  {
+    var doc: Document = cast(docNode, Document);
+    var n = new Document(doc.implementation);
+    n.characterSet = doc.characterSet;
+    n.contentType = doc.contentType;
+    n.URL = doc.URL;
+    return n;
+  }
+
   /**********************************************
    * HELPERS DEFINED BY SPECIFICATION
    **********************************************/

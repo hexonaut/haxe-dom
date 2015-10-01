@@ -49,6 +49,16 @@ class ProcessingInstruction extends CharacterData {
    */
   public var target(default, null): DOMString;
 
+  /**********************************************
+   * IMPLEMENTATION HELPERS
+   **********************************************/
+  static public function _clone(piNode: Node): ProcessingInstruction
+  {
+    var d: ProcessingInstruction = cast(piNode, ProcessingInstruction);
+    var n = new ProcessingInstruction(d.target, d.data);
+    return n;
+  }
+
   public function new(target: DOMString, data: DOMString) {
     super(data);
     this.target = target;

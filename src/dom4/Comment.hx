@@ -44,6 +44,18 @@ class Comment extends CharacterData {
    * https://dom.spec.whatwg.org/#interface-comment
    */
 
+  /**********************************************
+   * IMPLEMENTATION HELPERS
+   **********************************************/
+  static public function _clone(commentNode: Node): Comment
+  {
+    var d: Comment = cast(commentNode, Comment);
+    var n = new Comment(d.data);
+    return n;
+  }
+
+  /**********************************************/
+
   public function new(v: DOMString) {
     super(v);
     this.nodeType = Node.COMMENT_NODE;

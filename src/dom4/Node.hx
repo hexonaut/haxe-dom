@@ -75,6 +75,9 @@ class Node implements EventTarget {
   private var NOT_WHITESPACE_ONLY_EREG = new EReg("[^ \t\r\n]", "g");
 
   private var eventListeners: Array<NodeEventListener>;
+  @:allow(dom4.MutationObserver) @:allow(dom4.utils.MutationUtils)
+	private var mutationObservers: Array<{ observer:MutationObserver, options:dom4.MutationObserver.MutationObserverInit }>;
+
   /*
    * https://dom.spec.whatwg.org/#dom-node-nodetype
    */
@@ -240,31 +243,40 @@ class Node implements EventTarget {
    */
   public function cloneNode(?deep: Bool = false) : Node
   {
-    // XXX
-    return null;
+    var doc: Document = this.ownerDocument;
+    var clone = this._cloneOneNode(null, deep);
+    return clone;
   }
 
-  private function _cloneOneNode() : Node
+  private function _cloneOneNode(parentNode: Node, deep: Bool) : Node
   {
+    var clone: Node = null;
     switch (this.nodeType) {
-      case DOCUMENT_TYPE_NODE: {
-        var dt = cast(this, DocumentType);
-        return cast(this.ownerDocument.implementation.createDocumentType(dt.name, dt.publicId, dt.systemId), Node);
-      }
+      case DOCUMENT_NODE:
+        clone = Document._clone(this);
+      case DOCUMENT_TYPE_NODE:
+        clone = DocumentType._clone(this);
       case TEXT_NODE:
-        return cast(this.ownerDocument.createTextNode(cast(this, Text).data), Node);
+        clone = Text._clone(this);
       case COMMENT_NODE:
-        return cast(this.ownerDocument.createComment(cast(this, Comment).data), Node);
-      case PROCESSING_INSTRUCTION_NODE: {
-        var pi = cast(this, ProcessingInstruction);
-        return cast(this.ownerDocument.createProcessingInstruction(pi.target, pi.data), Node);
-      }
-      case ELEMENT_NODE: {
-        var e = cast(this, Element);
-        var newElt = this.ownerDocument.createElementNS(e.namespaceURI, e.localName);
+        clone = Comment._clone(this);
+      case PROCESSING_INSTRUCTION_NODE:
+        clone = ProcessingInstruction._clone(this);
+      case ELEMENT_NODE:
+        clone = Element._clone(this);
+    }
+    if (clone != null) {
+      if (parentNode != null)
+        parentNode.appendChild(clone);
+      if (deep) {
+        var child: Node = this.firstChild;
+        while (child != null) {
+          child._cloneOneNode(clone, deep);
+          child = child.nextSibling;
+        }
       }
     }
-    return null; // should never happen
+    return clone;
   }
 
   /*
@@ -272,8 +284,66 @@ class Node implements EventTarget {
    */
   public function isEqualNode(node: Node): Bool
   {
-    // TBD must run in depth
-    return (node == this);
+    if (node == null)
+      return false;
+
+    if (this.nodeType != node.nodeType)
+      return false;
+
+    switch (this.nodeType) {
+      case DOCUMENT_TYPE_NODE:
+        var t = cast(this, DocumentType);
+        var n = cast(node, DocumentType);
+        if (t.name != n.name
+            || t.publicId != n.publicId
+            || t.systemId != n.systemId)
+           return false;
+      case ELEMENT_NODE:
+        var t = cast(this, Element);
+        var n = cast(node, Element);
+        if (t.namespaceURI != n.namespaceURI
+            || t.prefix != n.prefix
+            || t.localName != n.localName
+            || t.attributes.length != n.attributes.length)
+          return false;
+        for (i in 0...t.attributes.length) {
+          var tAttr = t.attributes[i];
+          var nAttr = n.attributes.getNamedItemNS(tAttr.namespaceURI, tAttr.localName);
+          if (nAttr == null)
+            return false;
+          if (nAttr.value != tAttr.value)
+            return false;
+        }
+      case PROCESSING_INSTRUCTION_NODE:
+        var t = cast(this, ProcessingInstruction);
+        var n = cast(node, ProcessingInstruction);
+        if (t.target != n.target
+            || t.data != n.data)
+          return false;
+      case TEXT_NODE:
+        var t = cast(this, Text);
+        var n = cast(node, Text);
+        if (t.data != n.data)
+          return false;
+      case COMMENT_NODE:
+        var t = cast(this, Comment);
+        var n = cast(node, Comment);
+        if (t.data != n.data)
+          return false;
+    }
+
+    if (this._childrenCount != node._childrenCount)
+      return false;
+
+    var tChild = this.firstChild;
+    var nChild = node.firstChild;
+    while (tChild != null) {
+      if (!tChild.isEqualNode(nChild))
+        return false;
+      tChild = tChild.nextSibling;
+      nChild = nChild.nextSibling;
+    }
+    return true;
   }
 
   /* 
@@ -512,6 +582,17 @@ class Node implements EventTarget {
         node = node.previousSibling;
       }
       return index;
+    }
+
+    private function _childrenCount(): Int
+    {
+      var count = 0;
+      var child: Node = this.firstChild;
+      while (child != null) {
+        count++;
+        child = child.nextSibling;
+      }
+      return count;
     }
 
   /**********************************************
@@ -986,5 +1067,6 @@ class Node implements EventTarget {
 
   public function new() {
     this.eventListeners = [];
+	this.mutationObservers = [];
   }
 }
