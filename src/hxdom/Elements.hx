@@ -273,11 +273,11 @@ class EButton extends VirtualElement<ButtonElement> {
 	public function new (?type:ButtonType) {
 		super(VirtualNode.buildElement(ButtonElement, "BUTTON"));
 		if (type == null) type = Button;
-		node.type = switch (type) {
+		DomTools.setAttr(this, "type", switch (type) {
 			case Button: "button";
 			case Submit: "submit";
 			case Reset: "reset";
-		}
+		});
 	}
 }
 class ECanvas extends VirtualElement<CanvasElement> { public function new () { super(VirtualNode.buildElement(CanvasElement, "CANVAS")); } }
